@@ -29,6 +29,8 @@ class StateManager:
             self.current_state.draw(screen)
 
 class BaseState:
+    def __init__(self):
+        pass
     def enter(self):
         #called when we enter this state
         pass
@@ -47,4 +49,7 @@ class BaseState:
         pass
 
     def update_window_size(self, screen):
+        pass
+    
+    def on_mouse_motion(self, pos):
         pass

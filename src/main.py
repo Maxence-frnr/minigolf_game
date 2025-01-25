@@ -1,4 +1,5 @@
 import pygame as py
+from assets_manager import AssetsManager
 from state_manager import StateManager
 from menu import MenuState
 from game import Game
@@ -12,14 +13,20 @@ screen = py.display.set_mode((WIDTH, HEIGHT), flags=py.RESIZABLE)
 clock = py.time.Clock()
 
 #state initialisation
+assets_manager = AssetsManager()
 state_manager = StateManager()
-menu_state = MenuState()
-game_state = Game()
+
+back_arrow = assets_manager.load("back_arrow", "assets\sprites\\back_arrow.png")
+
+
+
+menu_state = MenuState(state_manager)
+game_state = Game(state_manager, assets_manager)
 state_manager.add_state("menu", menu_state)
 state_manager.add_state("game", game_state)
 
 
-state_manager.set_state("game")
+state_manager.set_state("menu")
 
 running = True
 while running:
