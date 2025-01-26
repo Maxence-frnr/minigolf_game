@@ -19,11 +19,21 @@ class Game(BaseState):
         self.is_left_button_down = False
         self.is_building_strength = False
         
+        self.strength_arrow_angle = 0
+        
         #UI
         self.back_to_menu_button_sprite = assets_manager.get("back_arrow")
+        self.strength_arrow_sprite = assets_manager.get("white_arrow")
         
         self.back_to_menu_button = Button("", (10, 10, 30, 30), 10, (255, 255, 255), (255, 0, 0), self.back_to_menu, self.back_to_menu_button_sprite)
         self.buttons = [self.back_to_menu_button]
+    
+    def enter(self):
+        pass
+    
+    def exit(self):
+        self.player.v = Vector2(0, 0)
+        self.player.pos = Vector2(300, 300)
         
         
 
@@ -49,7 +59,7 @@ class Game(BaseState):
             if event.type == py.MOUSEBUTTONDOWN:
                 self.is_left_button_down = True
                 
-                if abs(event.pos[0] - self.player.pos[0]) < 10 and abs(event.pos[1] - self.player.pos[1]) < 10:
+                if abs(event.pos[0] - self.player.pos[0]) < 15 and abs(event.pos[1] - self.player.pos[1]) < 15:
                     self.is_building_strength = True
                     
             elif event.type == py.MOUSEBUTTONUP:
@@ -71,6 +81,8 @@ class Game(BaseState):
         if self.player.v.length() > 0:
             friction_v = self.player.v.normalize() * -self.friction
             self.player.v += friction_v * dt
+            self.player.v[0] = self.player.v[0] if abs(self.player.v[0]) > 1 else 0
+            self.player.v[1] = self.player.v[1] if abs(self.player.v[1]) > 1 else 0
 
         self.strength = Vector2(0, 0)
         
@@ -98,7 +110,8 @@ class Game(BaseState):
             strength_y = -strength_y
             
         self.builded_strength = Vector2(strength_x, strength_y)
-        print(self.builded_strength)
+        self.strength_arrow_angle = self.calc_strength_arrow_angle(pos)
+        #print(self.builded_strength)
         
     def update_strength_bar(self, screen):
         builded_strength_length = max(abs(self.builded_strength[0]), abs(self.builded_strength[1]))
@@ -113,5 +126,10 @@ class Game(BaseState):
             color = (255, 0, 0)
         py.draw.rect(screen, (150, 155, 155), max_builded_strength_bar)
         py.draw.rect(screen, color, builded_strength_bar)
+    
+    def calc_strength_arrow_angle(self, pos):
+        direction = pos - self.player.pos
+        angle = direction.angle_to_rad(Vector2(1, 0))
+        print(angle)
         
-        
+#TODO: afficher une fleche avec l'angle calculé

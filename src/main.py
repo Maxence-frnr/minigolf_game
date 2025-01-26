@@ -18,6 +18,7 @@ assets_manager = AssetsManager()
 state_manager = StateManager()
 
 back_arrow = assets_manager.load("back_arrow", "assets\sprites\\back_arrow.png")
+white_arrow = assets_manager.load("white_arrow", "assets\sprites\\white_arrow.png")
 
 
 
