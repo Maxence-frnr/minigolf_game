@@ -10,6 +10,7 @@ WIDTH, HEIGHT = 1280, 720
 
 py.init()
 screen = py.display.set_mode((WIDTH, HEIGHT), flags=py.RESIZABLE)
+py.display.set_caption("Minigolf 2D")
 clock = py.time.Clock()
 
 #state initialisation
