@@ -52,7 +52,9 @@ class Game(BaseState):
         self.back_to_menu_button.draw(screen)
         if self.builded_strength != Vector2(0, 0):
             self.update_strength_bar(screen)
-            screen.blit(self.strength_arrow_sprite, self.strength_arrow_rect.topleft)
+
+
+            screen.blit(self.rotated_image, self.rotated_rect)
         
     def handle_events(self, events):
         for button in self.buttons:
@@ -135,12 +137,6 @@ class Game(BaseState):
         if angle < 0:
             angle = 360 + angle
         #print(angle)
-        strength_arrow_rect = self.strength_arrow_sprite.get_rect()
-        strength_arrow_rect[0] = self.player.pos[0]
-        strength_arrow_rect[1] = self.player.pos[1]
-        rotated_image = py.transform.rotate(self.strength_arrow_sprite, -angle)
-        rotated_rect = rotated_image.get_rect(center=strength_arrow_rect.center)
-        
-        print(strength_arrow_rect)
-        return rotated_rect
-#TODO: afficher une fleche avec l'angle calculé
+        self.rotated_image = py.transform.rotate(self.strength_arrow_sprite, angle + 180)
+        self.rotated_rect = self.rotated_image.get_rect(center=self.player.pos)
+        #FIXME: clean code
