@@ -35,8 +35,6 @@ class Game(BaseState):
     def exit(self):
         self.player.v = Vector2(0, 0)
         self.player.pos = Vector2(300, 300)
-        
-        
 
     def update_window_size(self, screen):
         self.WIDTH, self.HEIGHT = py.display.get_window_size()
@@ -50,10 +48,9 @@ class Game(BaseState):
         
         #UI
         self.back_to_menu_button.draw(screen)
+
         if self.builded_strength != Vector2(0, 0):
             self.update_strength_bar(screen)
-
-
             screen.blit(self.rotated_image, self.rotated_rect)
         
     def handle_events(self, events):
@@ -83,21 +80,23 @@ class Game(BaseState):
             self.player.v += self.strength
 
         if self.player.v.length() > 0:
-            friction_v = self.player.v.normalize() * -self.friction
-            self.player.v += friction_v * dt
-            self.player.v[0] = self.player.v[0] if abs(self.player.v[0]) > 1 else 0
-            self.player.v[1] = self.player.v[1] if abs(self.player.v[1]) > 1 else 0
+            friction_v = self.player.v.normalize() * -self.friction * dt
+            self.player.v += friction_v 
+            # self.player.v[0] = self.player.v[0] if abs(self.player.v[0]) > 1 else 0
+            # self.player.v[1] = self.player.v[1] if abs(self.player.v[1]) > 1 else 0
+            if self.player.v.length() < 1:
+                self.player.v = Vector2(0, 0)
 
         self.strength = Vector2(0, 0)
         
         player_next_pos = self.player.pos + self.player.v * dt
         #inverse player velocity if player is out of bounds
-        if player_next_pos[0] < 0 or player_next_pos[0] > self.WIDTH:
-            self.player.v.x = -self.player.v.x
+        if not (0 <= player_next_pos.x <= self.WIDTH):
+            self.player.v.x *= -1
             player_next_pos.x = max(0, min(self.WIDTH, player_next_pos.x))
 
-        if player_next_pos[1] < 0 or player_next_pos[1] > self.HEIGHT:
-            self.player.v.y = -self.player.v.y
+        if not (0 <= player_next_pos.y <= self.HEIGHT):
+            self.player.v.y *= -1     
             player_next_pos.y = max(0, min(self.HEIGHT, player_next_pos.y))
             
         self.player.pos = player_next_pos
@@ -106,16 +105,18 @@ class Game(BaseState):
         self.state_manager.set_state("menu")
         
     def build_strength(self, pos):
-        strength_x = min(abs(self.building_strength_factor*(pos[0] - self.player.pos[0])), self.max_strength)
-        strength_y = min(abs(self.building_strength_factor*(pos[1] - self.player.pos[1])), self.max_strength)
-        if pos[0] - self.player.pos[0] > 0:
-            strength_x = -strength_x
-        if pos[1] - self.player.pos[1] > 0:
-            strength_y = -strength_y
+        # strength_x = min(abs(self.building_strength_factor*(pos[0] - self.player.pos[0])), self.max_strength)
+        # strength_y = min(abs(self.building_strength_factor*(pos[1] - self.player.pos[1])), self.max_strength)
+        # if pos[0] - self.player.pos[0] > 0:
+        #     strength_x = -strength_x
+        # if pos[1] - self.player.pos[1] > 0:
+        #     strength_y = -strength_y
             
-        self.builded_strength = Vector2(strength_x, strength_y)
+        # self.builded_strength = Vector2(strength_x, strength_y)
+        direction = -Vector2(pos) + self.player.pos
+        self.builded_strength = direction.normalize() * min(direction.length() * self.building_strength_factor, self.max_strength)
         self.strength_arrow_rect = self.calc_strength_arrow_angle(pos)
-        #print(self.builded_strength)
+        print(self.builded_strength)
         
     def update_strength_bar(self, screen):
         builded_strength_length = max(abs(self.builded_strength[0]), abs(self.builded_strength[1]))
