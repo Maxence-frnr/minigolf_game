@@ -10,7 +10,11 @@ class Game(BaseState):
     def __init__(self, state_manager, assets_manager):
         self.state_manager = state_manager
         self.WIDTH, self.HEIGHT = py.display.get_window_size()
-        self.player = Player((300, 300))
+        self.player = Player((self.WIDTH//2, self.HEIGHT//2 + 100))
+
+        self.font = py.font.Font(None, 40)
+
+        self.stroke = 0
 
         hole_sprite = assets_manager.get("hole")
         self.hole = Hole((self.WIDTH//2, 200), hole_sprite)
@@ -39,17 +43,18 @@ class Game(BaseState):
     
     def exit(self):
         self.player.v = Vector2(0, 0)
-        self.player.pos = Vector2(300, 300)
+        self.player.pos = Vector2((self.WIDTH//2, self.HEIGHT//2 + 100))
+        self.stroke = 0
 
     def update_window_size(self, screen):
         self.WIDTH, self.HEIGHT = py.display.get_window_size()
         
     def update(self, dt)->None:
         self.update_player_pos(dt)
-        if self.check_win(): self.win()
+        if self.check_win(): self.win() #FIXME: ne pas appeler check_win() a chaque frame
     
     def check_win(self):
-        if self.player.pos == self.hole.pos:
+        if (self.player.pos - self.hole.pos).length() < 10:          
             return True
 
     def win(self):
@@ -60,7 +65,8 @@ class Game(BaseState):
         screen.fill((50, 50, 50))
         self.hole.draw(screen)
         self.player.draw(screen)
-        
+        stroke_surface = self.font.render(f"Stroke {self.stroke}", True, (255, 255, 255))
+        screen.blit(stroke_surface, py.Rect(self.WIDTH//2 - stroke_surface.get_width()//2, 20, 30, 20))
         
         #UI
         self.back_to_menu_button.draw(screen)
@@ -94,6 +100,7 @@ class Game(BaseState):
     def update_player_pos(self, dt): #Calc physics of the player
         if self.strength and self.strength.length() > 0:
             self.player.v += self.strength
+            self.stroke += 1
 
         if self.player.v.length() > 0:
             friction_v = self.player.v.normalize() * -self.friction * dt

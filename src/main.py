@@ -5,11 +5,12 @@ from menu import MenuState
 from game import Game
 
 #CONSTANT
-WIDTH, HEIGHT = 1280, 720
+WIDTH, HEIGHT = 600, 1000
 
 
 py.init()
-screen = py.display.set_mode((WIDTH, HEIGHT), flags=py.RESIZABLE)
+py.mixer.init()
+screen = py.display.set_mode((WIDTH, HEIGHT)) #flags=py.RESIZABLE
 py.display.set_caption("Minigolf 2D")
 clock = py.time.Clock()
 
@@ -20,6 +21,7 @@ state_manager = StateManager()
 back_arrow = assets_manager.load("back_arrow", "assets\\sprites\\back_arrow.png")
 white_arrow = assets_manager.load("white_arrow", "assets\\sprites\\white_arrow_edited.png")
 hole = assets_manager.load("hole", "assets\\sprites\\hole.png")
+
 
 
 
