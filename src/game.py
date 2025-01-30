@@ -4,13 +4,17 @@ from pygame import Vector2
 from state_manager import BaseState
 from utils import Button
 from player import Player
-import player
+from hole import Hole
 
 class Game(BaseState):
     def __init__(self, state_manager, assets_manager):
         self.state_manager = state_manager
         self.WIDTH, self.HEIGHT = py.display.get_window_size()
         self.player = Player((300, 300))
+
+        hole_sprite = assets_manager.get("hole")
+        self.hole = Hole((self.WIDTH//2, 200), hole_sprite)
+
         self.max_strength = 600.0
         self.strength = None
         self.builded_strength = Vector2(0, 0)
@@ -21,6 +25,7 @@ class Game(BaseState):
         self.is_building_strength = False
         
         self.strength_arrow_angle = 0
+
         
         #UI
         self.back_to_menu_button_sprite = assets_manager.get("back_arrow")
@@ -41,10 +46,21 @@ class Game(BaseState):
         
     def update(self, dt)->None:
         self.update_player_pos(dt)
+        if self.check_win(): self.win()
+    
+    def check_win(self):
+        if self.player.pos == self.hole.pos:
+            return True
+
+    def win(self):
+        print("WIN")
+        self.back_to_menu()
 
     def draw(self, screen):
         screen.fill((50, 50, 50))
+        self.hole.draw(screen)
         self.player.draw(screen)
+        
         
         #UI
         self.back_to_menu_button.draw(screen)
@@ -105,30 +121,19 @@ class Game(BaseState):
         self.state_manager.set_state("menu")
         
     def build_strength(self, pos):
-        # strength_x = min(abs(self.building_strength_factor*(pos[0] - self.player.pos[0])), self.max_strength)
-        # strength_y = min(abs(self.building_strength_factor*(pos[1] - self.player.pos[1])), self.max_strength)
-        # if pos[0] - self.player.pos[0] > 0:
-        #     strength_x = -strength_x
-        # if pos[1] - self.player.pos[1] > 0:
-        #     strength_y = -strength_y
-            
-        # self.builded_strength = Vector2(strength_x, strength_y)
         direction = -Vector2(pos) + self.player.pos
-        self.builded_strength = direction.normalize() * min(direction.length() * self.building_strength_factor, self.max_strength)
+        self.builded_strength = direction.normalize() * min(direction.length() * self.building_strength_factor, self.max_strength) if direction.length() != 0 else Vector2(0, 0)
         self.strength_arrow_rect = self.calc_strength_arrow_angle(pos)
-        print(self.builded_strength)
+        #print(self.builded_strength)
         
     def update_strength_bar(self, screen):
-        builded_strength_length = max(abs(self.builded_strength[0]), abs(self.builded_strength[1]))
+        builded_strength_length = self.builded_strength.length()
         builded_strength_bar = (self.player.pos[0] + 20, self.player.pos[1] + 5 -abs(builded_strength_length/20) , 7, abs(builded_strength_length/20))
         max_builded_strength_bar = (self.player.pos[0] + 20 - 1, self.player.pos[1] + 5 - 600/20-2, 9, 600/20+4)
-        
-        if builded_strength_length <= 200:
-            color = (0, 255, 0)
-        elif 200 <= builded_strength_length < 450:
-            color = (255, 200, 0)
-        else:
-            color = (255, 0, 0)
+
+        red_value = min(builded_strength_length // (self.max_strength/510), 255)
+        green_value = min(510 - builded_strength_length // (self.max_strength/510), 255)
+        color = (red_value, green_value, 0)
         py.draw.rect(screen, (150, 155, 155), max_builded_strength_bar)
         py.draw.rect(screen, color, builded_strength_bar)
     
