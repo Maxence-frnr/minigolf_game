@@ -45,13 +45,13 @@ class Wall():
         penetration_y = 0
 
         if player_pos[0] < self.rect.left:
-            penetration_x = (player_pos[0] + player_radius) - self.rect.left
+            penetration_x = (player_pos[0] + player_radius) - self.rect.left -1
         elif player_pos[0] > self.rect.right:
-            penetration_x = (player_pos[0] - player_radius) - self.rect.right
+            penetration_x = -((player_pos[0] - player_radius) - self.rect.right) + 1
 
         if player_pos[1] < self.rect.top:
-            penetration_y = (player_pos[1] + player_radius) - self.rect.top
+            penetration_y = (player_pos[1] + player_radius) - self.rect.top -1 
         elif player_pos[1] > self.rect.bottom:
-            penetration_y = (player_pos[1] - player_radius) - self.rect.bottom
+            penetration_y = -((player_pos[1] - player_radius) - self.rect.bottom) + 1
 
         return penetration_x, penetration_y

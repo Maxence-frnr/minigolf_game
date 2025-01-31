@@ -42,8 +42,12 @@ class Game(BaseState):
         #Level1 FIXME: à deplacer dans level.json et y charger 
 
         self.walls = []
-        self.walls.append(Wall(py.Rect(350, 500, 15, 100), (170, 170 ,245)))
-        self.walls.append(Wall(py.Rect(250, 500, 15, 100), (170, 170 ,245)))
+        self.walls.append(Wall(py.Rect(100, self.HEIGHT - 50, 400, 20), (170, 170 ,245)))
+        self.walls.append(Wall(py.Rect(100, 50, 400, 20), (170, 170 ,245)))
+        self.walls.append(Wall(py.Rect(100, 50, 20, 900), (170, 170 ,245)))
+        self.walls.append(Wall(py.Rect(500 - 20, 50, 20, 900), (170, 170 ,245)))
+
+        self.walls.append(Wall(py.Rect(self.WIDTH // 2 - 20, self.HEIGHT // 2 - 20, 40, 40), (170, 170 ,245)))
     
     def enter(self):
         pass
@@ -137,12 +141,30 @@ class Game(BaseState):
             if wall.detect_collision(player_next_pos, self.player.radius):
                 penetration_x, penetration_y = wall.get_penetration_depth(player_next_pos, self.player.radius)
 
-                if abs(penetration_x) > abs(penetration_y):#check if the player is deeper Xwise or Ywise
-                    self.player.v.x *= -1                   #reverse the most impacted direction
-                    player_next_pos.x += penetration_x      #place the player
+                # if abs(penetration_x) > abs(penetration_y):#check if the player is deeper Xwise or Ywise
+                #     self.player.v.x *= -1                   #reverse the most impacted direction
+                #     player_next_pos.x += penetration_x      #place the player
+                # else:
+                #     self.player.v.y *= -1
+                #     player_next_pos.y += penetration_y
+                if abs(penetration_x) > abs(penetration_y):
+                    if self.player.v.x > 0:
+                        player_next_pos.x = wall.rect.left - self.player.radius - 1
+                    else:
+                        player_next_pos.x = wall.rect.right + self.player.radius + 1
+                    self.player.v.x *= -1
                 else:
+                    if self.player.v.y > 0:
+                        player_next_pos.y = wall.rect.top - self.player.radius - 1
+                    else:
+                        player_next_pos.y = wall.rect.bottom + self.player.radius + 1
                     self.player.v.y *= -1
-                    player_next_pos.y += penetration_y
+
+
+
+
+
+
 
         self.player.pos = player_next_pos
         
