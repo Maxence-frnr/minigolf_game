@@ -1,4 +1,5 @@
 import pygame as py
+import math
 
 class Button:
     def __init__(self, text, rect:tuple, font_size, color, hover_color, action, sprite=None):
@@ -23,3 +24,34 @@ class Button:
                 self.is_hovered = py.Rect.collidepoint(self.rect, event.pos)
             elif event.type == py.MOUSEBUTTONDOWN and self.is_hovered:
                 self.action()
+
+class Wall():
+    def __init__(self, rect:tuple, color):
+        self.rect = rect
+        self.color = color
+
+    def draw(self, screen):
+        py.draw.rect(screen, self.color, self.rect)
+
+    def detect_collision(self, player_pos, player_radius):
+        closest_x = max(self.rect.left, min(player_pos[0], self.rect.right))
+        closest_y = max(self.rect.top, min(player_pos[1], self.rect.bottom))
+
+        distance = math.sqrt((player_pos[0]- closest_x)**2 + (player_pos[1]- closest_y)**2)
+        return distance < player_radius
+    
+    def get_penetration_depth(self, player_pos, player_radius):
+        penetration_x = 0
+        penetration_y = 0
+
+        if player_pos[0] < self.rect.left:
+            penetration_x = (player_pos[0] + player_radius) - self.rect.left
+        elif player_pos[0] > self.rect.right:
+            penetration_x = (player_pos[0] - player_radius) - self.rect.right
+
+        if player_pos[1] < self.rect.top:
+            penetration_y = (player_pos[1] + player_radius) - self.rect.top
+        elif player_pos[1] > self.rect.bottom:
+            penetration_y = (player_pos[1] - player_radius) - self.rect.bottom
+
+        return penetration_x, penetration_y

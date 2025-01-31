@@ -3,6 +3,7 @@ import math
 from pygame import Vector2
 from state_manager import BaseState
 from utils import Button
+from utils import Wall
 from player import Player
 from hole import Hole
 
@@ -10,7 +11,7 @@ class Game(BaseState):
     def __init__(self, state_manager, assets_manager):
         self.state_manager = state_manager
         self.WIDTH, self.HEIGHT = py.display.get_window_size()
-        self.player = Player((self.WIDTH//2, self.HEIGHT//2 + 100))
+        self.player = Player((self.WIDTH//2, self.HEIGHT//2 + 100), 7)
 
         self.font = py.font.Font(None, 40)
 
@@ -37,6 +38,12 @@ class Game(BaseState):
         
         self.back_to_menu_button = Button("", (10, 10, 30, 30), 10, (255, 255, 255), (255, 0, 0), self.back_to_menu, self.back_to_menu_button_sprite)
         self.buttons = [self.back_to_menu_button]
+
+        #Level1 FIXME: à deplacer dans level.json et y charger 
+
+        self.walls = []
+        self.walls.append(Wall(py.Rect(350, 500, 15, 100), (170, 170 ,245)))
+        self.walls.append(Wall(py.Rect(250, 500, 15, 100), (170, 170 ,245)))
     
     def enter(self):
         pass
@@ -67,6 +74,9 @@ class Game(BaseState):
         self.player.draw(screen)
         stroke_surface = self.font.render(f"Stroke {self.stroke}", True, (255, 255, 255))
         screen.blit(stroke_surface, py.Rect(self.WIDTH//2 - stroke_surface.get_width()//2, 20, 30, 20))
+
+        for wall in self.walls:
+            wall.draw(screen)
         
         #UI
         self.back_to_menu_button.draw(screen)
@@ -105,13 +115,13 @@ class Game(BaseState):
         if self.player.v.length() > 0:
             friction_v = self.player.v.normalize() * -self.friction * dt
             self.player.v += friction_v 
-            # self.player.v[0] = self.player.v[0] if abs(self.player.v[0]) > 1 else 0
-            # self.player.v[1] = self.player.v[1] if abs(self.player.v[1]) > 1 else 0
+
             if self.player.v.length() < 1:
                 self.player.v = Vector2(0, 0)
 
         self.strength = Vector2(0, 0)
         
+        #Predict player next pos
         player_next_pos = self.player.pos + self.player.v * dt
         #inverse player velocity if player is out of bounds
         if not (0 <= player_next_pos.x <= self.WIDTH):
@@ -121,7 +131,19 @@ class Game(BaseState):
         if not (0 <= player_next_pos.y <= self.HEIGHT):
             self.player.v.y *= -1     
             player_next_pos.y = max(0, min(self.HEIGHT, player_next_pos.y))
-            
+
+        #check if the player is in a wall
+        for wall in self.walls:
+            if wall.detect_collision(player_next_pos, self.player.radius):
+                penetration_x, penetration_y = wall.get_penetration_depth(player_next_pos, self.player.radius)
+
+                if abs(penetration_x) > abs(penetration_y):#check if the player is deeper Xwise or Ywise
+                    self.player.v.x *= -1                   #reverse the most impacted direction
+                    player_next_pos.x += penetration_x      #place the player
+                else:
+                    self.player.v.y *= -1
+                    player_next_pos.y += penetration_y
+
         self.player.pos = player_next_pos
         
     def back_to_menu(self):
