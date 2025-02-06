@@ -4,6 +4,7 @@ from pygame import Vector2
 from state_manager import BaseState
 from utils import Button
 from utils import Wall
+from utils import Wall2
 from player import Player
 from hole import Hole
 
@@ -48,6 +49,8 @@ class Game(BaseState):
         self.walls.append(Wall(py.Rect(500 - 20, 50, 20, 900), (170, 170 ,245)))
 
         self.walls.append(Wall(py.Rect(self.WIDTH // 2 - 20, self.HEIGHT // 2 - 20, 40, 40), (170, 170 ,245)))
+
+        self.wall2 = Wall2((self.WIDTH//2 - 50, self.HEIGHT//2 - 100), (self.WIDTH//2 + 50, self.HEIGHT//2 - 150), 15, (255, 100, 100))
     
     def enter(self):
         pass
@@ -81,6 +84,8 @@ class Game(BaseState):
 
         for wall in self.walls:
             wall.draw(screen)
+
+        self.wall2.draw(screen)
         
         #UI
         self.back_to_menu_button.draw(screen)

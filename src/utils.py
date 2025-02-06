@@ -55,3 +55,13 @@ class Wall():
             penetration_y = -((player_pos[1] - player_radius) - self.rect.bottom) + 1
 
         return penetration_x, penetration_y
+    
+class Wall2():
+    def __init__(self, start:tuple, end:tuple, width:int, color:tuple):
+        self.start = start
+        self.end = end
+        self.color = color
+        self.width = width
+    
+    def draw(self, screen):
+        py.draw.line(screen, self.color, self.start, self.end, self.width)
