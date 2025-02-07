@@ -29,4 +29,4 @@ class MenuState(BaseState):
             button.handle_events(events)
             
     def play(self):
-        self.state_manager.set_state("game", "level_1")
+        self.state_manager.set_state(name="game", level="level_1")

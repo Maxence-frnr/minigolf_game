@@ -51,8 +51,8 @@ class Game(BaseState):
 
 
     
-    def enter(self, *args):
-        level_to_load = args[0]
+    def enter(self, **kwargs):
+        level_to_load = kwargs["level"]
         print(level_to_load)
         level = self.level_manager.get_level(level_to_load)
         self.player = Player(level["player_pos"], 7)
@@ -156,7 +156,7 @@ class Game(BaseState):
         self.player.pos = player_next_pos
         
     def back_to_menu(self):
-        self.state_manager.set_state("menu")
+        self.state_manager.set_state(name="menu")
         
     def build_strength(self, pos):
         direction = -Vector2(pos) + self.player.pos

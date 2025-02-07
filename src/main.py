@@ -35,7 +35,7 @@ state_manager.add_state("menu", menu_state)
 state_manager.add_state("game", game_state)
 
 
-state_manager.set_state("menu")
+state_manager.set_state(name="menu")
 
 running = True
 while running:
