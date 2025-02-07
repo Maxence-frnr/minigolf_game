@@ -4,7 +4,6 @@ from pygame import Vector2
 from state_manager import BaseState
 from utils import Button
 from utils import Wall
-from utils import Wall2
 from player import Player
 from hole import Hole
 
@@ -43,14 +42,12 @@ class Game(BaseState):
         #Level1 FIXME: à deplacer dans level.json et y charger 
 
         self.walls = []
-        self.walls.append(Wall(py.Rect(100, self.HEIGHT - 50, 400, 20), (170, 170 ,245)))
-        self.walls.append(Wall(py.Rect(100, 50, 400, 20), (170, 170 ,245)))
-        self.walls.append(Wall(py.Rect(100, 50, 20, 900), (170, 170 ,245)))
-        self.walls.append(Wall(py.Rect(500 - 20, 50, 20, 900), (170, 170 ,245)))
+        self.walls.append(Wall((100, self.HEIGHT - 50),(500, self.HEIGHT-50), 19, (170, 170 ,245)))#horizontale bas
+        self.walls.append(Wall((109, self.HEIGHT - 60),(109, 70), 19, (170, 170 ,245)))#vertical gauche
+        self.walls.append(Wall((100, 60),(500, 60), 19, (170, 170 ,245)))#horizontal haut
+        self.walls.append(Wall((491, 70),(491, self.HEIGHT-60), 19, (170, 170 ,245)))#vertical droite
 
-        self.walls.append(Wall(py.Rect(self.WIDTH // 2 - 20, self.HEIGHT // 2 - 20, 40, 40), (170, 170 ,245)))
 
-        self.wall2 = Wall2((self.WIDTH//2 - 50, self.HEIGHT//2 - 100), (self.WIDTH//2 + 50, self.HEIGHT//2 - 150), 15, (255, 100, 100))
     
     def enter(self):
         pass
@@ -84,8 +81,6 @@ class Game(BaseState):
 
         for wall in self.walls:
             wall.draw(screen)
-
-        self.wall2.draw(screen)
         
         #UI
         self.back_to_menu_button.draw(screen)
@@ -143,33 +138,10 @@ class Game(BaseState):
 
         #check if the player is in a wall
         for wall in self.walls:
-            if wall.detect_collision(player_next_pos, self.player.radius):
-                penetration_x, penetration_y = wall.get_penetration_depth(player_next_pos, self.player.radius)
-
-                # if abs(penetration_x) > abs(penetration_y):#check if the player is deeper Xwise or Ywise
-                #     self.player.v.x *= -1                   #reverse the most impacted direction
-                #     player_next_pos.x += penetration_x      #place the player
-                # else:
-                #     self.player.v.y *= -1
-                #     player_next_pos.y += penetration_y
-                if abs(penetration_x) > abs(penetration_y):
-                    if self.player.v.x > 0:
-                        player_next_pos.x = wall.rect.left - self.player.radius - 1
-                    else:
-                        player_next_pos.x = wall.rect.right + self.player.radius + 1
-                    self.player.v.x *= -1
-                else:
-                    if self.player.v.y > 0:
-                        player_next_pos.y = wall.rect.top - self.player.radius - 1
-                    else:
-                        player_next_pos.y = wall.rect.bottom + self.player.radius + 1
-                    self.player.v.y *= -1
-
-
-
-
-
-
+            collision, new_velocity = wall.detect_and_handle_collision(player_next_pos, self.player.radius, self.player.v)
+            if collision:
+                self.player.v = new_velocity
+                player_next_pos = self.player.pos + self.player.v * dt
 
         self.player.pos = player_next_pos
         

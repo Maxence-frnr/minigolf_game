@@ -1,5 +1,6 @@
 import pygame as py
 import math
+from pygame import Vector2
 
 class Button:
     def __init__(self, text, rect:tuple, font_size, color, hover_color, action, sprite=None):
@@ -25,7 +26,7 @@ class Button:
             elif event.type == py.MOUSEBUTTONDOWN and self.is_hovered:
                 self.action()
 
-class Wall():
+class Wall_old():
     def __init__(self, rect:tuple, color):
         self.rect = rect
         self.color = color
@@ -56,7 +57,7 @@ class Wall():
 
         return penetration_x, penetration_y
     
-class Wall2():
+class Wall():
     def __init__(self, start:tuple, end:tuple, width:int, color:tuple):
         self.start = start
         self.end = end
@@ -65,3 +66,26 @@ class Wall2():
     
     def draw(self, screen):
         py.draw.line(screen, self.color, self.start, self.end, self.width)
+    
+    def detect_and_handle_collision(self, player_pos, player_radius, velocity:Vector2):
+        A = Vector2(self.start)
+        B = Vector2(self.end)
+        C = Vector2(player_pos)
+        P = Vector2()#Point le plus proche du joueur sur la droite A-B
+
+        t = ((C - A) * (B - A)) / ((B - A) * (B - A))
+
+        if t < 0: P = A
+        elif t > 1: P = B
+        else:
+            P = A + t*(B - A)
+        distance = C.distance_to(P)
+        if distance < player_radius:
+            normal = (C-P).normalize()
+
+            new_velocity = velocity - 2 * velocity.dot(normal) * normal
+            return True, new_velocity
+        return False, velocity 
+
+
+        
