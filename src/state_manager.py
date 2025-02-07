@@ -9,12 +9,12 @@ class StateManager:
         if name not in self.states:
             self.states[name] = state
     
-    def set_state(self, name):
+    def set_state(self, name, *args):
         if self.current_state:
             self.current_state.exit()
         if name in self.states:
             self.current_state = self.states[name]
-            self.current_state.enter() # A ajouter a chaque etat
+            self.current_state.enter(args) # A ajouter a chaque etat
 
     def handle_events(self, events):
         if self.current_state:
@@ -31,7 +31,7 @@ class StateManager:
 class BaseState:
     def __init__(self):
         pass
-    def enter(self):
+    def enter(self, *args):
         #called when we enter this state
         pass
 

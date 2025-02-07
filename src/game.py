@@ -8,17 +8,19 @@ from player import Player
 from hole import Hole
 
 class Game(BaseState):
-    def __init__(self, state_manager, assets_manager):
+    def __init__(self, state_manager, assets_manager, level_manager):
         self.state_manager = state_manager
         self.WIDTH, self.HEIGHT = py.display.get_window_size()
-        self.player = Player((self.WIDTH//2, self.HEIGHT//2 + 100), 7)
+        self.level_manager = level_manager
+        
+        
 
         self.font = py.font.Font(None, 40)
 
         self.stroke = 0
 
-        hole_sprite = assets_manager.get("hole")
-        self.hole = Hole((self.WIDTH//2, 200), hole_sprite)
+        self.hole_sprite = assets_manager.get("hole")
+        
 
         self.max_strength = 600.0
         self.strength = None
@@ -41,16 +43,24 @@ class Game(BaseState):
 
         #Level1 FIXME: à deplacer dans level.json et y charger 
 
-        self.walls = []
-        self.walls.append(Wall((100, self.HEIGHT - 50),(500, self.HEIGHT-50), 19, (170, 170 ,245)))#horizontale bas
-        self.walls.append(Wall((109, self.HEIGHT - 60),(109, 70), 19, (170, 170 ,245)))#vertical gauche
-        self.walls.append(Wall((100, 60),(500, 60), 19, (170, 170 ,245)))#horizontal haut
-        self.walls.append(Wall((491, 70),(491, self.HEIGHT-60), 19, (170, 170 ,245)))#vertical droite
+        # self.walls = []
+        # self.walls.append(Wall((100, self.HEIGHT - 50),(500, self.HEIGHT-50), 19, (170, 170 ,245)))#horizontale bas
+        # self.walls.append(Wall((109, self.HEIGHT - 60),(109, 70), 19, (170, 170 ,245)))#vertical gauche
+        # self.walls.append(Wall((100, 60),(500, 60), 19, (170, 170 ,245)))#horizontal haut
+        # self.walls.append(Wall((491, 70),(491, self.HEIGHT-60), 19, (170, 170 ,245)))#vertical droite
 
 
     
-    def enter(self):
-        pass
+    def enter(self, *args):
+        level_to_load = args[0]
+        print(level_to_load)
+        level = self.level_manager.get_level(level_to_load)
+        self.player = Player(level["player_pos"], 7)
+        self.hole = Hole((self.WIDTH//2, 200), self.hole_sprite)
+        self.walls = []
+        for wall in level["walls"]:
+            self.walls.append(Wall((wall["start_pos"]), (wall["end_pos"]), wall["width"], (wall["color"])))
+
     
     def exit(self):
         self.player.v = Vector2(0, 0)

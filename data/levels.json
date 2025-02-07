@@ -1,0 +1,26 @@
+{
+    "level_1": {
+        "player_pos": [300, 600],
+        "hole_pos":   [300, 200],
+        "walls": [
+            {"start_pos": [100, 950], "end_pos": [500, 950], "width": 19, "color": [170, 170 ,245]},
+            {"start_pos": [109, 940], "end_pos": [109, 70], "width": 19, "color": [170, 170 ,245]},
+            {"start_pos": [100, 60], "end_pos": [500, 60], "width": 19, "color": [170, 170 ,245]},
+            {"start_pos": [491, 70], "end_pos": [491, 940], "width": 19, "color": [170, 170 ,245]}
+        ]
+        
+    },
+    "level_2": {
+        "player_pos": [300, 600],
+        "hole_pos":   [300, 200],
+        "walls": [
+            {"start_pos": [100, 950], "end_pos": [500, 950], "width": 19, "color": [130, 255 ,155]},
+            {"start_pos": [109, 940], "end_pos": [109, 70], "width": 19, "color": [130, 255 ,155]},
+            {"start_pos": [100, 60], "end_pos": [500, 60], "width": 19, "color": [130, 255 ,155]},
+            {"start_pos": [491, 70], "end_pos": [491, 940], "width": 19, "color": [130, 255 ,155]},
+
+            {"start_pos": [270, 500], "end_pos": [330, 500], "width": 39, "color": [130, 255 ,155]}
+        ]
+        
+    }
+}

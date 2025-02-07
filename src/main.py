@@ -1,6 +1,9 @@
 import pygame as py
+
 from assets_manager import AssetsManager
 from state_manager import StateManager
+from level_manager import LevelManager
+
 from menu import MenuState
 from game import Game
 
@@ -22,11 +25,12 @@ back_arrow = assets_manager.load("back_arrow", "assets\\sprites\\back_arrow.png"
 white_arrow = assets_manager.load("white_arrow", "assets\\sprites\\white_arrow_edited.png")
 hole = assets_manager.load("hole", "assets\\sprites\\hole.png")
 
+level_manager = LevelManager('data\\levels.json')#automaticaly load all levels from the json
 
 
 
 menu_state = MenuState(state_manager)
-game_state = Game(state_manager, assets_manager)
+game_state = Game(state_manager, assets_manager, level_manager)
 state_manager.add_state("menu", menu_state)
 state_manager.add_state("game", game_state)
 
