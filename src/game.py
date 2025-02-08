@@ -8,7 +8,7 @@ from player import Player
 from hole import Hole
 
 class Game(BaseState):
-    def __init__(self, state_manager, assets_manager, level_manager):
+    def __init__(self, state_manager, assets_manager, level_manager, sounds_manager):
         self.state_manager = state_manager
         self.WIDTH, self.HEIGHT = py.display.get_window_size()
         self.level_manager = level_manager
@@ -19,6 +19,10 @@ class Game(BaseState):
 
         self.player_sprite = assets_manager.get("ball")
         self.hole_sprite = assets_manager.get("hole")
+        
+        self.swing_sound = sounds_manager.get("swing")
+        self.bounce_sound = sounds_manager.get("bounce")
+        self.hole_sound = sounds_manager.get("hole")
         
         self.stroke = 0
         self.max_strength = 600.0
@@ -42,9 +46,8 @@ class Game(BaseState):
 
     def enter(self, **kwargs):
         level_to_load = kwargs["level"]
-        print(level_to_load)
         level = self.level_manager.get_level(level_to_load)
-        self.player = Player(level["player_pos"], 7, self.player_sprite)
+        self.player = Player(level["player_pos"], 8, self.player_sprite)
         self.hole = Hole((self.WIDTH//2, 200), self.hole_sprite)
         self.walls = []
         for wall in level["walls"]:
@@ -68,6 +71,7 @@ class Game(BaseState):
             return True
 
     def win(self):
+        py.mixer.Sound(self.hole_sound).play()
         print("WIN")
         self.back_to_menu()
 
@@ -114,6 +118,7 @@ class Game(BaseState):
         if self.strength and self.strength.length() > 0:
             self.player.v += self.strength
             self.stroke += 1
+            py.mixer.Sound(self.swing_sound).play()
 
         if self.player.v.length() > 0:
             friction_v = self.player.v.normalize() * -self.friction * dt
@@ -141,6 +146,7 @@ class Game(BaseState):
             if collision:
                 self.player.v = new_velocity
                 player_next_pos = self.player.pos + self.player.v * dt
+                py.mixer.Sound(self.bounce_sound).play()
 
         self.player.pos = player_next_pos
         
@@ -151,7 +157,6 @@ class Game(BaseState):
         direction = -Vector2(pos) + self.player.pos
         self.builded_strength = direction.normalize() * min(direction.length() * self.building_strength_factor, self.max_strength) if direction.length() != 0 else Vector2(0, 0)
         self.strength_arrow_rect = self.calc_strength_arrow_angle(pos)
-        #print(self.builded_strength)
         
     def update_strength_bar(self, screen):
         builded_strength_length = self.builded_strength.length()
@@ -169,7 +174,6 @@ class Game(BaseState):
         angle = direction.angle_to(Vector2(1, 0))
         if angle < 0:
             angle = 360 + angle
-        #print(angle)
         self.rotated_image = py.transform.rotate(self.strength_arrow_sprite, angle + 180)
         self.rotated_rect = self.rotated_image.get_rect(center=self.player.pos)
         #FIXME: clean code

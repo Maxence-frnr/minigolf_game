@@ -10,7 +10,6 @@ class StateManager:
             self.states[name] = state
     
     def set_state(self, **kwargs):
-        print(kwargs)
         name = kwargs["name"]
         if self.current_state:
             self.current_state.exit()

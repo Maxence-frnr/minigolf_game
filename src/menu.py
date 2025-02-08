@@ -4,9 +4,10 @@ from utils import Button
 
 class MenuState(BaseState):
     def __init__(self, state_manager):
+        self.state_manager = state_manager
         #UI elements to enable
         self.title_font = py.font.Font(None, 100)
-        self.state_manager = state_manager
+        
         
         self.WIDTH, self.HEIGHT = py.display.get_window_size()
         
@@ -29,4 +30,4 @@ class MenuState(BaseState):
             button.handle_events(events)
             
     def play(self):
-        self.state_manager.set_state(name="game", level="level_1")
+        self.state_manager.set_state(name="level_selection_menu")#, level="level_1"
