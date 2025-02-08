@@ -13,15 +13,14 @@ class Game(BaseState):
         self.WIDTH, self.HEIGHT = py.display.get_window_size()
         self.level_manager = level_manager
         
-        
-
         self.font = py.font.Font(None, 40)
 
-        self.stroke = 0
-
-        self.hole_sprite = assets_manager.get("hole")
         
 
+        self.player_sprite = assets_manager.get("ball")
+        self.hole_sprite = assets_manager.get("hole")
+        
+        self.stroke = 0
         self.max_strength = 600.0
         self.strength = None
         self.builded_strength = Vector2(0, 0)
@@ -41,21 +40,11 @@ class Game(BaseState):
         self.back_to_menu_button = Button("", (10, 10, 30, 30), 10, (255, 255, 255), (255, 0, 0), self.back_to_menu, self.back_to_menu_button_sprite)
         self.buttons = [self.back_to_menu_button]
 
-        #Level1 FIXME: à deplacer dans level.json et y charger 
-
-        # self.walls = []
-        # self.walls.append(Wall((100, self.HEIGHT - 50),(500, self.HEIGHT-50), 19, (170, 170 ,245)))#horizontale bas
-        # self.walls.append(Wall((109, self.HEIGHT - 60),(109, 70), 19, (170, 170 ,245)))#vertical gauche
-        # self.walls.append(Wall((100, 60),(500, 60), 19, (170, 170 ,245)))#horizontal haut
-        # self.walls.append(Wall((491, 70),(491, self.HEIGHT-60), 19, (170, 170 ,245)))#vertical droite
-
-
-    
     def enter(self, **kwargs):
         level_to_load = kwargs["level"]
         print(level_to_load)
         level = self.level_manager.get_level(level_to_load)
-        self.player = Player(level["player_pos"], 7)
+        self.player = Player(level["player_pos"], 7, self.player_sprite)
         self.hole = Hole((self.WIDTH//2, 200), self.hole_sprite)
         self.walls = []
         for wall in level["walls"]:

@@ -21,6 +21,7 @@ clock = py.time.Clock()
 assets_manager = AssetsManager()
 state_manager = StateManager()
 
+ball = assets_manager.load("ball", "assets\\sprites\\16x16 ball.png")
 back_arrow = assets_manager.load("back_arrow", "assets\\sprites\\back_arrow.png")
 white_arrow = assets_manager.load("white_arrow", "assets\\sprites\\white_arrow_edited.png")
 hole = assets_manager.load("hole", "assets\\sprites\\hole.png")
