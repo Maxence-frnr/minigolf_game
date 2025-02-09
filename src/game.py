@@ -41,7 +41,7 @@ class Game(BaseState):
         self.back_to_menu_button_sprite = assets_manager.get("back_arrow")
         self.strength_arrow_sprite = assets_manager.get("white_arrow")
         
-        self.back_to_menu_button = Button("", (10, 10, 30, 30), 10, (255, 255, 255), (255, 0, 0), self.back_to_menu, self.back_to_menu_button_sprite)
+        self.back_to_menu_button = Button("", py.Rect(10, 10, 30, 30), 10, (255, 255, 255), (255, 0, 0), self.back_to_menu, self.back_to_menu_button_sprite)
         self.buttons = [self.back_to_menu_button]
 
     def enter(self, **kwargs):

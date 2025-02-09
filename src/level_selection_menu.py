@@ -9,7 +9,12 @@ class LevelSelectionMenu(BaseState):
         self.WIDTH, self.HEIGHT = py.display.get_window_size()
         
         self.level_cards = []
-        self.level_cards.append(LevelCard((300,500), 1, 10, self.level_selected))
+        #self.level_cards.append(LevelCard((300,500), 1, 10, self.level_selected))
+        rect= py.Rect(200, 500, 75, 75)
+        self.level_cards.append(Button("1", rect, 75, border=True, action=self.level_selected, action_arg=1))
+        
+        rect2= py.Rect(400, 500, 75, 75)
+        self.level_cards.append(Button("2", rect2, 75, border=True, action=self.level_selected, action_arg=2))
 
     def draw(self, screen):
         screen.fill((50, 50, 50))
@@ -33,8 +38,8 @@ class LevelCard:
         self.highscore = highscore
         
         self.rect = py.Rect(pos[0], pos[1], 50, 50)
+        self.button = Button(str(index), self.rect, 75, (255, 255, 255), (200, 200, 200), function(index))
         self.rect.center = pos
-        self.button = Button(str(index), self.rect, 35, (255, 255, 255), (200, 200, 200), function(index))
         
     def draw(self, screen):
         self.button.draw(screen)

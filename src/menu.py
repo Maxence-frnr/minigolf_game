@@ -11,7 +11,7 @@ class MenuState(BaseState):
         
         self.WIDTH, self.HEIGHT = py.display.get_window_size()
         
-        self.play_button = Button("Play", (self.WIDTH//2 - 25, self.HEIGHT//2+50, 50, 40),60,  (210, 210, 210), (255, 255, 255), self.play)
+        self.play_button = Button("Play", py.Rect(self.WIDTH//2, self.HEIGHT//2, 100, 60),60, (210, 210, 210), (255, 255, 255), self.play, border=True)
         self.buttons = [self.play_button]
         
     def update_window_size(self, screen):
@@ -29,5 +29,5 @@ class MenuState(BaseState):
         for button in self.buttons:
             button.handle_events(events)
             
-    def play(self):
+    def play(self, *args):
         self.state_manager.set_state(name="level_selection_menu")#, level="level_1"

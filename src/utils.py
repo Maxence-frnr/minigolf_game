@@ -3,28 +3,42 @@ import math
 from pygame import Vector2
 
 class Button:
-    def __init__(self, text, rect:tuple, font_size, color, hover_color, action, sprite=None):
+    def __init__(self, text:str="", rect:py.Rect=py.Rect(0, 0, 10, 10), font_size:int=24, color:py.Color=(255, 255, 255), hover_color:py.Color=(200, 200, 200), action=None, action_arg=None, sprite=None, border:bool=False, border_width:int=3, border_radius:int=3):
         self.text = text
-        self.rect = py.Rect(rect)
-        self.font = py.font.Font(None, font_size)
+        self.rect = rect
+        self.font_size = font_size
         self.color = color
         self.hover_color = hover_color
         self.action = action
-        self.is_hovered = False
+        self.action_arg = action_arg
         self.sprite = sprite
+        self.font = py.font.Font(None, font_size)
+        self.border = border
+        self.border_width = border_width
+        self.border_radius = border_radius
         
-    def draw(self, screen):
+        self.is_hovered = False
+
+        self.sprite_rect = rect.copy()
+        self.sprite_rect.center = (rect[0], rect[1])        
+        
+    def draw(self, screen:py.Surface):
+        if self.border:
+            py.draw.rect(screen, self.color, self.sprite_rect, 3, 3)
         color = self.hover_color if self.is_hovered else self.color
-        if self.sprite: screen.blit(self.sprite, self.rect)
-        text_surface = self.font.render(self.text, True, color)
-        screen.blit(text_surface, self.rect)
+        if self.sprite: screen.blit(self.sprite, self.sprite_rect)
+        text = self.font.render(self.text, True, color)
+        text_rect = text.get_rect(center= (self.rect[0], self.rect[1]))
+        screen.blit(text, text_rect)
         
-    def handle_events(self, events):
+        
+    def handle_events(self, events:py.event.Event):
         for event in events:
             if event.type == py.MOUSEMOTION:
-                self.is_hovered = py.Rect.collidepoint(self.rect, event.pos)
+                self.is_hovered = py.Rect.collidepoint(self.sprite_rect, event.pos)
             elif event.type == py.MOUSEBUTTONDOWN and self.is_hovered:
-                self.action()
+                self.action(self.action_arg)
+
 
 class Wall_old():
     def __init__(self, rect:tuple, color):
