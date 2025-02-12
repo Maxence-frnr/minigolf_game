@@ -3,7 +3,7 @@ import math
 from pygame import Vector2
 
 class Button:
-    def __init__(self, text:str="", rect:py.Rect=py.Rect(0, 0, 10, 10), font_size:int=24, color:py.Color=(255, 255, 255), hover_color:py.Color=(200, 200, 200), action=None, action_arg=None, sprite=None, border:bool=False, border_width:int=3, border_radius:int=3):
+    def __init__(self, text:str="", rect:py.Rect=py.Rect(0, 0, 10, 10), font_size:int=24, color:py.Color=(255, 255, 255), hover_color:py.Color=(200, 200, 200), action=None, action_arg=None, sprite=None, border:bool=False, border_width:int=3, border_radius:int=3, sound=None, sounds_manager = None):
         self.text = text
         self.rect = rect
         self.font_size = font_size
@@ -16,6 +16,9 @@ class Button:
         self.border = border
         self.border_width = border_width
         self.border_radius = border_radius
+        self.sounds_manager = sounds_manager
+        if sound and sounds_manager:
+            self.sound = self.sounds_manager.get(sound)
         
         self.is_hovered = False
 
@@ -38,6 +41,8 @@ class Button:
                 self.is_hovered = py.Rect.collidepoint(self.sprite_rect, event.pos)
             elif event.type == py.MOUSEBUTTONDOWN and self.is_hovered:
                 self.action(self.action_arg)
+                if self.sounds_manager:
+                    py.mixer.Sound(self.sound).play()
 
 
 class Wall_old():

@@ -10,5 +10,4 @@ class LevelManager:
             file.close()
     
     def get_level(self, name:str):
-        print(name)
         return self.levels[name]

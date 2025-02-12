@@ -16,7 +16,6 @@ class Game(BaseState):
         self.font = py.font.Font(None, 40)
 
         
-
         self.player_sprite = assets_manager.get("ball")
         self.hole_sprite = assets_manager.get("hole")
         
@@ -41,14 +40,14 @@ class Game(BaseState):
         self.back_to_menu_button_sprite = assets_manager.get("back_arrow")
         self.strength_arrow_sprite = assets_manager.get("white_arrow")
         
-        self.back_to_menu_button = Button("", py.Rect(10, 10, 30, 30), 10, (255, 255, 255), (255, 0, 0), self.back_to_menu, self.back_to_menu_button_sprite)
+        self.back_to_menu_button = Button(text="", rect=py.Rect(30, 30, 30, 30), font_size=10, color=(255, 255, 255), hover_color=(255, 0, 0), action=self.back_to_menu, sprite=self.back_to_menu_button_sprite, sound="click", sounds_manager=sounds_manager)
         self.buttons = [self.back_to_menu_button]
 
     def enter(self, **kwargs):
         level_to_load = kwargs["level"]
         level = self.level_manager.get_level(level_to_load)
         self.player = Player(level["player_pos"], 8, self.player_sprite)
-        self.hole = Hole((self.WIDTH//2, 200), self.hole_sprite)
+        self.hole = Hole(level["hole_pos"], self.hole_sprite)
         self.walls = []
         for wall in level["walls"]:
             self.walls.append(Wall((wall["start_pos"]), (wall["end_pos"]), wall["width"], (wall["color"])))
@@ -76,7 +75,8 @@ class Game(BaseState):
         self.back_to_menu()
 
     def draw(self, screen):
-        screen.fill((50, 50, 50))
+        #screen.fill((50, 50, 50))
+        self.draw_background(screen)
         self.hole.draw(screen)
         self.player.draw(screen)
         stroke_surface = self.font.render(f"Stroke {self.stroke}", True, (255, 255, 255))
@@ -99,7 +99,7 @@ class Game(BaseState):
             if event.type == py.MOUSEBUTTONDOWN:
                 self.is_left_button_down = True
                 
-                if abs(event.pos[0] - self.player.pos[0]) < 15 and abs(event.pos[1] - self.player.pos[1]) < 15:
+                if abs(event.pos[0] - self.player.pos[0]) < 20 and abs(event.pos[1] - self.player.pos[1]) < 20:
                     self.is_building_strength = True
                     
             elif event.type == py.MOUSEBUTTONUP:
@@ -135,10 +135,12 @@ class Game(BaseState):
         if not (0 <= player_next_pos.x <= self.WIDTH):
             self.player.v.x *= -1
             player_next_pos.x = max(0, min(self.WIDTH, player_next_pos.x))
+            py.mixer.Sound(self.bounce_sound).play()
 
         if not (0 <= player_next_pos.y <= self.HEIGHT):
-            self.player.v.y *= -1     
+            self.player.v.y *= -1  
             player_next_pos.y = max(0, min(self.HEIGHT, player_next_pos.y))
+            py.mixer.Sound(self.bounce_sound).play()
 
         #check if the player is in a wall
         for wall in self.walls:
@@ -150,8 +152,8 @@ class Game(BaseState):
 
         self.player.pos = player_next_pos
         
-    def back_to_menu(self):
-        self.state_manager.set_state(name="menu")
+    def back_to_menu(self, *args):
+        self.state_manager.set_state(name="level_selection_menu")
         
     def build_strength(self, pos):
         direction = -Vector2(pos) + self.player.pos
@@ -177,3 +179,11 @@ class Game(BaseState):
         self.rotated_image = py.transform.rotate(self.strength_arrow_sprite, angle + 180)
         self.rotated_rect = self.rotated_image.get_rect(center=self.player.pos)
         #FIXME: clean code
+        
+    def draw_background(self, screen):
+        CELL_SIZE = 50
+        screen.fill((131, 177, 73))
+        for i in range(self.WIDTH // CELL_SIZE):
+            for j in range (self.HEIGHT // CELL_SIZE):
+                if (i + j) %2 == 0:
+                    py.draw.rect(screen, (161, 197, 75), (i*CELL_SIZE, j*CELL_SIZE, CELL_SIZE, CELL_SIZE), 0 )
