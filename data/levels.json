@@ -52,5 +52,60 @@
             {"start_pos": [375, 500], "end_pos": [375, 650], "width": 14, "color": [50, 50 ,50]}
 
         ]
+    },
+    "level_5": {
+        "player_pos": [300, 600],
+        "hole_pos":   [300, 200],
+        "walls": []
+    },
+    "level_6": {
+        "player_pos": [300, 600],
+        "hole_pos":   [300, 200],
+        "walls": []
+    },
+    "level_7": {
+        "player_pos": [300, 600],
+        "hole_pos":   [300, 200],
+        "walls": []
+    },
+    "level_8": {
+        "player_pos": [300, 600],
+        "hole_pos":   [300, 200],
+        "walls": []
+    },
+    "level_9": {
+        "player_pos": [300, 600],
+        "hole_pos":   [300, 200],
+        "walls": []
+    },
+    "level_10": {
+        "player_pos": [300, 600],
+        "hole_pos":   [300, 200],
+        "walls": []
+    },
+    "level_11": {
+        "player_pos": [300, 600],
+        "hole_pos":   [300, 200],
+        "walls": []
+    },
+    "level_12": {
+        "player_pos": [300, 600],
+        "hole_pos":   [300, 200],
+        "walls": []
+    },
+    "level_13": {
+        "player_pos": [300, 600],
+        "hole_pos":   [300, 200],
+        "walls": []
+    },
+    "level_14": {
+        "player_pos": [300, 600],
+        "hole_pos":   [300, 200],
+        "walls": []
+    },
+    "level_15": {
+        "player_pos": [300, 600],
+        "hole_pos":   [300, 200],
+        "walls": []
     }
 }

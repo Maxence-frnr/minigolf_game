@@ -40,6 +40,8 @@ class Button:
             if event.type == py.MOUSEMOTION:
                 self.is_hovered = py.Rect.collidepoint(self.sprite_rect, event.pos)
             elif event.type == py.MOUSEBUTTONDOWN and self.is_hovered:
+                if self.text == "Next":
+                    print(self.action_arg)
                 self.action(self.action_arg)
                 if self.sounds_manager:
                     py.mixer.Sound(self.sound).play()
@@ -106,5 +108,7 @@ class Wall():
             return True, new_velocity
         return False, velocity 
 
+
+        
 
         

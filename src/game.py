@@ -23,6 +23,8 @@ class Game(BaseState):
         self.bounce_sound = sounds_manager.get("bounce")
         self.hole_sound = sounds_manager.get("hole")
         
+        self.in_game = True
+        self.level_to_load = "level_1"
         self.stroke = 0
         self.max_strength = 600.0
         self.strength = None
@@ -42,21 +44,37 @@ class Game(BaseState):
         
         self.back_to_menu_button = Button(text="", rect=py.Rect(30, 30, 30, 30), font_size=10, color=(255, 255, 255), hover_color=(255, 0, 0), action=self.back_to_menu, sprite=self.back_to_menu_button_sprite, sound="click", sounds_manager=sounds_manager)
         self.buttons = [self.back_to_menu_button]
-
+        
+        
+        #End_level_menu
+        self.end_level_menu_elem = []
+        self.end_level_menu_elem.append(Button(text="Next", rect=py.Rect(self.WIDTH//2 + 175, self.HEIGHT//2, 150, 50), font_size=40, color=(255, 255, 255), hover_color=(200, 200, 200), action=self.next_level, sound="click", sounds_manager=sounds_manager, border=True))
+        self.end_level_menu_elem.append(Button(text="Retry", rect=py.Rect(self.WIDTH//2 , self.HEIGHT//2, 150, 50), font_size=40, color=(255, 255, 255), hover_color=(200, 200, 200), action=self.reset, sound="click", sounds_manager=sounds_manager, border=True))
+        self.end_level_menu_elem.append(Button(text="Main Menu", rect=py.Rect(self.WIDTH//2- 175, self.HEIGHT//2, 150, 50), font_size=35, color=(255, 255, 255), hover_color=(200, 200, 200), action=self.back_to_menu, sound="click", sounds_manager=sounds_manager, border=True))
+        
     def enter(self, **kwargs):
-        level_to_load = kwargs["level"]
-        level = self.level_manager.get_level(level_to_load)
+        self.level_to_load = kwargs["level"]
+        level = self.level_manager.get_level(self.level_to_load)
         self.player = Player(level["player_pos"], 8, self.player_sprite)
         self.hole = Hole(level["hole_pos"], self.hole_sprite)
         self.walls = []
         for wall in level["walls"]:
             self.walls.append(Wall((wall["start_pos"]), (wall["end_pos"]), wall["width"], (wall["color"])))
+        self.level_to_load = "level_"+self.level_to_load.split("_")[1]
+        self.stroke = 0
+        self.in_game = True
+            
+    def next_level(self, *args):
+        self.level_to_load = "level_" + str(int(self.level_to_load.split("_")[1]) + 1)
+        self.enter(level=self.level_to_load)
 
-    
     def exit(self):
         self.player.v = Vector2(0, 0)
         self.player.pos = Vector2((self.WIDTH//2, self.HEIGHT//2 + 100))
         self.stroke = 0
+        
+    def reset(self, *args):
+        self.enter(level=self.level_to_load)
 
     def update_window_size(self, screen):
         self.WIDTH, self.HEIGHT = py.display.get_window_size()
@@ -72,7 +90,11 @@ class Game(BaseState):
     def win(self):
         py.mixer.Sound(self.hole_sound).play()
         print("WIN")
-        self.back_to_menu()
+        self.in_game = False
+        self.player.v = Vector2(0, 0)
+        self.player.pos = Vector2((1000, 1000))
+        #self.back_to_menu()
+    
 
     def draw(self, screen):
         #screen.fill((50, 50, 50))
@@ -92,9 +114,17 @@ class Game(BaseState):
             self.update_strength_bar(screen)
             screen.blit(self.rotated_image, self.rotated_rect)
         
+        if not self.in_game:
+            for elem in self.end_level_menu_elem:
+                elem.draw(screen)
+        
     def handle_events(self, events):
         for button in self.buttons:
             button.handle_events(events)
+        if not self.in_game:
+            for elem in self.end_level_menu_elem:
+                elem.handle_events(events)
+            
         for event in events:
             if event.type == py.MOUSEBUTTONDOWN:
                 self.is_left_button_down = True
@@ -187,3 +217,4 @@ class Game(BaseState):
             for j in range (self.HEIGHT // CELL_SIZE):
                 if (i + j) %2 == 0:
                     py.draw.rect(screen, (161, 197, 75), (i*CELL_SIZE, j*CELL_SIZE, CELL_SIZE, CELL_SIZE), 0 )
+                    
