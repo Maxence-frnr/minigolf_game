@@ -108,7 +108,29 @@ class Wall():
             return True, new_velocity
         return False, velocity 
 
-
+class Ground():
+    def __init__(self, rect:py.Rect, type):
+        self.rect = rect
+        if type == "sand":
+            self.color = (255, 255, 0)
+            self.friction = 600
         
+        elif type == "ice":
+            self.color = (0, 255, 255)
+            self.friction = 100
+        
+        elif type == "boost":
+            self.color = (222, 76, 18)
+            self.friction = -100
 
+    def draw(self, screen):
+        py.draw.rect(screen, self.color, self.rect)
+
+    def detect_collision(self, player_pos):
+        return self.rect.collidepoint(player_pos)
+
+    def handle_collision(self, player_velocity:Vector2, dt):
+        friction_v = player_velocity.normalize() * -self.friction * dt
+        player_velocity += friction_v
+        return player_velocity
         

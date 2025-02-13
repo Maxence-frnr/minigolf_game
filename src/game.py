@@ -4,11 +4,16 @@ from pygame import Vector2
 from state_manager import BaseState
 from utils import Button
 from utils import Wall
+from utils import Ground
 from player import Player
 from hole import Hole
 
 class Game(BaseState):
     def __init__(self, state_manager, assets_manager, level_manager, sounds_manager):
+        #DEBUG
+        self.show_ball_speed = False
+        self.show_ball_pos = False
+
         self.state_manager = state_manager
         self.WIDTH, self.HEIGHT = py.display.get_window_size()
         self.level_manager = level_manager
@@ -58,8 +63,13 @@ class Game(BaseState):
         self.player = Player(level["player_pos"], 8, self.player_sprite)
         self.hole = Hole(level["hole_pos"], self.hole_sprite)
         self.walls = []
-        for wall in level["walls"]:
-            self.walls.append(Wall((wall["start_pos"]), (wall["end_pos"]), wall["width"], (wall["color"])))
+        if "walls" in level:
+            for wall in level["walls"]:
+                self.walls.append(Wall((wall["start_pos"]), (wall["end_pos"]), wall["width"], (wall["color"])))
+        self.grounds = []
+        if "grounds" in level:
+            for ground in level["grounds"]:
+                self.grounds.append(Ground(py.Rect(ground["rect"]), ground["type"]))
         self.level_to_load = "level_"+self.level_to_load.split("_")[1]
         self.stroke = 0
         self.in_game = True
@@ -99,6 +109,8 @@ class Game(BaseState):
     def draw(self, screen):
         #screen.fill((50, 50, 50))
         self.draw_background(screen)
+        for ground in self.grounds:
+            ground.draw(screen)
         self.hole.draw(screen)
         self.player.draw(screen)
         stroke_surface = self.font.render(f"Stroke {self.stroke}", True, (255, 255, 255))
@@ -117,6 +129,15 @@ class Game(BaseState):
         if not self.in_game:
             for elem in self.end_level_menu_elem:
                 elem.draw(screen)
+        if self.show_ball_speed:
+            speed = round(self.player.v.length(), 1)
+            txt = self.font.render(f"Speed: {speed}", True, (255, 255, 255))
+            screen.blit(txt, py.Rect(280, 900, 40, 20))
+        
+        if self.show_ball_pos:
+            pos = self.player.pos
+            txt = self.font.render(f"Pos: {pos}", True, (255, 255, 255))
+            screen.blit(txt, py.Rect(280, 950, 40, 20))
         
     def handle_events(self, events):
         for button in self.buttons:
@@ -149,13 +170,20 @@ class Game(BaseState):
             self.player.v += self.strength
             self.stroke += 1
             py.mixer.Sound(self.swing_sound).play()
-
+        is_on_special_ground = False
         if self.player.v.length() > 0:
-            friction_v = self.player.v.normalize() * -self.friction * dt
-            self.player.v += friction_v 
+            for ground in self.grounds:
+                if ground.detect_collision(self.player.pos):
+                    is_on_special_ground = True
+                    self.player.v = ground.handle_collision(self.player.v, dt)
 
-            if self.player.v.length() < 1:
-                self.player.v = Vector2(0, 0)
+        
+            if self.player.v.length() > 0 and not is_on_special_ground:
+                friction_v = self.player.v.normalize() * -self.friction * dt
+                self.player.v += friction_v 
+
+        if self.player.v.length() < 1:
+            self.player.v = Vector2(0, 0)
 
         self.strength = Vector2(0, 0)
         

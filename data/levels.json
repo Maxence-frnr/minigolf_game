@@ -8,7 +8,6 @@
             {"start_pos": [100, 60], "end_pos": [500, 60], "width": 19, "color": [200, 200 ,200]},
             {"start_pos": [491, 70], "end_pos": [491, 940], "width": 19, "color": [200, 200  ,200]}
         ]
-        
     },
     "level_2": {
         "player_pos": [300, 600],
@@ -56,17 +55,26 @@
     "level_5": {
         "player_pos": [300, 600],
         "hole_pos":   [300, 200],
-        "walls": []
+        "walls": [],
+        "grounds": [
+            {"rect": [100, 400, 400, 300], "type": "sand"}
+        ]
     },
     "level_6": {
         "player_pos": [300, 600],
         "hole_pos":   [300, 200],
-        "walls": []
+        "walls": [],
+        "grounds": [
+            {"rect": [100, 400, 400, 300], "type": "ice"}
+        ]
     },
     "level_7": {
         "player_pos": [300, 600],
         "hole_pos":   [300, 200],
-        "walls": []
+        "walls": [],
+        "grounds": [
+            {"rect": [100, 400, 400, 300], "type": "boost"}
+        ]
     },
     "level_8": {
         "player_pos": [300, 600],
