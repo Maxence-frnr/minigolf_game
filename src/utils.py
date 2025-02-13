@@ -22,12 +22,16 @@ class Button:
         
         self.is_hovered = False
 
+        self.border_rect = rect.copy()
         self.sprite_rect = rect.copy()
-        self.sprite_rect.center = (rect[0], rect[1])        
+        self.border_rect.center = (rect[0], rect[1]) #Centre la bordure autour de pos_x/ pos_y
+        if self.sprite:
+            self.sprite_rect[0] -= self.sprite.get_rect()[2]//2 #centre le rectangle du sprite autour de pos_x/ pos_y
+            self.sprite_rect[1] -= self.sprite.get_rect()[3]//2  
         
     def draw(self, screen:py.Surface):
         if self.border:
-            py.draw.rect(screen, self.color, self.sprite_rect, 3, 3)
+            py.draw.rect(screen, self.color, self.border_rect, 3, 3)
         color = self.hover_color if self.is_hovered else self.color
         if self.sprite: screen.blit(self.sprite, self.sprite_rect)
         text = self.font.render(self.text, True, color)

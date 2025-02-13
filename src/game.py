@@ -11,7 +11,7 @@ from hole import Hole
 class Game(BaseState):
     def __init__(self, state_manager, assets_manager, level_manager, sounds_manager):
         #DEBUG
-        self.show_ball_speed = False
+        self.show_ball_speed = True
         self.show_ball_pos = False
 
         self.state_manager = state_manager
@@ -46,6 +46,9 @@ class Game(BaseState):
         #UI
         self.back_to_menu_button_sprite = assets_manager.get("back_arrow")
         self.strength_arrow_sprite = assets_manager.get("white_arrow")
+        self.undo_arrow_sprite = assets_manager.get("undo_arrow")
+        self.home_sprite = assets_manager.get("home")
+        self.next_arrow_sprite = assets_manager.get("next_arrow")
         
         self.back_to_menu_button = Button(text="", rect=py.Rect(30, 30, 30, 30), font_size=10, color=(255, 255, 255), hover_color=(255, 0, 0), action=self.back_to_menu, sprite=self.back_to_menu_button_sprite, sound="click", sounds_manager=sounds_manager)
         self.buttons = [self.back_to_menu_button]
@@ -53,9 +56,9 @@ class Game(BaseState):
         
         #End_level_menu
         self.end_level_menu_elem = []
-        self.end_level_menu_elem.append(Button(text="Next", rect=py.Rect(self.WIDTH//2 + 175, self.HEIGHT//2, 150, 50), font_size=40, color=(255, 255, 255), hover_color=(200, 200, 200), action=self.next_level, sound="click", sounds_manager=sounds_manager, border=True))
-        self.end_level_menu_elem.append(Button(text="Retry", rect=py.Rect(self.WIDTH//2 , self.HEIGHT//2, 150, 50), font_size=40, color=(255, 255, 255), hover_color=(200, 200, 200), action=self.reset, sound="click", sounds_manager=sounds_manager, border=True))
-        self.end_level_menu_elem.append(Button(text="Main Menu", rect=py.Rect(self.WIDTH//2- 175, self.HEIGHT//2, 150, 50), font_size=35, color=(255, 255, 255), hover_color=(200, 200, 200), action=self.back_to_menu, sound="click", sounds_manager=sounds_manager, border=True))
+        self.end_level_menu_elem.append(Button(text="", rect=py.Rect(self.WIDTH//2 + 175, self.HEIGHT//2, 150, 50), font_size=40, color=(255, 255, 255), hover_color=(200, 200, 200), action=self.next_level, sound="click", sounds_manager=sounds_manager, border=True, sprite=self.next_arrow_sprite))
+        self.end_level_menu_elem.append(Button(text="", rect=py.Rect(self.WIDTH//2 , self.HEIGHT//2, 150, 50), font_size=40, color=(255, 255, 255), hover_color=(200, 200, 200), action=self.reset, sound="click", sounds_manager=sounds_manager, border=True, sprite=self.undo_arrow_sprite))
+        self.end_level_menu_elem.append(Button(text="", rect=py.Rect(self.WIDTH//2- 175, self.HEIGHT//2, 150, 50), font_size=35, color=(255, 255, 255), hover_color=(200, 200, 200), action=self.back_to_menu, sound="click", sounds_manager=sounds_manager, border=True, sprite=self.home_sprite))
         
     def enter(self, **kwargs):
         self.level_to_load = kwargs["level"]

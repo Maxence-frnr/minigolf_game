@@ -77,9 +77,17 @@
         ]
     },
     "level_8": {
-        "player_pos": [300, 600],
+        "player_pos": [300, 500],
         "hole_pos":   [300, 200],
-        "walls": []
+        "walls": [
+            {"start_pos": [200, 400], "end_pos": [400, 400], "width": 25, "color": [50, 50 ,50]},
+            {"start_pos": [400, 400], "end_pos": [400, 600], "width": 25, "color": [50, 50 ,50]},
+            {"start_pos": [200, 600], "end_pos": [400, 600], "width": 25, "color": [50, 50 ,50]},
+            {"start_pos": [200, 400], "end_pos": [200, 600], "width": 25, "color": [50, 50 ,50]}
+        ],
+        "grounds": [
+            {"rect": [0, 0, 600, 1000], "type": "boost"}
+        ]
     },
     "level_9": {
         "player_pos": [300, 600],

@@ -28,7 +28,10 @@ state_manager = StateManager()
 ball = assets_manager.load("ball", "assets\\sprites\\16x16 ball.png")
 back_arrow = assets_manager.load("back_arrow", "assets\\sprites\\back_arrow.png")
 white_arrow = assets_manager.load("white_arrow", "assets\\sprites\\white_arrow_edited.png")
+next_arrow = assets_manager.load("next_arrow", "assets\\sprites\\white_arrow.png")
 hole = assets_manager.load("hole", "assets\\sprites\\hole.png")
+undo_arrow = assets_manager.load("undo_arrow", "assets\\sprites\\undo_arrow.png")
+home = assets_manager.load("home", "assets\\sprites\\home.png")
 
 level_manager = LevelManager('data\\levels.json')#automaticaly load all levels from the json
 save_manager = SaveManager('data\\data.json')#load all saved data
