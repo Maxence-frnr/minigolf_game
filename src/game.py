@@ -141,6 +141,11 @@ class Game(BaseState):
             pos = self.player.pos
             txt = self.font.render(f"Pos: {pos}", True, (255, 255, 255))
             screen.blit(txt, py.Rect(280, 950, 40, 20))
+
+    def dash(self, dir):
+        if self.player.v.length == 0: return
+        if dir == "right" and self.player.v:
+            self.player.v.rotate_ip(1)
         
     def handle_events(self, events):
         for button in self.buttons:
@@ -166,6 +171,13 @@ class Game(BaseState):
             elif event.type == py.MOUSEMOTION:
                 if self.is_left_button_down and self.is_building_strength:
                     self.build_strength(event.pos)
+                
+            keys = py.key.get_pressed()
+            if keys[py.K_d]:
+                self.dash("right")
+
+    
+
                     
     
     def update_player_pos(self, dt): #Calc physics of the player
