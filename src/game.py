@@ -11,7 +11,7 @@ from hole import Hole
 class Game(BaseState):
     def __init__(self, state_manager, assets_manager, level_manager, sounds_manager):
         #DEBUG
-        self.show_ball_speed = True
+        self.show_ball_speed = False
         self.show_ball_pos = False
 
         self.state_manager = state_manager
@@ -105,7 +105,7 @@ class Game(BaseState):
         print("WIN")
         self.in_game = False
         self.player.v = Vector2(0, 0)
-        self.player.pos = Vector2((1000, 1000))
+        self.player.pos = Vector2((1100, 1000))
         #self.back_to_menu()
     
 
@@ -142,10 +142,12 @@ class Game(BaseState):
             txt = self.font.render(f"Pos: {pos}", True, (255, 255, 255))
             screen.blit(txt, py.Rect(280, 950, 40, 20))
 
-    def dash(self, dir):
-        if self.player.v.length == 0: return
-        if dir == "right" and self.player.v:
-            self.player.v.rotate_ip(1)
+    #def dash(self, dir):
+    #    if self.player.v.length == 0: return
+    #    if dir == "right" and self.player.v:
+    #        self.player.v.rotate_ip(2)
+    #    elif dir == "left" and self.player.v:
+    #        self.player.v.rotate_ip(-2)
         
     def handle_events(self, events):
         for button in self.buttons:
@@ -173,14 +175,17 @@ class Game(BaseState):
                     self.build_strength(event.pos)
                 
             keys = py.key.get_pressed()
-            if keys[py.K_d]:
-                self.dash("right")
+            #if keys[py.K_d]:
+            #   self.dash("right")
+            #elif keys[py.K_a]:
+            #    self.dash("left")
 
     
 
                     
     
     def update_player_pos(self, dt): #Calc physics of the player
+        if not self.in_game: return
         if self.strength and self.strength.length() > 0:
             self.player.v += self.strength
             self.stroke += 1
