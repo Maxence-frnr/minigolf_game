@@ -16,13 +16,16 @@
                 <button id="add-sand" class="button" onclick="add_sand()">sand</button>
                 <button id="add-wind" class="button">wind</button>
                 <button id="add-black_hole" class="button">black hole</button>
-                <button id="add" class="button" onclick="draw()"></button>
-                <button id="add" class="button" onclick="show_data()">show</button>
+                <button id="add" class="button"></button>
+                <button id="add" class="button"></button>
                 <button id="add" class="button"></button>
             </div>
+            <h2>Level elements</h2>
             <div class="element-container"></div>
         </div>
         <canvas id="canvas" width="600" height="1000"></canvas>
+        <button id="export-btn" class="button" onclick="export_level()">Export to Clipboard</button>
+        <div class="credit">Made by Maxence F.</div>
     </div>
 </body>
 <script src="script.js"></script>
