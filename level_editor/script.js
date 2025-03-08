@@ -1,6 +1,6 @@
 let data = {
     level_x: {
-        player_pos: [300, 600],
+
         hole_pos:   [300, 200],
         walls: [
             {start_pos: [100, 950], end_pos: [500, 950], width: 19, color: [170, 170 ,245]},
@@ -98,6 +98,7 @@ function create_wrapper(name, pos, start, end, width, color) {
 }
 
 function add_spawn() {
+    data.level_x.player_pos = [300, 600];
     show_data();
     draw();
 }
@@ -105,6 +106,9 @@ function add_hole() {
 
 }
 function add_wall() {
+
+}
+function add_sand() {
 
 }
 function remove_element(){
