@@ -1,0 +1,111 @@
+* {
+    font-size: 10px;
+    background-color: #1a1a1a;
+    margin: 0;
+    padding: 0;
+}
+.container {
+    display: flex;
+    flex-direction: row;
+
+    
+    height: 100vh;
+}
+.left-panel {
+    display: flex;
+    flex-direction: column;
+    width: 30%;
+}
+.button-container {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    background-color: #242424;
+    align-content: center;
+    justify-content: center;
+
+    margin: 3rem 1rem 12rem 3rem;
+    width: 80%;
+    height: 20%;
+    border-radius: 0.8rem;
+
+}
+.element-container {
+    display: flex;
+    flex-direction: column;
+    background-color: #242424;
+    align-items: center;
+
+    margin: 0 3rem;
+    width: 80%;
+    min-height: 15rem;
+    max-height: 60rem;
+    height:max-content;
+    border-radius: 0.8rem;
+    border: 1px solid #AAA;
+    overflow-y: scroll;
+}
+canvas {
+    border: 1px solid #FFF;
+    border-radius: 2rem;
+}
+.button {
+    font-size: 2rem;
+    color: #FFF;
+    width: 11rem;
+    height: 3rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    margin: 1rem;
+    border: None;
+}
+.button:hover {
+    background-color: #3a3a3a;
+    color: #FFF;
+    border: 1px solid #AAA
+}
+.element-container > div {
+    display: flex;
+    flex-direction: row;
+
+    width: 90%;
+    padding: 0.5rem;
+    border-bottom: 1px solid #AAA;
+    margin: 0.5rem;
+    
+    overflow-x:hidden;
+    border-radius: 0.8rem;
+    height: 2.2rem;
+    min-height: 2.2rem;
+    
+    
+}
+.element-container > div label {
+    color: #FFF;
+    font-size: 2rem;
+    margin-left: 2rem;
+
+}
+
+.element-container > div input {
+    color: #FFF;
+    font-size: 1.5rem;
+    width: clamp(1rem, 3rem, 5rem);
+    margin-left: 1rem;
+    background-color: #3d3d3d;
+    border: None;
+
+
+}
+.element-container > div button {
+    color: #FFF;
+    font-size: 1.5rem;
+    width: 4rem;
+    background-color: rgb(75, 75, 75);
+    border: None;
+    margin-left: 8rem;
+
+}
+.element-container > div button:hover {
+    background-color: #F00;
+}
+
