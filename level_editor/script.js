@@ -67,7 +67,7 @@ function show_data() {
         element_container.appendChild(create_wrapper("spawn"));
     }
     if (data.level_x.hole_pos) {
-        element_container.appendChild(create_wrapper("hole_pos", "hole", true));
+        element_container.appendChild(create_wrapper("hole", true));
     }
     if (data.level_x.walls.length > 0) {
         data.level_x.walls.forEach((wall, index) => {
@@ -111,6 +111,7 @@ function create_wrapper(type, index=null) {
         const y = createNumberInput("y:", data.level_x.player_pos[1], (val) => {data.level_x.player_pos[1] = val; draw();});
         wrapper.appendChild(x);
         wrapper.appendChild(y);
+        wrapper.dataset.tags = "spawn";
     }
     else if (type == "hole")  {
         name = "hole_pos";
@@ -118,6 +119,7 @@ function create_wrapper(type, index=null) {
         const y = createNumberInput("y:", data.level_x.hole_pos[1], (val) => {data.level_x.hole_pos[1] = val; draw();});
         wrapper.appendChild(x);
         wrapper.appendChild(y);
+        wrapper.dataset.tags = "hole";
     }
     else if (type == "walls") {
         name = `wall ${index}`;
@@ -146,6 +148,7 @@ function create_wrapper(type, index=null) {
         wrapper.appendChild(end_x);
         wrapper.appendChild(end_y);
         wrapper.appendChild(width);
+        wrapper.dataset.tags = "wall";
     }
     else if (type == "grounds") {
         name = `${data.level_x.grounds[index].type} ${index}`;
@@ -169,6 +172,7 @@ function create_wrapper(type, index=null) {
         wrapper.appendChild(y);
         wrapper.appendChild(width);
         wrapper.appendChild(height);
+        wrapper.dataset.tags = "ground";
     }
 
     element_name.innerText = name;
@@ -203,8 +207,27 @@ function add_sand() {
     show_data();
     draw();
 }
-function remove_element(){
 
+function remove_element(){
+    const parent = this.parentElement;
+    const tags = parent.dataset.tags;
+    if (tags == "spawn") {
+        delete data.level_x.player_pos;
+    }
+    else if (tags == "hole") {
+        delete data.level_x.hole_pos;
+    }
+    else if (tags == "wall") {
+        index = parent.firstChild.innerText.split(" ")[1];
+        data.level_x.walls.splice(index, 1); 
+    }
+    else if (tags == "ground") {
+        index = parent.firstChild.innerText.split(" ")[1];
+        data.level_x.grounds.splice(index, 1);
+    }
+    parent.remove();
+    show_data();
+    draw();
 }
 
 function export_level() {
