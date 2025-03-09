@@ -5,6 +5,7 @@ from state_manager import BaseState
 from utils import Button
 from utils import Wall
 from utils import Ground
+from utils import Wind
 from player import Player
 from hole import Hole
 
@@ -41,6 +42,8 @@ class Game(BaseState):
         self.is_building_strength = False
         
         self.strength_arrow_angle = 0
+        
+        self.wind = Wind(py.Rect(300, 300, 200, 500), 30, 300, assets_manager.get("wind_arrows"))
 
         
         #UI
@@ -116,6 +119,8 @@ class Game(BaseState):
             ground.draw(screen)
         self.hole.draw(screen)
         self.player.draw(screen)
+        self.wind.draw(screen)
+        
         stroke_surface = self.font.render(f"Stroke {self.stroke}", True, (255, 255, 255))
         screen.blit(stroke_surface, py.Rect(self.WIDTH//2 - stroke_surface.get_width()//2, 20, 30, 20))
 
@@ -141,13 +146,6 @@ class Game(BaseState):
             pos = self.player.pos
             txt = self.font.render(f"Pos: {pos}", True, (255, 255, 255))
             screen.blit(txt, py.Rect(280, 950, 40, 20))
-
-    #def dash(self, dir):
-    #    if self.player.v.length == 0: return
-    #    if dir == "right" and self.player.v:
-    #        self.player.v.rotate_ip(2)
-    #    elif dir == "left" and self.player.v:
-    #        self.player.v.rotate_ip(-2)
         
     def handle_events(self, events):
         for button in self.buttons:
@@ -175,15 +173,7 @@ class Game(BaseState):
                     self.build_strength(event.pos)
                 
             keys = py.key.get_pressed()
-            #if keys[py.K_d]:
-            #   self.dash("right")
-            #elif keys[py.K_a]:
-            #    self.dash("left")
 
-    
-
-                    
-    
     def update_player_pos(self, dt): #Calc physics of the player
         if not self.in_game: return
         if self.strength and self.strength.length() > 0:
@@ -191,18 +181,23 @@ class Game(BaseState):
             self.stroke += 1
             py.mixer.Sound(self.swing_sound).play()
         is_on_special_ground = False
+        is_in_wind = False
         if self.player.v.length() > 0:
             for ground in self.grounds:
                 if ground.detect_collision(self.player.pos):
                     is_on_special_ground = True
                     self.player.v = ground.handle_collision(self.player.v, dt)
+            
+            if self.wind.detect_collision(self.player.pos, self.player.radius):
+                is_in_wind = True
+                self.player.v = self.wind.handle_collision(self.player.v, dt)
 
         
             if self.player.v.length() > 0 and not is_on_special_ground:
                 friction_v = self.player.v.normalize() * -self.friction * dt
                 self.player.v += friction_v 
 
-        if self.player.v.length() < 1:
+        if self.player.v.length() < 1 and not is_in_wind:
             self.player.v = Vector2(0, 0)
 
         self.strength = Vector2(0, 0)

@@ -13,7 +13,6 @@ from level_selection_menu import LevelSelectionMenu
 #CONSTANT
 WIDTH, HEIGHT = 600, 1000
 
-
 py.init()
 py.mixer.init()
 screen = py.display.set_mode((WIDTH, HEIGHT)) #flags=py.RESIZABLE
@@ -33,6 +32,7 @@ next_arrow = assets_manager.load("next_arrow", "assets\\sprites\\white_arrow.png
 hole = assets_manager.load("hole", "assets\\sprites\\hole.png")
 undo_arrow = assets_manager.load("undo_arrow", "assets\\sprites\\undo_arrow.png")
 home = assets_manager.load("home", "assets\\sprites\\home.png")
+wind_arrows = assets_manager.load("wind_arrows", "assets\\sprites\\wind_arrows_edited.png")
 
 level_manager = LevelManager('data\\levels.json')#automaticaly load all levels from the json
 save_manager = SaveManager('data\\data.json')#load all saved data
