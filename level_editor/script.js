@@ -1,6 +1,7 @@
 let data = {level_x: {
+    grounds: [],
     walls:[],
-    grounds: []
+    winds: []
 }};
 
 const canvas = document.getElementById('canvas');
@@ -41,6 +42,68 @@ function draw() {
             for (let i = 0; i < data.level_x[k].length; i++) {
                 ctx.fillStyle = data.level_x[k][i].type == "sand" ? "yellow" : "cyan";
                 ctx.fillRect(data.level_x[k][i].rect[0], data.level_x[k][i].rect[1], data.level_x[k][i].rect[2], data.level_x[k][i].rect[3]);
+            }
+        }
+        else if (k== "winds") {
+            for (let i = 0; i < data.level_x[k].length; i++) {
+                const x = data.level_x[k][i].rect[0];
+                const y = data.level_x[k][i].rect[1];
+                const half_w = data.level_x[k][i].rect[2] / 2;
+                const half_h = data.level_x[k][i].rect[3] / 2;
+                const angle = data.level_x[k][i].direction;
+                const rad = angle * Math.PI / 180;
+
+                let corners = [[-half_w, -half_h], 
+                                [half_w, -half_h], 
+                                [half_w, half_h], 
+                                [-half_w, half_h]];
+
+                let r_corners = [];//rotated corners
+                corners.forEach((corner, index) => {
+                    const x1 = corner[0] * Math.cos(rad) - corner[1] * Math.sin(rad)+x;
+                    const y1 = corner[0] * Math.sin(rad) + corner[1] * Math.cos(rad)+y;
+
+                    r_corners.push([x1, y1])               
+                })
+
+                ctx.fillStyle = "rgb(214 50 133 / 30%)";
+                ctx.beginPath();
+                ctx.moveTo(r_corners[0][0], r_corners[0][1]);
+                ctx.lineTo(r_corners[1][0], r_corners[1][1]);
+                ctx.lineTo(r_corners[2][0], r_corners[2][1]);
+                ctx.lineTo(r_corners[3][0], r_corners[3][1]);
+                ctx.fill();
+
+                ctx.fillStyle = "black";
+                ctx.font = "18px Arial";
+                ctx.fillText(data.level_x[k][i].strength, x-8, y - 16);
+
+                // Dessiner une flèche indiquant l'angle de rotation
+                const arrow_length = 30; // Longueur de la flèche
+                const arrow_x = x + arrow_length * Math.cos(rad);
+                const arrow_y = y + arrow_length * Math.sin(rad);
+
+                ctx.strokeStyle = "black";
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.lineTo(arrow_x, arrow_y);
+                ctx.stroke();
+
+                // Dessiner la pointe de la flèche
+                const arrow_head_size = 10;
+                const angle1 = rad + Math.PI * 0.75; // Angle pour un côté de la pointe
+                const angle2 = rad - Math.PI * 0.75;
+
+                ctx.beginPath();
+                ctx.moveTo(arrow_x, arrow_y);
+                ctx.lineTo(arrow_x - arrow_head_size * -Math.cos(angle1), 
+                           arrow_y - arrow_head_size * -Math.sin(angle1));
+                ctx.lineTo(arrow_x - arrow_head_size * -Math.cos(angle2), 
+                           arrow_y - arrow_head_size * -Math.sin(angle2));
+                ctx.closePath();
+                ctx.fill();
+
             }
         }
     }
@@ -85,17 +148,22 @@ function show_data() {
     }
     if (data.level_x.walls.length > 0) {
         data.level_x.walls.forEach((wall, index) => {
-            element_container.appendChild(create_wrapper("walls", index));
+            element_container.appendChild(create_wrapper("wall", index));
         });
     }
     if (data.level_x.grounds.length > 0) {
         data.level_x.grounds.forEach((ground, index) => {
-            element_container.appendChild(create_wrapper("grounds", index));
+            element_container.appendChild(create_wrapper("ground", index));
+        })
+    }
+    if (data.level_x.winds.length > 0) {
+        data.level_x.winds.forEach((wind, index) => {
+            element_container.appendChild(create_wrapper("wind", index));
         })
     }
 }
 
-function createNumberInput(labelText, value, onChange, max_value =1000) {
+function createNumberInput(labelText, value, onChange, max_value =1000, step=10) {
     const wrapper = document.createElement("div");
 
     const label = document.createElement("label");
@@ -105,7 +173,7 @@ function createNumberInput(labelText, value, onChange, max_value =1000) {
     const input = document.createElement("input");
     input.type = "number";
     input.value = value;
-    input.step = 10;
+    input.step = step;
     input.min = 0;
     input.max = max_value;
     input.addEventListener("input", (e) => onChange(Number(e.target.value)));
@@ -141,7 +209,7 @@ function create_wrapper(type, index=null) {
         wrapper.dataset.tags = "hole";
         element_name.style.color = "red";
     }
-    else if (type == "walls") {
+    else if (type == "wall") {
         name = `wall ${index}`;
         const start_x = createNumberInput("start x:", data.level_x.walls[index].start_pos[0], (val) => {
             data.level_x.walls[index].start_pos[0] = val;
@@ -171,7 +239,7 @@ function create_wrapper(type, index=null) {
         wrapper.dataset.tags = "wall";
         element_name.style.color = "white";
     }
-    else if (type == "grounds") {
+    else if (type == "ground") {
         name = `${data.level_x.grounds[index].type} ${index}`;
         const x = createNumberInput("pos x:", data.level_x.grounds[index].rect[0], (val) => {
             data.level_x.grounds[index].rect[0] = val;
@@ -195,6 +263,41 @@ function create_wrapper(type, index=null) {
         wrapper.appendChild(height);
         wrapper.dataset.tags = "ground";
         element_name.style.color = "yellow";
+    }
+    else if (type == "wind") {
+        name = `wind ${index}`;
+        const x = createNumberInput("pos x:", data.level_x.winds[index].rect[0], (val) => {
+            data.level_x.winds[index].rect[0] = val;
+            draw();
+        }, 600);
+        const y = createNumberInput("pos y:", data.level_x.winds[index].rect[1], (val) => {
+            data.level_x.winds[index].rect[1] = val;
+            draw();
+        }, 1000);
+        const width = createNumberInput("width:", data.level_x.winds[index].rect[2], (val) => {
+            data.level_x.winds[index].rect[2] = val;
+            draw();
+        }, 600);
+        const height = createNumberInput("height:", data.level_x.winds[index].rect[3], (val) => {
+            data.level_x.winds[index].rect[3] = val;
+            draw();
+        }, 1000);
+        const direction = createNumberInput("angle:", data.level_x.winds[index].direction, (val) => {
+            data.level_x.winds[index].direction = val;
+            draw();
+        }, 360);
+        const strength = createNumberInput("strength:", data.level_x.winds[index].strength, (val) => {
+            data.level_x.winds[index].strength = val;
+            draw();
+        }, 600);
+        wrapper.appendChild(x);
+        wrapper.appendChild(y);
+        wrapper.appendChild(width);
+        wrapper.appendChild(height);
+        wrapper.appendChild(direction);
+        wrapper.appendChild(strength);
+        wrapper.dataset.tags = "wind";
+        element_name.style.color = "green";
     }
 
     element_name.innerText = name;
@@ -229,7 +332,11 @@ function add_sand() {
     show_data();
     draw();
 }
-
+function add_wind() {
+    data.level_x.winds.push({rect: [300, 500, 100, 100], direction:0, strength:300});
+    show_data();
+    draw();
+}
 function remove_element(){
     const parent = this.parentElement;
     const tags = parent.dataset.tags;
@@ -262,3 +369,4 @@ function export_level() {
             console.error("Erreur lors de la copie : ", err);
         });
 }
+draw();
