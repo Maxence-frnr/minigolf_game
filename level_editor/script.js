@@ -44,6 +44,7 @@ function draw() {
             }
         }
     }
+    draw_scale();
 }
 
 function draw_background() {
@@ -57,8 +58,21 @@ function draw_background() {
                 ctx.fillRect(i * CELL_SIZE, j * CELL_SIZE, CELL_SIZE, CELL_SIZE);
             }
         }
+    }
 }
-}
+
+function draw_scale() {
+    const CELL_SIZE = 50;
+    ctx.font = "12px Arial";
+    ctx.fillStyle = "black";
+    for (let i = 1; i < height / CELL_SIZE; i++) {
+        ctx.fillText(i*CELL_SIZE, 6, i*CELL_SIZE+4);
+    }
+    for (let i = 1; i< width / CELL_SIZE; i++) {
+        ctx.fillText(i*CELL_SIZE, i*CELL_SIZE-9, 10);
+    }
+};
+
 function show_data() {
     const element_container = document.getElementsByClassName('element-container')[0];
     element_container.innerHTML = "";
@@ -81,7 +95,7 @@ function show_data() {
     }
 }
 
-function createNumberInput(labelText, value, onChange) {
+function createNumberInput(labelText, value, onChange, max_value =1000) {
     const wrapper = document.createElement("div");
 
     const label = document.createElement("label");
@@ -89,8 +103,11 @@ function createNumberInput(labelText, value, onChange) {
     wrapper.appendChild(label);
 
     const input = document.createElement("input");
-    input.type = "text";
+    input.type = "number";
     input.value = value;
+    input.step = 10;
+    input.min = 0;
+    input.max = max_value;
     input.addEventListener("input", (e) => onChange(Number(e.target.value)));
     wrapper.appendChild(input);
 
@@ -107,42 +124,42 @@ function create_wrapper(type, index=null) {
     
     if (type == "spawn") {
         name = "player_pos";
-        const x = createNumberInput("x:", data.level_x.player_pos[0], (val) => {data.level_x.player_pos[0] = val; draw();});
-        const y = createNumberInput("y:", data.level_x.player_pos[1], (val) => {data.level_x.player_pos[1] = val; draw();});
+        const x = createNumberInput("pos x:", data.level_x.player_pos[0], (val) => {data.level_x.player_pos[0] = val; draw();}, width);
+        const y = createNumberInput("pos y:", data.level_x.player_pos[1], (val) => {data.level_x.player_pos[1] = val; draw();}, height);
         wrapper.appendChild(x);
         wrapper.appendChild(y);
         wrapper.dataset.tags = "spawn";
     }
     else if (type == "hole")  {
         name = "hole_pos";
-        const x = createNumberInput("x:", data.level_x.hole_pos[0], (val) => {data.level_x.hole_pos[0] = val; draw();});
-        const y = createNumberInput("y:", data.level_x.hole_pos[1], (val) => {data.level_x.hole_pos[1] = val; draw();});
+        const x = createNumberInput("pos x:", data.level_x.hole_pos[0], (val) => {data.level_x.hole_pos[0] = val; draw();}, width);
+        const y = createNumberInput("pos y:", data.level_x.hole_pos[1], (val) => {data.level_x.hole_pos[1] = val; draw();}, height);
         wrapper.appendChild(x);
         wrapper.appendChild(y);
         wrapper.dataset.tags = "hole";
     }
     else if (type == "walls") {
         name = `wall ${index}`;
-        const start_x = createNumberInput("x1:", data.level_x.walls[index].start_pos[0], (val) => {
+        const start_x = createNumberInput("start x:", data.level_x.walls[index].start_pos[0], (val) => {
             data.level_x.walls[index].start_pos[0] = val;
             draw();
-        });
-        const start_y = createNumberInput("y1:", data.level_x.walls[index].start_pos[1], (val) => {
+        }, 600);
+        const start_y = createNumberInput("start y:", data.level_x.walls[index].start_pos[1], (val) => {
             data.level_x.walls[index].start_pos[1] = val;
             draw();
-        })
-        const end_x = createNumberInput("x2:", data.level_x.walls[index].end_pos[0], (val) => {
+        }, 1000);
+        const end_x = createNumberInput("end x:", data.level_x.walls[index].end_pos[0], (val) => {
             data.level_x.walls[index].end_pos[0] = val;
             draw();
-        });
-        const end_y = createNumberInput("y2:", data.level_x.walls[index].end_pos[1], (val) => {
+        }, 600);
+        const end_y = createNumberInput("end y:", data.level_x.walls[index].end_pos[1], (val) => {
             data.level_x.walls[index].end_pos[1] = val;
             draw();
-        });
-        const width = createNumberInput("w:", data.level_x.walls[index].width, (val) => {
+        }, 1000);
+        const width = createNumberInput("width:", data.level_x.walls[index].width, (val) => {
             data.level_x.walls[index].width = val;
             draw();
-        });
+        }, 400);
         wrapper.appendChild(start_x);
         wrapper.appendChild(start_y);
         wrapper.appendChild(end_x);
@@ -152,22 +169,22 @@ function create_wrapper(type, index=null) {
     }
     else if (type == "grounds") {
         name = `${data.level_x.grounds[index].type} ${index}`;
-        const x = createNumberInput("x:", data.level_x.grounds[index].rect[0], (val) => {
+        const x = createNumberInput("pos x:", data.level_x.grounds[index].rect[0], (val) => {
             data.level_x.grounds[index].rect[0] = val;
             draw();
-        });
-        const y = createNumberInput("y:", data.level_x.grounds[index].rect[1], (val) => {
+        }, 600);
+        const y = createNumberInput("pos y:", data.level_x.grounds[index].rect[1], (val) => {
             data.level_x.grounds[index].rect[1] = val;
             draw();
-        });
-        const width = createNumberInput("w:", data.level_x.grounds[index].rect[2], (val) => {
+        }, 1000);
+        const width = createNumberInput("width:", data.level_x.grounds[index].rect[2], (val) => {
             data.level_x.grounds[index].rect[2] = val;
             draw();
-        });
-        const height = createNumberInput("h:", data.level_x.grounds[index].rect[3], (val) => {
+        }, 600);
+        const height = createNumberInput("height:", data.level_x.grounds[index].rect[3], (val) => {
             data.level_x.grounds[index].rect[3] = val;
             draw();
-        });
+        }, 1000);
         wrapper.appendChild(x);
         wrapper.appendChild(y);
         wrapper.appendChild(width);

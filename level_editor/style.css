@@ -62,7 +62,7 @@ h2 {
 }
 canvas {
     border: 1px solid #FFF;
-    border-radius: 2rem;
+    border-radius: 1rem;
 }
 #export-btn {
     position: absolute;
@@ -135,10 +135,10 @@ canvas {
     align-items: center;
     gap: 0.5rem;
 }
-.element input {
+.element input[type="text"], .element input[type="number"] {
     color: #FFF;
     font-size: 1.5rem;
-    width: 4.5rem;
+    width: 6rem;
     background-color: #3a3a3a;
     border: 1px solid #AAA;
     border-radius: 0.5rem;
