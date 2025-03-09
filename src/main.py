@@ -18,6 +18,7 @@ py.init()
 py.mixer.init()
 screen = py.display.set_mode((WIDTH, HEIGHT)) #flags=py.RESIZABLE
 py.display.set_caption("Minigolf 2D")
+py.display.set_icon(py.image.load("assets\\sprites\\hole.png"))
 clock = py.time.Clock()
 
 #state initialisation

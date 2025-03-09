@@ -42,7 +42,7 @@ class Button:
     def handle_events(self, events:py.event.Event):
         for event in events:
             if event.type == py.MOUSEMOTION:
-                self.is_hovered = py.Rect.collidepoint(self.sprite_rect, event.pos)
+                self.is_hovered = py.Rect.collidepoint(self.border_rect, event.pos)
             elif event.type == py.MOUSEBUTTONDOWN and self.is_hovered:
                 if self.text == "Next":
                     print(self.action_arg)
