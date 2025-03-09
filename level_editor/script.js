@@ -119,24 +119,27 @@ function create_wrapper(type, index=null) {
     wrapper.classList.add('element');
 
     const element_name = document.createElement('label');
+    element_name.style.textAlign = "center";
     wrapper.appendChild(element_name);
     let name;
     
     if (type == "spawn") {
-        name = "player_pos";
+        name = "Spawn";
         const x = createNumberInput("pos x:", data.level_x.player_pos[0], (val) => {data.level_x.player_pos[0] = val; draw();}, width);
         const y = createNumberInput("pos y:", data.level_x.player_pos[1], (val) => {data.level_x.player_pos[1] = val; draw();}, height);
         wrapper.appendChild(x);
         wrapper.appendChild(y);
         wrapper.dataset.tags = "spawn";
+        element_name.style.color = "blue";
     }
     else if (type == "hole")  {
-        name = "hole_pos";
+        name = "Hole";
         const x = createNumberInput("pos x:", data.level_x.hole_pos[0], (val) => {data.level_x.hole_pos[0] = val; draw();}, width);
         const y = createNumberInput("pos y:", data.level_x.hole_pos[1], (val) => {data.level_x.hole_pos[1] = val; draw();}, height);
         wrapper.appendChild(x);
         wrapper.appendChild(y);
         wrapper.dataset.tags = "hole";
+        element_name.style.color = "red";
     }
     else if (type == "walls") {
         name = `wall ${index}`;
@@ -166,6 +169,7 @@ function create_wrapper(type, index=null) {
         wrapper.appendChild(end_y);
         wrapper.appendChild(width);
         wrapper.dataset.tags = "wall";
+        element_name.style.color = "white";
     }
     else if (type == "grounds") {
         name = `${data.level_x.grounds[index].type} ${index}`;
@@ -190,6 +194,7 @@ function create_wrapper(type, index=null) {
         wrapper.appendChild(width);
         wrapper.appendChild(height);
         wrapper.dataset.tags = "ground";
+        element_name.style.color = "yellow";
     }
 
     element_name.innerText = name;
@@ -248,7 +253,7 @@ function remove_element(){
 }
 
 function export_level() {
-    const textToCopy = JSON.stringify(data, null, 2); // Convertir l'objet en JSON formaté
+    const textToCopy = JSON.stringify(data, null, 0);
     navigator.clipboard.writeText(textToCopy)
         .then(() => {
             alert("Les données ont été copiées !");
@@ -257,4 +262,3 @@ function export_level() {
             console.error("Erreur lors de la copie : ", err);
         });
 }
-draw();
