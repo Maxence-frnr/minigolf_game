@@ -1,7 +1,8 @@
 let data = {level_x: {
     grounds: [],
     walls:[],
-    winds: []
+    winds: [],
+    blackholes: []
 }};
 
 const canvas = document.getElementById('canvas');
@@ -106,6 +107,22 @@ function draw() {
 
             }
         }
+        else if (k=="blackholes") {
+            for (let i=0; i < data.level_x[k].length; i ++) {
+                ctx.strokeStyle = "black";
+                const x = data.level_x[k][i].pos[0];
+                const y = data.level_x[k][i].pos[1];
+                const radius =  data.level_x[k][i].radius
+                ctx.lineWidth = 5;
+                ctx.beginPath();
+                ctx.arc(x, y, radius, 0, 2 * Math.PI);
+                ctx.stroke();
+
+                ctx.fillStyle = "black";
+                ctx.font = "18px Arial";
+                ctx.fillText(data.level_x[k][i].strength, x-15, y+8);
+            }
+        }
     }
     draw_scale();
 }
@@ -159,6 +176,11 @@ function show_data() {
     if (data.level_x.winds.length > 0) {
         data.level_x.winds.forEach((wind, index) => {
             element_container.appendChild(create_wrapper("wind", index));
+        })
+    }
+    if (data.level_x.blackholes.length > 0) {
+        data.level_x.blackholes.forEach((blackhole, index) => {
+            element_container.appendChild(create_wrapper("blackhole", index));
         })
     }
 }
@@ -299,6 +321,32 @@ function create_wrapper(type, index=null) {
         wrapper.dataset.tags = "wind";
         element_name.style.color = "green";
     }
+    else if (type == "blackhole") {
+        name = `blackhole ${index}`;
+        const x = createNumberInput("pos x:", data.level_x.blackholes[index].pos[0], (val) => {
+            data.level_x.blackholes[index].pos[0] = val;
+            draw();
+        }, 600);
+        const y = createNumberInput("pos y:", data.level_x.blackholes[index].pos[1], (val) => {
+            data.level_x.blackholes[index].pos[1] = val;
+            draw();
+        }, 1000);
+
+        const radius = createNumberInput("radius:", data.level_x.blackholes[index].radius, (val) => {
+            data.level_x.blackholes[index].radius = val;
+            draw();
+        }, 1000);
+        const strength = createNumberInput("strength:", data.level_x.blackholes[index].strength, (val) => {
+            data.level_x.blackholes[index].strength = val;
+            draw();
+        }, 800);
+        wrapper.appendChild(x);
+        wrapper.appendChild(y);
+        wrapper.appendChild(radius);
+        wrapper.appendChild(strength);
+        wrapper.dataset.tags = "blackhole";
+        element_name.style.color = "white";
+    }
 
     element_name.innerText = name;
     
@@ -337,6 +385,11 @@ function add_wind() {
     show_data();
     draw();
 }
+function add_blackhole() {
+    data.level_x.blackholes.push({pos: [300, 500], radius: 50, strength: 200});
+    show_data();
+    draw();
+}
 function remove_element(){
     const parent = this.parentElement;
     const tags = parent.dataset.tags;
@@ -357,6 +410,10 @@ function remove_element(){
     else if (tags == "wind") {
         index = parent.firstChild.innerText.split(" ")[1];
         data.level_x.winds.splice(index, 1)
+    }
+    else if (tags == "blackhole") {
+        index = parent.firstChild.innerText.split(" ")[1];
+        data.level_x.blackholes.splice(index, 1)
     }
     parent.remove();
     show_data();

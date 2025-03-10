@@ -112,7 +112,10 @@
     "level_13": {
         "player_pos": [300, 600],
         "hole_pos":   [300, 200],
-        "walls": []
+        "walls": [],
+        "blackholes": [
+            {"pos": [100, 350], "radius": 300, "strength": 300}
+        ]
     },
     "level_14": {
         "player_pos": [300, 600],

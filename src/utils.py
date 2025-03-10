@@ -135,7 +135,7 @@ class Wind():
     
     def draw(self, screen):
         screen.blit(self.sprite, self.sprite.get_rect(center = self.center))
-        py.draw.polygon(screen, (255, 0, 0), self.corners, 2)
+        #py.draw.polygon(screen, (255, 0, 0), self.corners, 2)
         
     def detect_collision(self, player_pos, player_radius):
         return self.sat_collision(player_pos, player_radius)
@@ -177,3 +177,30 @@ class Wind():
 
         # Si toutes les projections se chevauchent, il y a une collision
         return True
+    
+class Blackhole:
+    def __init__(self, pos, radius, strength, sprite):
+        self.pos = Vector2(pos)
+        self.radius = radius
+        self.strength = strength
+        self.sprite = sprite
+    
+    def draw(self, screen):
+        py.draw.circle(screen, (10, 10, 15), self.pos, self.radius, 5)
+    
+    def detect_collision(self, player_pos:Vector2, player_radius):
+        d = self.pos.distance_to(player_pos)
+        return d < self.radius + player_radius
+
+    
+    def handle_collision(self, player_pos:Vector2, player_v:Vector2, dt):
+        r = self.pos - player_pos
+        d = r.length()
+        if d == 0:
+            return player_v
+        
+        norme_f = 500* self.strength / (d)
+        f = r.normalize() * norme_f
+        print("r: ", r)
+        print("f", f)
+        return player_v + f * dt

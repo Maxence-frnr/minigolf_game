@@ -6,13 +6,14 @@ from utils import Button
 from utils import Wall
 from utils import Ground
 from utils import Wind
+from utils import Blackhole
 from player import Player
 from hole import Hole
 
 class Game(BaseState):
     def __init__(self, state_manager, assets_manager, level_manager, sounds_manager):
         #DEBUG
-        self.show_ball_speed = False
+        self.show_ball_speed = True
         self.show_ball_pos = False
 
         self.state_manager = state_manager
@@ -43,6 +44,7 @@ class Game(BaseState):
         self.is_building_strength = False
         
         self.strength_arrow_angle = 0
+
 
         
         #UI
@@ -79,6 +81,10 @@ class Game(BaseState):
         if "winds" in level:
             for wind in level["winds"]:
                 self.winds.append(Wind(py.Rect(wind["rect"]), wind["direction"], wind["strength"], self.wind_sprite))
+        self.blackholes = []
+        if "blackholes" in level:
+            for blackhole in level["blackholes"]:
+                self.blackholes.append(Blackhole(blackhole["pos"], blackhole["radius"], blackhole["strength"], None))
         self.level_to_load = "level_"+self.level_to_load.split("_")[1]
         self.stroke = 0
         self.in_game = True
@@ -118,6 +124,8 @@ class Game(BaseState):
     def draw(self, screen):
         #screen.fill((50, 50, 50))
         self.draw_background(screen)
+        for blackhole in self.blackholes:
+            blackhole.draw(screen)
         for ground in self.grounds:
             ground.draw(screen)
         self.hole.draw(screen)
@@ -131,6 +139,9 @@ class Game(BaseState):
             
         for wind in self.winds:
             wind.draw(screen)
+            
+        for blackhole in self.blackholes:
+            blackhole.draw(screen)
         
         #UI
         self.back_to_menu_button.draw(screen)
@@ -187,6 +198,7 @@ class Game(BaseState):
             py.mixer.Sound(self.swing_sound).play()
         is_on_special_ground = False
         is_in_wind = False
+        is_in_blackhole = False
         if self.player.v.length() > 0:
             for ground in self.grounds:
                 if ground.detect_collision(self.player.pos):
@@ -197,14 +209,24 @@ class Game(BaseState):
                 if wind.detect_collision(self.player.pos, self.player.radius):
                     is_in_wind = True
                     self.player.v = wind.handle_collision(self.player.v, dt)
+            
+            for blackhole in self.blackholes:
+                if blackhole.detect_collision(self.player.pos, self.player.radius):
+                    is_in_blackhole = True
+                    self.player.v = blackhole.handle_collision(self.player.pos, self.player.v, dt)
 
         
             if self.player.v.length() > 0 and not is_on_special_ground:
                 friction_v = self.player.v.normalize() * -self.friction * dt
                 self.player.v += friction_v 
+                
+            
 
-        if self.player.v.length() < 1 and not is_in_wind:
+        if self.player.v.length() < 1 and not is_in_wind and not is_in_blackhole:
             self.player.v = Vector2(0, 0)
+        
+        if self.player.v.length() > 800:
+            self.player.v = self.player.v.normalize() * 800
 
         self.strength = Vector2(0, 0)
         
