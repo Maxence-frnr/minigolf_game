@@ -354,6 +354,10 @@ function remove_element(){
         index = parent.firstChild.innerText.split(" ")[1];
         data.level_x.grounds.splice(index, 1);
     }
+    else if (tags == "wind") {
+        index = parent.firstChild.innerText.split(" ")[1];
+        data.level_x.winds.splice(index, 1)
+    }
     parent.remove();
     show_data();
     draw();

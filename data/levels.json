@@ -117,11 +117,14 @@
     "level_14": {
         "player_pos": [300, 600],
         "hole_pos":   [300, 200],
-        "walls": []
+        "walls": [],
+        "winds": [
+            {"rect":[300, 500, 400, 200], "direction": 45, "strength": 500}
+        ]
     },
-    "level_15": {
-        "player_pos": [300, 600],
-        "hole_pos":   [300, 200],
-        "walls": []
-    }
-}
+    "level_15":{
+        "walls":[{"start_pos":[100,500],"end_pos":[500,500],"width":120,"color":[20,20,20]}],
+        "grounds":[{"rect":[275,475,50,50],"type":"sand"}],
+        "player_pos":[300,750],
+        "hole_pos":[300,250]}}
+

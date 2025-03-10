@@ -24,6 +24,7 @@ class Game(BaseState):
         
         self.player_sprite = assets_manager.get("ball")
         self.hole_sprite = assets_manager.get("hole")
+        self.wind_sprite = assets_manager.get("wind_arrows")
         
         self.swing_sound = sounds_manager.get("swing")
         self.bounce_sound = sounds_manager.get("bounce")
@@ -42,8 +43,6 @@ class Game(BaseState):
         self.is_building_strength = False
         
         self.strength_arrow_angle = 0
-        
-        self.wind = Wind(py.Rect(300, 300, 200, 500), 30, 300, assets_manager.get("wind_arrows"))
 
         
         #UI
@@ -76,6 +75,10 @@ class Game(BaseState):
         if "grounds" in level:
             for ground in level["grounds"]:
                 self.grounds.append(Ground(py.Rect(ground["rect"]), ground["type"]))
+        self.winds = []
+        if "winds" in level:
+            for wind in level["winds"]:
+                self.winds.append(Wind(py.Rect(wind["rect"]), wind["direction"], wind["strength"], self.wind_sprite))
         self.level_to_load = "level_"+self.level_to_load.split("_")[1]
         self.stroke = 0
         self.in_game = True
@@ -119,13 +122,15 @@ class Game(BaseState):
             ground.draw(screen)
         self.hole.draw(screen)
         self.player.draw(screen)
-        self.wind.draw(screen)
         
         stroke_surface = self.font.render(f"Stroke {self.stroke}", True, (255, 255, 255))
         screen.blit(stroke_surface, py.Rect(self.WIDTH//2 - stroke_surface.get_width()//2, 20, 30, 20))
 
         for wall in self.walls:
             wall.draw(screen)
+            
+        for wind in self.winds:
+            wind.draw(screen)
         
         #UI
         self.back_to_menu_button.draw(screen)
@@ -188,9 +193,10 @@ class Game(BaseState):
                     is_on_special_ground = True
                     self.player.v = ground.handle_collision(self.player.v, dt)
             
-            if self.wind.detect_collision(self.player.pos, self.player.radius):
-                is_in_wind = True
-                self.player.v = self.wind.handle_collision(self.player.v, dt)
+            for wind in self.winds:
+                if wind.detect_collision(self.player.pos, self.player.radius):
+                    is_in_wind = True
+                    self.player.v = wind.handle_collision(self.player.v, dt)
 
         
             if self.player.v.length() > 0 and not is_on_special_ground:

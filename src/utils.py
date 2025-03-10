@@ -107,10 +107,10 @@ class Ground():
         return player_velocity
     
 class Wind():
-    def __init__(self, rect:py.Rect, direction:int, force:int, sprite):
+    def __init__(self, rect:py.Rect, direction:int, strength:int, sprite):
         self.direction = Vector2(round(math.cos(math.radians(direction)), 2), 
                                  -round(math.sin(math.radians(direction)), 2))
-        self.force = self.direction * force
+        self.strength = self.direction * strength
         self.angle = direction
         
         self.sprite = py.transform.scale(sprite, (rect[2], rect[3]))
@@ -141,7 +141,7 @@ class Wind():
         return self.sat_collision(player_pos, player_radius)
     
     def handle_collision(self, player_velocity:Vector2, dt):
-        return player_velocity + self.force * dt
+        return player_velocity + self.strength * dt
     
     #TODO: relire le code
     def project_polygon(self, axis, points):
