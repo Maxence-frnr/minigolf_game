@@ -7,6 +7,8 @@ from utils import Wall
 from utils import Ground
 from utils import Wind
 from utils import Blackhole
+from utils import Portal_entry
+from utils import Portal_exit
 from player import Player
 from hole import Hole
 
@@ -44,6 +46,9 @@ class Game(BaseState):
         self.is_building_strength = False
         
         self.strength_arrow_angle = 0
+        
+        self.portal_exit = Portal_exit(Vector2(450, 600))
+        self.portal_entry = Portal_entry(Vector2(150, 600), self.portal_exit.pos)
 
 
         
@@ -143,6 +148,9 @@ class Game(BaseState):
         for blackhole in self.blackholes:
             blackhole.draw(screen)
         
+        self.portal_entry.draw(screen)
+        self.portal_exit.draw(screen)
+        
         #UI
         self.back_to_menu_button.draw(screen)
 
@@ -214,6 +222,9 @@ class Game(BaseState):
                 if blackhole.detect_collision(self.player.pos, self.player.radius):
                     is_in_blackhole = True
                     self.player.v = blackhole.handle_collision(self.player.pos, self.player.v, dt)
+                    
+            if self.portal_entry.detect_collision(self.player.pos, self.player.radius):
+                self.player.pos = self.portal_entry.handle_collision()
 
         
             if self.player.v.length() > 0 and not is_on_special_ground:

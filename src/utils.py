@@ -204,3 +204,30 @@ class Blackhole:
         print("r: ", r)
         print("f", f)
         return player_v + f * dt
+    
+class Portal_entry:
+    def __init__(self, pos:Vector2, exit_pos:Vector2, sprite:py.image=None):
+        self.pos = pos
+        self.radius = 20
+        self.exit_pos = exit_pos
+        self.sprite = sprite
+    
+    def draw(self, screen):
+        py.draw.circle(screen, (0, 150, 210), self.pos, self.radius, 5)
+        
+    def detect_collision(self, player_pos:Vector2, player_radius:float):
+        d = self.pos.distance_to(player_pos)
+        return d < self.radius + player_radius
+    
+    def handle_collision(self):
+        return self.exit_pos
+    
+class Portal_exit:
+    def __init__(self, pos:Vector2, sprite:py.image=None):
+        self.pos = pos
+        self.sprite = sprite
+        self.radius = 20
+    
+    def draw(self, screen):
+        py.draw.circle(screen, (230, 130, 10), self.pos, self.radius, 5)
+        

@@ -2,7 +2,8 @@ let data = {level_x: {
     grounds: [],
     walls:[],
     winds: [],
-    blackholes: []
+    blackholes: [],
+    portals: []
 }};
 
 const canvas = document.getElementById('canvas');
@@ -123,6 +124,27 @@ function draw() {
                 ctx.fillText(data.level_x[k][i].strength, x-15, y+8);
             }
         }
+        else if (k == "portals") {
+            for (let i=0; i < data.level_x[k].length; i ++) {
+                const x1 = data.level_x[k][i].entry_pos[0];
+                const y1 = data.level_x[k][i].entry_pos[1];
+                const x2 = data.level_x[k][i].exit_pos[0];
+                const y2 = data.level_x[k][i].exit_pos[1];
+                const radius = 20;
+                ctx.lineWidth = 5;
+
+                ctx.strokeStyle = "rgb(0 150 210)";
+                ctx.beginPath();
+                ctx.arc(x1, y1, radius, 0, 2 * Math.PI);
+                ctx.stroke();
+
+                ctx.strokeStyle = "rgb(230 130 10)";
+                ctx.beginPath();
+                ctx.arc(x2, y2, radius, 0, 2*Math.PI);
+                ctx.stroke();
+                console.log(x1, y1, x2, y2)
+            }
+        }
     }
     draw_scale();
 }
@@ -181,6 +203,11 @@ function show_data() {
     if (data.level_x.blackholes.length > 0) {
         data.level_x.blackholes.forEach((blackhole, index) => {
             element_container.appendChild(create_wrapper("blackhole", index));
+        })
+    }
+    if (data.level_x.portals.length > 0) {
+        data.level_x.portals.forEach((portals, index) => {
+            element_container.appendChild(create_wrapper("portals", index));
         })
     }
 }
@@ -347,6 +374,33 @@ function create_wrapper(type, index=null) {
         wrapper.dataset.tags = "blackhole";
         element_name.style.color = "white";
     }
+    else if (type == "portals") {
+        name = `portals ${index}`;
+        const x1 = createNumberInput("x1: ", data.level_x.portals[index].entry_pos[0], (val) => {
+            data.level_x.portals[index].entry_pos[0] = val;
+            draw();
+        }, 600);
+        const y1 = createNumberInput("y1:", data.level_x.portals[index].entry_pos[1], (val) => {
+            data.level_x.portals[index].entry_pos[1] = val;
+            draw();
+        }, 1000);
+
+        const x2 = createNumberInput("x2: ", data.level_x.portals[index].exit_pos[0], (val) => {
+            data.level_x.portals[index].exit_pos[0] = val;
+            draw();
+        }, 600);
+        const y2 = createNumberInput("y2:", data.level_x.portals[index].exit_pos[1], (val) => {
+            data.level_x.portals[index].exit_pos[1] = val;
+            draw();
+        }, 1000);
+
+        wrapper.appendChild(x1);
+        wrapper.appendChild(y1);
+        wrapper.appendChild(x2);
+        wrapper.appendChild(y2);
+        wrapper.dataset.tags = "portals";
+        element_name.style.color = "white";
+    }
 
     element_name.innerText = name;
     
@@ -390,6 +444,11 @@ function add_blackhole() {
     show_data();
     draw();
 }
+function add_portals() {
+    data.level_x.portals.push({entry_pos: [150, 500], exit_pos: [450, 500]})
+    show_data();
+    draw();
+}
 function remove_element(){
     const parent = this.parentElement;
     const tags = parent.dataset.tags;
@@ -414,6 +473,10 @@ function remove_element(){
     else if (tags == "blackhole") {
         index = parent.firstChild.innerText.split(" ")[1];
         data.level_x.blackholes.splice(index, 1)
+    }
+    else if (tags == "portals") {
+        index = parent.firstChild.innerText.split(" ")[1];
+        data.level_x.portals.splice(index, 1)
     }
     parent.remove();
     show_data();
