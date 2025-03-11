@@ -35,8 +35,8 @@ home = assets_manager.load("home", "assets\\sprites\\home.png")
 wind_arrows = assets_manager.load("wind_arrows", "assets\\sprites\\wind_arrows_edited.png")
 
 level_manager = LevelManager('data\\levels.json')#automaticaly load all levels from the json
-save_manager = SaveManager('data\\data.json')#load all saved data
-print(save_manager.get_data("level_unlocked"))
+save_manager = SaveManager('data\\data.json')#load all saved data in data.json
+
 #sound initialisation
 swing_sound = sounds_manager.load("swing", "assets\\sounds\\swing.mp3")
 bounce_sound = sounds_manager.load("bounce", "assets\\sounds\\bounce.mp3")
@@ -45,7 +45,7 @@ click_sound = sounds_manager.load("click", "assets\\sounds\\click.mp3")
 
 menu_state = MenuState(state_manager, sounds_manager)
 level_selection_menu_state = LevelSelectionMenu(state_manager, assets_manager, sounds_manager)
-game_state = Game(state_manager, assets_manager, level_manager, sounds_manager)
+game_state = Game(state_manager, assets_manager, level_manager, save_manager, sounds_manager)
 state_manager.add_state("menu", menu_state)
 state_manager.add_state("level_selection_menu", level_selection_menu_state)
 state_manager.add_state("game", game_state)

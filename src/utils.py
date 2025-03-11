@@ -44,8 +44,6 @@ class Button:
             if event.type == py.MOUSEMOTION:
                 self.is_hovered = py.Rect.collidepoint(self.border_rect, event.pos)
             elif event.type == py.MOUSEBUTTONDOWN and self.is_hovered:
-                if self.text == "Next":
-                    print(self.action_arg)
                 self.action(self.action_arg)
                 if self.sounds_manager:
                     py.mixer.Sound(self.sound).play()
@@ -201,8 +199,6 @@ class Blackhole:
         
         norme_f = 500* self.strength / (d)
         f = r.normalize() * norme_f
-        print("r: ", r)
-        print("f", f)
         return player_v + f * dt
     
 class Portal_entry:

@@ -13,7 +13,7 @@ from player import Player
 from hole import Hole
 
 class Game(BaseState):
-    def __init__(self, state_manager, assets_manager, level_manager, sounds_manager):
+    def __init__(self, state_manager, assets_manager, level_manager, save_manager, sounds_manager):
         #DEBUG
         self.show_ball_speed = True
         self.show_ball_pos = False
@@ -21,10 +21,10 @@ class Game(BaseState):
         self.state_manager = state_manager
         self.WIDTH, self.HEIGHT = py.display.get_window_size()
         self.level_manager = level_manager
+        self.save_manager = save_manager
         
         self.font = py.font.Font(None, 40)
 
-        
         self.player_sprite = assets_manager.get("ball")
         self.hole_sprite = assets_manager.get("hole")
         self.wind_sprite = assets_manager.get("wind_arrows")
@@ -47,10 +47,6 @@ class Game(BaseState):
         
         self.strength_arrow_angle = 0
         
-        self.portal_exit = Portal_exit(Vector2(450, 600))
-        self.portal_entry = Portal_entry(Vector2(150, 600), self.portal_exit.pos)
-
-
         
         #UI
         self.back_to_menu_button_sprite = assets_manager.get("back_arrow")
@@ -60,7 +56,8 @@ class Game(BaseState):
         self.next_arrow_sprite = assets_manager.get("next_arrow")
         
         self.back_to_menu_button = Button(text="", rect=py.Rect(30, 30, 30, 30), font_size=10, color=(255, 255, 255), hover_color=(255, 0, 0), action=self.back_to_menu, sprite=self.back_to_menu_button_sprite, sound="click", sounds_manager=sounds_manager)
-        self.buttons = [self.back_to_menu_button]
+        self.reset_button = Button(text="", rect=py.Rect(570, 30, 150, 50), font_size=10, color=(255, 255, 255), hover_color=(200, 200, 200), action=self.reset, sound="click", sounds_manager=sounds_manager, border=False, sprite=self.undo_arrow_sprite)
+        self.buttons = [self.back_to_menu_button, self.reset_button]
         
         
         #End_level_menu
@@ -72,24 +69,37 @@ class Game(BaseState):
     def enter(self, **kwargs):
         self.level_to_load = kwargs["level"]
         level = self.level_manager.get_level(self.level_to_load)
-        self.player = Player(level["player_pos"], 8, self.player_sprite)
-        self.hole = Hole(level["hole_pos"], self.hole_sprite)
+        
+        self.player = Player(Vector2(level["player_pos"]), 8, self.player_sprite)
+        self.hole = Hole(Vector2(level["hole_pos"]), self.hole_sprite)
         self.walls = []
+        self.grounds = []
+        self.winds = []
+        self.blackholes = []
+        self.portals_entry = []
+        self.portals_exit = []
+        
         if "walls" in level:
             for wall in level["walls"]:
                 self.walls.append(Wall((wall["start_pos"]), (wall["end_pos"]), wall["width"], (wall["color"])))
-        self.grounds = []
+        
         if "grounds" in level:
             for ground in level["grounds"]:
                 self.grounds.append(Ground(py.Rect(ground["rect"]), ground["type"]))
-        self.winds = []
+        
         if "winds" in level:
             for wind in level["winds"]:
                 self.winds.append(Wind(py.Rect(wind["rect"]), wind["direction"], wind["strength"], self.wind_sprite))
-        self.blackholes = []
+        
         if "blackholes" in level:
             for blackhole in level["blackholes"]:
                 self.blackholes.append(Blackhole(blackhole["pos"], blackhole["radius"], blackhole["strength"], None))
+        
+        if "portals" in level:
+            for portals in level["portals"]:
+                self.portals_entry.append(Portal_entry(Vector2(portals["entry_pos"]), Vector2(portals["exit_pos"])))
+                self.portals_exit.append(Portal_exit(Vector2(portals["exit_pos"])))
+                
         self.level_to_load = "level_"+self.level_to_load.split("_")[1]
         self.stroke = 0
         self.in_game = True
@@ -97,11 +107,6 @@ class Game(BaseState):
     def next_level(self, *args):
         self.level_to_load = "level_" + str(int(self.level_to_load.split("_")[1]) + 1)
         self.enter(level=self.level_to_load)
-
-    def exit(self):
-        self.player.v = Vector2(0, 0)
-        self.player.pos = Vector2((self.WIDTH//2, self.HEIGHT//2 + 100))
-        self.stroke = 0
         
     def reset(self, *args):
         self.enter(level=self.level_to_load)
@@ -111,21 +116,22 @@ class Game(BaseState):
         
     def update(self, dt)->None:
         self.update_player_pos(dt)
-        if self.check_win(): self.win() #FIXME: ne pas appeler check_win() a chaque frame
-    
-    def check_win(self):
-        if (self.player.pos - self.hole.pos).length() < 10:          
-            return True
 
     def win(self):
         py.mixer.Sound(self.hole_sound).play()
-        print("WIN")
+        self.save_progression()
         self.in_game = False
         self.player.v = Vector2(0, 0)
         self.player.pos = Vector2((1100, 1000))
         #self.back_to_menu()
     
-
+    def save_progression(self):
+        if str(self.level_to_load) in self.save_manager.data["highscores"] and self.stroke < self.save_manager.data["highscores"][str(self.level_to_load)]:
+            self.save_manager.data["highscores"][str(self.level_to_load)] = self.stroke
+        else:
+            self.save_manager.data["highscores"][str(self.level_to_load)] = self.stroke
+        self.save_manager.save_data()
+    
     def draw(self, screen):
         #screen.fill((50, 50, 50))
         self.draw_background(screen)
@@ -136,23 +142,28 @@ class Game(BaseState):
         self.hole.draw(screen)
         self.player.draw(screen)
         
-        stroke_surface = self.font.render(f"Stroke {self.stroke}", True, (255, 255, 255))
-        screen.blit(stroke_surface, py.Rect(self.WIDTH//2 - stroke_surface.get_width()//2, 20, 30, 20))
+        for portal in self.portals_entry:
+            portal.draw(screen)
+        for portal in self.portals_exit:
+            portal.draw(screen)
+        
+        for blackhole in self.blackholes:
+            blackhole.draw(screen)
 
         for wall in self.walls:
             wall.draw(screen)
             
         for wind in self.winds:
             wind.draw(screen)
-            
-        for blackhole in self.blackholes:
-            blackhole.draw(screen)
+                  
+        stroke_surface = self.font.render(f"Stroke {self.stroke}", True, (255, 255, 255))
+        screen.blit(stroke_surface, py.Rect(self.WIDTH//2 - stroke_surface.get_width()//2, 20, 30, 20))
         
-        self.portal_entry.draw(screen)
-        self.portal_exit.draw(screen)
         
         #UI
-        self.back_to_menu_button.draw(screen)
+        if self.in_game:
+            for button in self.buttons:
+                button.draw(screen)
 
         if self.builded_strength != Vector2(0, 0):
             self.update_strength_bar(screen)
@@ -213,6 +224,9 @@ class Game(BaseState):
                     is_on_special_ground = True
                     self.player.v = ground.handle_collision(self.player.v, dt)
             
+            if self.hole.detect_collision(self.player.pos, self.player.radius):
+                self.win()
+            
             for wind in self.winds:
                 if wind.detect_collision(self.player.pos, self.player.radius):
                     is_in_wind = True
@@ -223,8 +237,9 @@ class Game(BaseState):
                     is_in_blackhole = True
                     self.player.v = blackhole.handle_collision(self.player.pos, self.player.v, dt)
                     
-            if self.portal_entry.detect_collision(self.player.pos, self.player.radius):
-                self.player.pos = self.portal_entry.handle_collision()
+            for portal in self.portals_entry:    
+                if portal.detect_collision(self.player.pos, self.player.radius):
+                    self.player.pos = portal.handle_collision()
 
         
             if self.player.v.length() > 0 and not is_on_special_ground:
