@@ -70,6 +70,7 @@ class Game(BaseState):
         self.level_to_load = kwargs["level"]
         level = self.level_manager.get_level(self.level_to_load)
         
+        
         self.player = Player(Vector2(level["player_pos"]), 8, self.player_sprite)
         self.hole = Hole(Vector2(level["hole_pos"]), self.hole_sprite)
         self.walls = []
@@ -101,6 +102,11 @@ class Game(BaseState):
                 self.portals_exit.append(Portal_exit(Vector2(portals["exit_pos"])))
                 
         self.level_to_load = "level_"+self.level_to_load.split("_")[1]
+        if "attempts" in self.save_manager.data["stats"][self.level_to_load]:
+            self.save_manager.data["stats"][self.level_to_load]["attempts"] += 1
+        else:
+            self.save_manager.data["stats"][self.level_to_load] = {}
+            self.save_manager.data["stats"][self.level_to_load]["attempts"] = 1
         self.stroke = 0
         self.in_game = True
             
@@ -126,10 +132,12 @@ class Game(BaseState):
         #self.back_to_menu()
     
     def save_progression(self):
-        if str(self.level_to_load) in self.save_manager.data["highscores"] and self.stroke < self.save_manager.data["highscores"][str(self.level_to_load)]:
-            self.save_manager.data["highscores"][str(self.level_to_load)] = self.stroke
+        if "highscore" in self.save_manager.data["stats"][str(self.level_to_load)] and self.stroke < self.save_manager.data["stats"][str(self.level_to_load)]["highscore"]:
+            self.save_manager.data["stats"][str(self.level_to_load)]["highscore"] = self.stroke
         else:
-            self.save_manager.data["highscores"][str(self.level_to_load)] = self.stroke
+            self.save_manager.data["stats"][str(self.level_to_load)]["highscore"] = self.stroke
+        if int(self.level_to_load.split("_")[1])+1 > self.save_manager.data["level_unlocked"]:
+            self.save_manager.data["level_unlocked"] = int(self.level_to_load.split("_")[1])+1
         self.save_manager.save_data()
     
     def draw(self, screen):

@@ -82,7 +82,6 @@
         "walls": [
             {"start_pos": [200, 400], "end_pos": [400, 400], "width": 25, "color": [50, 50 ,50]},
             {"start_pos": [400, 400], "end_pos": [400, 600], "width": 25, "color": [50, 50 ,50]},
-            {"start_pos": [200, 600], "end_pos": [400, 600], "width": 25, "color": [50, 50 ,50]},
             {"start_pos": [200, 400], "end_pos": [200, 600], "width": 25, "color": [50, 50 ,50]}
         ],
         "grounds": [
@@ -105,9 +104,10 @@
         "walls": []
     },
     "level_12": {
-        "player_pos": [300, 600],
+        "player_pos": [300, 700],
         "hole_pos":   [300, 200],
-        "walls": []
+        "walls": [{"start_pos":[75, 475],"end_pos":[525,475],"width":19,"color":[30,30,35]}],
+        "portals": [{"entry_pos": [170, 530], "exit_pos": [470, 420]}]
     },
     "level_13": {
         "player_pos": [300, 600],

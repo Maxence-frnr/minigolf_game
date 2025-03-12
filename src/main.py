@@ -44,7 +44,7 @@ hole_sound = sounds_manager.load("hole", "assets\\sounds\\hole.mp3")
 click_sound = sounds_manager.load("click", "assets\\sounds\\click.mp3")
 
 menu_state = MenuState(state_manager, sounds_manager)
-level_selection_menu_state = LevelSelectionMenu(state_manager, assets_manager, sounds_manager)
+level_selection_menu_state = LevelSelectionMenu(state_manager, assets_manager, sounds_manager, save_manager)
 game_state = Game(state_manager, assets_manager, level_manager, save_manager, sounds_manager)
 state_manager.add_state("menu", menu_state)
 state_manager.add_state("level_selection_menu", level_selection_menu_state)

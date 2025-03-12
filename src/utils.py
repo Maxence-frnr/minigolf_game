@@ -48,6 +48,64 @@ class Button:
                 if self.sounds_manager:
                     py.mixer.Sound(self.sound).play()
     
+class Div:
+    def __init__(self, rect:py.Rect, border:bool=False, color=(255, 255, 255), hover_color=None, border_radius:int=3, border_width:int = 3):
+        self.rect = rect
+        self.rect.center = (rect[0], rect[1])
+        self.childs = {}
+        self.border = border
+        self.color = color
+        self.hover_color = color
+        self.border_radius = border_radius
+        self.border_width = border_width
+        
+    def draw(self, screen):
+        py.draw.rect(screen, self.color, self.rect, self.border_width, self.border_radius)
+        for child in self.childs:
+            child.draw(screen)
+        
+    def add_child(self, child):
+        pass
+    
+    def remove_child(self, name=None, index=None):
+        pass
+    
+    def remove_all_child(self):
+        pass
+
+class Label:
+    def __init__(self, text:str="", rect:py.Rect=py.Rect(0, 0, 10, 10), font_size:int=24, color:py.Color=(255, 255, 255), sprite=None, border:bool=False, border_width:int=3, border_radius:int=3):
+        self.text = text
+        self.rect = rect
+        self.font_size = font_size
+        self.color = color
+
+        self.sprite = sprite
+        self.font = py.font.Font(None, font_size)
+        self.border = border
+        self.border_width = border_width
+        self.border_radius = border_radius
+        
+
+        self.border_rect = rect.copy()
+        self.sprite_rect = rect.copy()
+        self.border_rect.center = (rect[0], rect[1]) #Centre la bordure autour de pos_x/ pos_y
+        if self.sprite:
+            self.sprite_rect[0] -= self.sprite.get_rect()[2]//2 #centre le rectangle du sprite autour de pos_x/ pos_y
+            self.sprite_rect[1] -= self.sprite.get_rect()[3]//2  
+        
+    def draw(self, screen:py.Surface):
+        color = self.color
+        if self.border:
+            py.draw.rect(screen, color, self.border_rect, 3, 3)
+        if self.sprite: screen.blit(self.sprite, self.sprite_rect)
+        text = self.font.render(self.text, True, color)
+        text_rect = text.get_rect(center= (self.rect[0], self.rect[1]))
+        screen.blit(text, text_rect)
+    
+    def handle_events(self, events:py.event.Event):
+        pass
+
 class Wall():
     def __init__(self, start:tuple, end:tuple, width:int, color:tuple):
         self.start = start
