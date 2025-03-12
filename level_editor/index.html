@@ -22,12 +22,21 @@
                 <button id="add" class="button" style="background-color: rgb(102, 30, 30);">bumper</button>
                 <button id="add" class="button" style="background-color: rgb(102, 30, 30);"></button>
             </div>
-            <h2>Level elements :</h2>
+            <h2 id="loaded_level_label">Level 1:</h2>
             <div class="element-container"></div>
         </div>
         <canvas id="canvas" width="600" height="1000"></canvas>
-        <button id="export-btn" class="button" onclick="export_level()">Export to Clipboard</button>
-        <div class="credit">Made by Maxence F.</div>
+        <div class="right-panel">
+            <button id="load_button" class="button" onclick="load_database()">Load Database</button>
+            <div class="change-level">
+                <button id="previous_level_button" class="button" onclick="load_previous_level()"><</button>
+                <button id="next_level_button" class="button" onclick="load_next_level()">></button>
+            </div>
+
+            <button id="export-btn" class="button" onclick="export_level()">Export to Clipboard</button>
+            <div class="credit">Made by Maxence F.</div>
+        </div>
+        
     </div>
 </body>
 <script src="script.js"></script>

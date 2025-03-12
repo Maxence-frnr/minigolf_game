@@ -7,7 +7,11 @@
             {"start_pos": [109, 940], "end_pos": [109, 70], "width": 19, "color": [200, 200 ,200]},
             {"start_pos": [100, 60], "end_pos": [500, 60], "width": 19, "color": [200, 200 ,200]},
             {"start_pos": [491, 70], "end_pos": [491, 940], "width": 19, "color": [200, 200  ,200]}
-        ]
+        ],
+        "grounds": [],
+        "winds" : [],
+        "blackholes": [],
+        "portals": []
     },
     "level_2": {
         "player_pos": [300, 600],
@@ -19,7 +23,11 @@
             {"start_pos": [491, 70], "end_pos": [491, 940], "width": 10, "color": [50, 50 ,50]},
 
             {"start_pos": [270, 500], "end_pos": [330, 500], "width": 39, "color": [130, 255 ,155]}
-        ]
+        ],
+        "grounds": [],
+        "winds" : [],
+        "blackholes": [],
+        "portals": []
         
     },
     "level_3": {
@@ -29,7 +37,11 @@
             {"start_pos": [180, 400], "end_pos": [180, 550], "width": 19, "color": [50, 50 ,50]},
             {"start_pos": [300, 400], "end_pos": [300, 550], "width": 19, "color": [50, 50 ,50]},
             {"start_pos": [420, 400], "end_pos": [420, 550], "width": 19, "color": [50, 50 ,50]}   
-        ]
+        ],
+        "grounds": [],
+        "winds" : [],
+        "blackholes": [],
+        "portals": []
     },
     "level_4": {
         "player_pos": [300, 750],
@@ -50,7 +62,11 @@
             {"start_pos": [225, 500], "end_pos": [225, 650], "width": 14, "color": [50, 50 ,50]},
             {"start_pos": [375, 500], "end_pos": [375, 650], "width": 14, "color": [50, 50 ,50]}
 
-        ]
+        ],
+        "grounds": [],
+        "winds" : [],
+        "blackholes": [],
+        "portals": []
     },
     "level_5": {
         "player_pos": [300, 600],
@@ -58,7 +74,10 @@
         "walls": [],
         "grounds": [
             {"rect": [100, 400, 400, 300], "type": "sand"}
-        ]
+        ],
+        "winds" : [],
+        "blackholes": [],
+        "portals": []
     },
     "level_6": {
         "player_pos": [300, 600],
@@ -66,15 +85,19 @@
         "walls": [],
         "grounds": [
             {"rect": [100, 400, 400, 300], "type": "ice"}
-        ]
+        ],
+        "winds" : [],
+        "blackholes": [],
+        "portals": []
     },
     "level_7": {
         "player_pos": [300, 600],
         "hole_pos":   [300, 200],
         "walls": [],
-        "grounds": [
-            {"rect": [100, 400, 400, 300], "type": "boost"}
-        ]
+        "grounds": [],
+        "winds" : [],
+        "blackholes": [],
+        "portals": []
     },
     "level_8": {
         "player_pos": [300, 500],
@@ -84,50 +107,77 @@
             {"start_pos": [400, 400], "end_pos": [400, 600], "width": 25, "color": [50, 50 ,50]},
             {"start_pos": [200, 400], "end_pos": [200, 600], "width": 25, "color": [50, 50 ,50]}
         ],
-        "grounds": [
-            {"rect": [0, 0, 600, 1000], "type": "boost"}
-        ]
+        "grounds": [],
+        "winds" : [],
+        "blackholes": [],
+        "portals": []
     },
     "level_9": {
         "player_pos": [300, 600],
         "hole_pos":   [300, 200],
-        "walls": []
+        "walls": [],
+        "grounds": [],
+        "winds" : [],
+        "blackholes": [],
+        "portals": []
     },
     "level_10": {
         "player_pos": [300, 600],
         "hole_pos":   [300, 200],
-        "walls": []
+        "walls": [],
+        "grounds": [],
+        "winds" : [],
+        "blackholes": [],
+        "portals": []
     },
     "level_11": {
         "player_pos": [300, 600],
         "hole_pos":   [300, 200],
-        "walls": []
+        "walls": [],
+        "grounds": [],
+        "winds" : [],
+        "blackholes": [],
+        "portals": []
     },
     "level_12": {
         "player_pos": [300, 700],
         "hole_pos":   [300, 200],
         "walls": [{"start_pos":[75, 475],"end_pos":[525,475],"width":19,"color":[30,30,35]}],
-        "portals": [{"entry_pos": [170, 530], "exit_pos": [470, 420]}]
+        "portals": [{"entry_pos": [170, 530], "exit_pos": [470, 420]}],
+        "grounds": [],
+        "winds" : [],
+        "blackholes": []
+
     },
     "level_13": {
         "player_pos": [300, 600],
         "hole_pos":   [300, 200],
         "walls": [],
+        "grounds": [],
+        "winds" : [],
         "blackholes": [
             {"pos": [100, 350], "radius": 300, "strength": 300}
-        ]
+        ],
+        "portals": []
     },
     "level_14": {
         "player_pos": [300, 600],
         "hole_pos":   [300, 200],
         "walls": [],
+        "grounds": [],
         "winds": [
             {"rect":[300, 500, 400, 200], "direction": 45, "strength": 500}
-        ]
+        ],
+        "blackholes": [],
+        "portals": []
     },
     "level_15":{
+        "player_pos":[300,750],
+        "hole_pos":[300,250],
         "walls":[{"start_pos":[100,500],"end_pos":[500,500],"width":120,"color":[20,20,20]}],
         "grounds":[{"rect":[275,475,50,50],"type":"sand"}],
-        "player_pos":[300,750],
-        "hole_pos":[300,250]}}
+        "winds" : [],
+        "blackholes": [],
+        "portals": []
+        }}
 

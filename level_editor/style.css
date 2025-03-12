@@ -28,6 +28,27 @@ h1 {
     user-select: none;
     margin-top: 9rem;
 }
+.right-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 20%;
+    padding-top: 5rem;
+    padding-left: 5rem;
+}
+
+.change-level {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: center;
+
+}
+.change-level button{
+    background-color: #3a3a3a;
+    width: 8rem;
+    text-align: center;
+}
 .button-container {
     display: grid;
     grid-template-columns: auto auto auto;
@@ -83,6 +104,7 @@ canvas {
     border: 3px solid rgb(131, 177, 73);
     transform: translateY(-0.2rem);
     box-shadow: #11220e 0.2rem 0.4rem 0.2rem;
+    text-align: center;
 }
 .credit {
     position: absolute;
@@ -169,4 +191,15 @@ canvas {
 .del_button:hover {
     background-color: #e63946;
     transform: scale(1.1);
+}
+
+#load_button {
+    height: 4rem;
+    justify-content: center;
+    width: 18rem;
+    background-color: #3a3a3a;
+}
+#load_button:hover{
+    border:none;
+    background-color: #6ab04c;
 }
