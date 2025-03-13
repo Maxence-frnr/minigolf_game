@@ -4,10 +4,11 @@ from utils import Button
 from utils import Label
 
 class LevelSelectionMenu(BaseState):
-    def __init__(self, state_manager, assets_manager, sounds_manager, save_manager):
+    def __init__(self, state_manager, assets_manager, sounds_manager, save_manager, level_manager):
         self.state_manager = state_manager
         self.sounds_manager = sounds_manager
         self.save_manager = save_manager
+        self.level_manager = level_manager
         self.title_font = py.font.Font(None, 50)
         self.WIDTH, self.HEIGHT = py.display.get_window_size()
         
@@ -15,28 +16,31 @@ class LevelSelectionMenu(BaseState):
         self.buttons = []
         self.buttons.append(Button(text="", rect=py.Rect(30, 30, 30, 30), font_size=10, color=(255, 255, 255), hover_color=(255, 0, 0), action=self.back_to_menu, sprite=self.back_to_menu_button_sprite, sound="click", sounds_manager=sounds_manager))
         self.title = Label("Level Selection", py.Rect(300, 60, 400, 75), 50, (255, 255, 255))
+        self.pos_x = 300
+        self.pos_y = 175
         
         
        
     def create_level_cards(self):
-        pos_x = 300
-        pos_y = 150
+        pos_y = self.pos_y
         unlocked_level_index = self.save_manager.data["level_unlocked"]
         color = (255, 255, 255)
         level_cards = [[]]
-        for i in range(1, 16):
+        number_of_level = len(self.level_manager.levels)+1
+        for i in range(1, number_of_level):
             level_cards.append([])
             if i > unlocked_level_index:
                 color = (200, 70, 70)
             level_highscore, level_attempts = self.get_level_stats(f"level_{i}")
-            level_cards[i].append(Button("", py.Rect(pos_x, pos_y, 400, 75), 75, color=color, border=True, action=self.level_selected, action_arg=i, sound="click", sounds_manager=self.sounds_manager))
-            level_cards[i].append(Label(str(i), py.Rect(pos_x - 125, pos_y, 50, 50), 65, color, None, True, 3, 10))
+            level_cards[i].append(Button("", py.Rect(self.pos_x, pos_y, 400, 75), 75, color=color, border=True, action=self.level_selected, action_arg=i, sound="click", sounds_manager=self.sounds_manager))
+            level_cards[i].append(Label(str(i), py.Rect(self.pos_x - 125, pos_y, 50, 50), 65, color, None, True, 3, 10))
             if level_highscore:
-                level_cards[i].append(Label(f"Highscore: {level_highscore}", py.Rect(pos_x+50, pos_y-15, 50, 50), 24, color, None))
+                level_cards[i].append(Label(f"Highscore: {level_highscore}", py.Rect(self.pos_x+50, pos_y-15, 50, 50), 24, color, None))
             if level_attempts:
-                level_cards[i].append(Label(f"Attempts: {level_attempts}", py.Rect(pos_x+50, pos_y+15, 50, 50), 24, color, None))
+                level_cards[i].append(Label(f"Attempts: {level_attempts}", py.Rect(self.pos_x+50, pos_y+15, 50, 50), 24, color, None))
             
             pos_y += 125
+        
         return level_cards
     
     def get_level_stats(self, level):
@@ -54,6 +58,7 @@ class LevelSelectionMenu(BaseState):
         return [level_highscore, level_attempts]
 
     def enter(self, **kwargs):
+        self.pos_y = 175
         self.level_cards = self.create_level_cards()
 
     def draw(self, screen):
@@ -71,12 +76,28 @@ class LevelSelectionMenu(BaseState):
         if self.save_manager.data["level_unlocked"] >= index:
             self.state_manager.set_state(name="game", level=f"level_{index}")
     
-    def handle_events(self, events):
+    def handle_events(self, events:py.event.Event):
         for button in self.buttons:
             button.handle_events(events)
         for card in self.level_cards:
             for i in range(len(card)):
                 card[i].handle_events(events)
+        for event in events:
+            if event.type == py.MOUSEWHEEL:
+                self.scroll(event.y)
+    
+    def scroll(self, direction):
+        scroll_amount = 40
+        if direction > 0 and self.level_cards[1][0].rect[1] < 150:
+            for card in self.level_cards:
+                for elem in card:
+                    elem.rect[1] += scroll_amount
+                    elem.border_rect[1] += scroll_amount
+        elif direction < 0 and self.level_cards[-1][0].rect[1] > 750:
+            for card in self.level_cards:
+                for elem in card:
+                    elem.rect[1] -= scroll_amount
+                    elem.border_rect[1] -= scroll_amount
             
     def back_to_menu(self, *args):
         self.state_manager.set_state(name="menu")

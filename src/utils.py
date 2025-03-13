@@ -43,7 +43,7 @@ class Button:
         for event in events:
             if event.type == py.MOUSEMOTION:
                 self.is_hovered = py.Rect.collidepoint(self.border_rect, event.pos)
-            elif event.type == py.MOUSEBUTTONDOWN and self.is_hovered:
+            elif event.type == py.MOUSEBUTTONDOWN and self.is_hovered and py.mouse.get_pressed()[0]:
                 self.action(self.action_arg)
                 if self.sounds_manager:
                     py.mixer.Sound(self.sound).play()
