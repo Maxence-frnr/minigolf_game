@@ -1,6 +1,7 @@
 import pygame as py
 from state_manager import BaseState
 from utils import Button
+from utils import Particle
 
 class MenuState(BaseState):
     def __init__(self, state_manager, sounds_manager):
@@ -14,6 +15,7 @@ class MenuState(BaseState):
         
         self.play_button = Button("Play", py.Rect(self.WIDTH//2, self.HEIGHT//2, 130, 80), 75, (255, 255, 255), (210, 210, 210), self.play, border=True, sounds_manager=sounds_manager, sound="click")
         self.buttons = [self.play_button]
+
         
     def update_window_size(self, screen):
         self.WIDTH, self.HEIGHT = py.display.get_window_size()

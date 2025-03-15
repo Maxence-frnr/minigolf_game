@@ -1,5 +1,6 @@
 import pygame as py
 import math
+import random as r
 from pygame import Vector2
 
 class Button:
@@ -140,7 +141,7 @@ class Ground():
     def __init__(self, rect:py.Rect, type):
         self.rect = rect
         if type == "sand":
-            self.color = (255, 255, 0)
+            self.color = (255, 207, 92)
             self.friction = 600
         
         elif type == "ice":
@@ -285,3 +286,106 @@ class Portal_exit:
     def draw(self, screen):
         py.draw.circle(screen, (230, 130, 10), self.pos, self.radius, 5)
         
+class Particle(py.sprite.Sprite):
+    def __init__(self, 
+                groups: py.sprite.Group, 
+                pos: Vector2, 
+                color: tuple, 
+                direction: Vector2, 
+                speed: float,
+                size:int,
+                sprite: py.image=None):
+        super().__init__(groups)
+        self.pos = pos
+        self.color = color
+        self.direction = direction
+        self.speed = speed
+        self.sprite = sprite
+        self.size = size
+        if self.sprite:
+            self.size = self.sprite.get_width()
+
+        self.get_surface()
+
+    def get_surface(self):
+        self.image = py.Surface((self.size, self.size)).convert_alpha()
+        self.image.set_colorkey("black")
+        self.rect = self.image.get_rect(center=self.pos)
+        if self.sprite:
+            sprite_rect = self.sprite.get_rect(center = (self.size//2,self.size//2))
+            self.image.blit(self.sprite, sprite_rect)
+        else:
+            #py.draw.circle(self.image, self.color, center=(self.size//2, self.size//2), radius=self.size//2)
+            py.draw.rect(self.image, self.color, py.Rect(0, 0, self.size, self.size))
+        
+
+    def move(self, dt):
+        self.pos += self.direction * self.speed * dt
+        self.rect.center = self.pos
+
+    def update(self, dt):
+        self.move(dt)
+
+class Player_Particle(Particle):
+    def __init__(self, 
+                 groups:py.sprite.Group, 
+                 pos, 
+                 color, 
+                 direction, 
+                 speed,
+                 sprite:py.image = None):
+        k1 = r.uniform(-0.4, 0.4)
+        k2 = k1 = r.uniform(-0.4, 0.4)
+        direction = py.Vector2(direction[0] +k1 , direction[1] + k2).normalize()
+        size = r.randint(2, 8)
+        
+        super().__init__(groups, pos, color, direction, speed, size, sprite)
+        
+        self.scale = 1
+        self.alpha = 255
+        self.angle = r.randint(0, 359)
+
+        self.inflate_speed = 5
+        self.fade_speed = 400
+        self.rotation_speed = round(r.uniform(-1, 1))
+        self.slowing_speed = 75
+
+        self.max_size = 20
+        self.min_speed = 1
+        #self.image = py.transform.rotate(self.image, self.angle)
+        #self.rect = self.image.get_rect(center=self.pos)
+        #self.size = self.sprite.get_width()
+
+    def slow(self, dt):
+        if self.speed > self.min_speed:
+            self.speed -= self.slowing_speed * dt
+
+
+    def rotate(self, dt):
+        self.angle += self.rotation_speed * dt
+        self.image = py.transform.rotate(self.image, self.angle)
+        self.rect = self.image.get_rect(center = self.pos)
+
+    def fade(self, dt):
+        self.alpha -= self.fade_speed * dt
+        self.image.set_alpha(self.alpha)
+
+    def inflate(self, dt):
+        if self.size < self.max_size:
+            self.size += self.inflate_speed * dt
+            self.get_surface()
+
+    def check_alpha(self):
+        if self.alpha <= 0:
+            self.kill()
+
+    def update(self, dt):
+        self.move(dt)
+        self.inflate(dt)
+        self.rotate(dt)
+        self.fade(dt)
+        self.slow(dt)
+        
+        
+
+        self.check_alpha()

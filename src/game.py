@@ -1,5 +1,6 @@
 import pygame as py
 import math
+import random as r
 from pygame import Vector2
 from state_manager import BaseState
 from utils import Button
@@ -15,7 +16,7 @@ from hole import Hole
 class Game(BaseState):
     def __init__(self, state_manager, assets_manager, level_manager, save_manager, sounds_manager):
         #DEBUG
-        self.show_ball_speed = True
+        self.show_ball_speed = False
         self.show_ball_pos = False
 
         self.state_manager = state_manager
@@ -28,10 +29,13 @@ class Game(BaseState):
         self.player_sprite = assets_manager.get("ball")
         self.hole_sprite = assets_manager.get("hole")
         self.wind_sprite = assets_manager.get("wind_arrows")
+        self.grass_particle_sprite = assets_manager.get("grass_particle")
         
         self.swing_sound = sounds_manager.get("swing")
         self.bounce_sound = sounds_manager.get("bounce")
         self.hole_sound = sounds_manager.get("hole")
+
+        self.grass_particle_sprite = assets_manager.get("grass_particle")
         
         self.in_game = True
         self.level_to_load = "level_1"
@@ -46,6 +50,8 @@ class Game(BaseState):
         self.is_building_strength = False
         
         self.strength_arrow_angle = 0
+        self.particle_spawn_rate = 3
+        self.SPAWN_PARTICLE_TIMER = py.USEREVENT + 1
         
         
         #UI
@@ -71,7 +77,7 @@ class Game(BaseState):
         level = self.level_manager.get_level(self.level_to_load)
         
         
-        self.player = Player(Vector2(level["player_pos"]), 8, self.player_sprite)
+        self.player = Player(Vector2(level["player_pos"]), 8, self.player_sprite, self.grass_particle_sprite)
         self.hole = Hole(Vector2(level["hole_pos"]), self.hole_sprite)
         self.walls = []
         self.grounds = []
@@ -109,6 +115,8 @@ class Game(BaseState):
             self.save_manager.data["stats"][self.level_to_load]["attempts"] = 1
         self.stroke = 0
         self.in_game = True
+        py.time.set_timer(self.SPAWN_PARTICLE_TIMER, r.randint(30, 130))
+
             
     def next_level(self, *args):
         self.level_to_load = "level_" + str(int(self.level_to_load.split("_")[1]) + 1)
@@ -122,6 +130,8 @@ class Game(BaseState):
         
     def update(self, dt)->None:
         self.update_player_pos(dt)
+        
+        self.player.update_particles(dt)
 
     def win(self):
         py.mixer.Sound(self.hole_sound).play()
@@ -214,8 +224,12 @@ class Game(BaseState):
             elif event.type == py.MOUSEMOTION:
                 if self.is_left_button_down and self.is_building_strength:
                     self.build_strength(event.pos)
+            
+            elif event.type == self.SPAWN_PARTICLE_TIMER:
+                self.player.create_particles()
                 
             keys = py.key.get_pressed()
+            
 
     def update_player_pos(self, dt): #Calc physics of the player
         if not self.in_game: return
