@@ -135,7 +135,75 @@ class Wall():
 
             new_velocity = velocity - 2 * velocity.dot(normal) * normal
             return True, new_velocity
-        return False, velocity 
+        return False, velocity
+    
+class Wall2():
+    def __init__(self, rect:py.Rect, direction:int):
+        self.direction = Vector2(round(math.cos(math.radians(direction)), 2), 
+                                 -round(math.sin(math.radians(direction)), 2))
+        self.angle = direction
+
+        self.center  = (rect[0], rect[1])
+        self.width = rect[2]
+        self.height = rect[3]
+        
+        self.update_corners()
+        
+    def update_corners(self):
+        half_width, half_height = self.width//2, self.height //2
+        rad = math.radians(-self.angle)
+        corners = [Vector2(-half_width, -half_height),
+                   Vector2(half_width, -half_height),
+                   Vector2(half_width, half_height),
+                   Vector2(-half_width, half_height)]
+        
+        self.corners = [self.center + point.rotate_rad(rad) for point in corners]
+
+    
+    def draw(self, screen):
+        py.draw.polygon(screen, (255, 0, 0), self.corners, 2)
+        
+    def detect_collision(self, player_pos, player_radius):
+        return self.sat_collision(player_pos, player_radius)
+    
+    def handle_collision(self, player_velocity:Vector2, dt):
+        return -player_velocity
+    
+    #TODO: relire le code
+    def project_polygon(self, axis, points):
+        """ Projette un polygone sur un axe donné et retourne le min et max """
+        dots = [point.dot(axis) for point in points]
+        return min(dots), max(dots)
+
+    def sat_collision(self, player_pos, player_radius):
+        """ Implémente le théorème de séparation des axes (SAT) pour la collision rectangle-cercle """
+        # Ajouter le cercle comme un point + rayon
+        circle_center = Vector2(player_pos)
+
+        # Liste des axes de séparation (normales des bords du rectangle)
+        axes = []
+        for i in range(len(self.corners)):
+            edge = self.corners[i] - self.corners[(i + 1) % len(self.corners)]
+            normal = Vector2(-edge.y, edge.x).normalize()
+            axes.append(normal)
+
+        # Ajouter un axe passant par le centre du cercle et le point le plus proche
+        closest_point = min(self.corners, key=lambda p: (p - circle_center).length_squared())
+        axes.append((closest_point - circle_center).normalize())
+
+        # Vérification des projections sur chaque axe
+        for axis in axes:
+            min_rect, max_rect = self.project_polygon(axis, self.corners)
+            min_circle = circle_center.dot(axis) - player_radius
+            max_circle = circle_center.dot(axis) + player_radius
+
+            # Si les projections ne se chevauchent pas, il n'y a pas de collision
+            if max_circle < min_rect or min_circle > max_rect:
+                return False
+
+        # Si toutes les projections se chevauchent, il y a une collision
+        return True
+
 
 class Ground():
     def __init__(self, rect:py.Rect, type):

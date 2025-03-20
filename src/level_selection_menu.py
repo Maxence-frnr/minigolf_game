@@ -25,14 +25,16 @@ class LevelSelectionMenu(BaseState):
         pos_y = self.pos_y
         unlocked_level_index = self.save_manager.data["level_unlocked"]
         color = (255, 255, 255)
+        hover_color = (210, 210, 210)
         level_cards = [[]]
         number_of_level = len(self.level_manager.levels)+1
         for i in range(1, number_of_level):
             level_cards.append([])
             if i > unlocked_level_index:
                 color = (200, 70, 70)
+                hover_color = (180, 60, 60)
             level_highscore, level_attempts = self.get_level_stats(f"level_{i}")
-            level_cards[i].append(Button("", py.Rect(self.pos_x, pos_y, 400, 75), 75, color=color, border=True, action=self.level_selected, action_arg=i, sound="click", sounds_manager=self.sounds_manager))
+            level_cards[i].append(Button("", py.Rect(self.pos_x, pos_y, 400, 75), 75, color=color, hover_color=hover_color, border=True, action=self.level_selected, action_arg=i, sound="click", sounds_manager=self.sounds_manager))
             level_cards[i].append(Label(str(i), py.Rect(self.pos_x - 125, pos_y, 50, 50), 65, color, None, True, 3, 10))
             if level_highscore:
                 level_cards[i].append(Label(f"Highscore: {level_highscore}", py.Rect(self.pos_x+50, pos_y-15, 50, 50), 24, color, None))

@@ -10,6 +10,7 @@ from utils import Wind
 from utils import Blackhole
 from utils import Portal_entry
 from utils import Portal_exit
+from utils import Wall2
 from player import Player
 from hole import Hole
 
@@ -52,6 +53,8 @@ class Game(BaseState):
         self.strength_arrow_angle = 0
         self.particle_spawn_rate = 3
         self.SPAWN_PARTICLE_TIMER = py.USEREVENT + 1
+
+        self.wall = Wall2(py.Rect(300, 500, 100, 30), 45)
         
         
         #UI
@@ -89,6 +92,7 @@ class Game(BaseState):
         if "walls" in level:
             for wall in level["walls"]:
                 self.walls.append(Wall((wall["start_pos"]), (wall["end_pos"]), wall["width"], (wall["color"])))
+        
         
         if "grounds" in level:
             for ground in level["grounds"]:
@@ -170,6 +174,8 @@ class Game(BaseState):
 
         for wall in self.walls:
             wall.draw(screen)
+        
+        self.wall.draw(screen)
             
         for wind in self.winds:
             wind.draw(screen)
@@ -298,6 +304,9 @@ class Game(BaseState):
                 self.player.v = new_velocity
                 player_next_pos = self.player.pos + self.player.v * dt
                 py.mixer.Sound(self.bounce_sound).play()
+
+        if self.wall.detect_collision(self.player.pos, self.player.radius):
+            self.player.v = self.wall.handle_collision(self.player.v, dt)
 
         self.player.pos = player_next_pos
         
