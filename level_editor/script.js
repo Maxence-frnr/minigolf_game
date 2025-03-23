@@ -34,14 +34,36 @@ function draw() {
         }
         else if (k=="walls") {
             for (let i = 0; i < data[loaded_level][k].length; i++) {
-                ctx.strokeStyle = `rgb(${data[loaded_level][k][i].color[0]}, ${data[loaded_level][k][i].color[1]}, ${data[loaded_level][k][i].color[2]})`;
+                const x = data[loaded_level][k][i].rect[0];
+                const y = data[loaded_level][k][i].rect[1];
+                const half_w = data[loaded_level][k][i].rect[2] / 2;
+                const half_h = data[loaded_level][k][i].rect[3] / 2;
+                const angle = data[loaded_level][k][i].direction;
+                const rad = -angle * Math.PI / 180;
+
+                let corners = [[-half_w, -half_h], 
+                                [half_w, -half_h], 
+                                [half_w, half_h], 
+                                [-half_w, half_h]];
+
+                let r_corners = [];//rotated corners
+                corners.forEach((corner, index) => {
+                    const x1 = corner[0] * Math.cos(rad) - corner[1] * Math.sin(rad)+x;
+                    const y1 = corner[0] * Math.sin(rad) + corner[1] * Math.cos(rad)+y;
+
+                    r_corners.push([x1, y1])               
+                })
+
+                ctx.fillStyle = "rgb(20 20 20)";
                 ctx.beginPath();
-                ctx.moveTo(data[loaded_level][k][i].start_pos[0], data[loaded_level][k][i].start_pos[1]);
-                ctx.lineTo(data[loaded_level][k][i].end_pos[0], data[loaded_level][k][i].end_pos[1]);
-                ctx.lineWidth = data[loaded_level][k][i].width;
-                ctx.stroke();
+                ctx.moveTo(r_corners[0][0], r_corners[0][1]);
+                ctx.lineTo(r_corners[1][0], r_corners[1][1]);
+                ctx.lineTo(r_corners[2][0], r_corners[2][1]);
+                ctx.lineTo(r_corners[3][0], r_corners[3][1]);
+                ctx.fill();
             }
         }
+
         else if (k== "grounds") {
             for (let i = 0; i < data[loaded_level][k].length; i++) {
                 ctx.fillStyle = data[loaded_level][k][i].type == "sand" ? "yellow" : "cyan";
@@ -55,7 +77,7 @@ function draw() {
                 const half_w = data[loaded_level][k][i].rect[2] / 2;
                 const half_h = data[loaded_level][k][i].rect[3] / 2;
                 const angle = data[loaded_level][k][i].direction;
-                const rad = angle * Math.PI / 180;
+                const rad = -angle * Math.PI / 180;
 
                 let corners = [[-half_w, -half_h], 
                                 [half_w, -half_h], 
@@ -262,31 +284,33 @@ function create_wrapper(type, index=null) {
     }
     else if (type == "wall") {
         name = `wall ${index}`;
-        const start_x = createNumberInput("start x:", data[loaded_level].walls[index].start_pos[0], (val) => {
-            data[loaded_level].walls[index].start_pos[0] = val;
+
+        const x = createNumberInput("pos x:", data[loaded_level].walls[index].rect[0], (val) => {
+            data[loaded_level].walls[index].rect[0] = val;
             draw();
         }, 600);
-        const start_y = createNumberInput("start y:", data[loaded_level].walls[index].start_pos[1], (val) => {
-            data[loaded_level].walls[index].start_pos[1] = val;
+        const y = createNumberInput("pos y:", data[loaded_level].walls[index].rect[1], (val) => {
+            data[loaded_level].walls[index].rect[1] = val;
             draw();
         }, 1000);
-        const end_x = createNumberInput("end x:", data[loaded_level].walls[index].end_pos[0], (val) => {
-            data[loaded_level].walls[index].end_pos[0] = val;
+        const width = createNumberInput("width:", data[loaded_level].walls[index].rect[2], (val) => {
+            data[loaded_level].walls[index].rect[2] = val;
             draw();
         }, 600);
-        const end_y = createNumberInput("end y:", data[loaded_level].walls[index].end_pos[1], (val) => {
-            data[loaded_level].walls[index].end_pos[1] = val;
+        const height = createNumberInput("height:", data[loaded_level].walls[index].rect[3], (val) => {
+            data[loaded_level].walls[index].rect[3] = val;
             draw();
         }, 1000);
-        const width = createNumberInput("width:", data[loaded_level].walls[index].width, (val) => {
-            data[loaded_level].walls[index].width = val;
+        const direction = createNumberInput("angle:", data[loaded_level].walls[index].direction, (val) => {
+            data[loaded_level].walls[index].direction = val;
             draw();
-        }, 400);
-        wrapper.appendChild(start_x);
-        wrapper.appendChild(start_y);
-        wrapper.appendChild(end_x);
-        wrapper.appendChild(end_y);
+        }, 360);
+
+        wrapper.appendChild(x);
+        wrapper.appendChild(y);
         wrapper.appendChild(width);
+        wrapper.appendChild(height);
+        wrapper.appendChild(direction);
         wrapper.dataset.tags = "wall";
         element_name.style.color = "white";
     }
@@ -427,7 +451,7 @@ function add_hole() {
     draw();
 }
 function add_wall() {
-    data[loaded_level].walls.push({start_pos: [100, 500], end_pos: [500, 500], width: 19, color: [20, 20 ,20]});
+    data[loaded_level].walls.push({rect: [300, 500, 50, 25], direction:0});
     show_data();
     draw();
 }

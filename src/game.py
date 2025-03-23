@@ -3,14 +3,7 @@ import math
 import random as r
 from pygame import Vector2
 from state_manager import BaseState
-from utils import Button
-from utils import Wall
-from utils import Ground
-from utils import Wind
-from utils import Blackhole
-from utils import Portal_entry
-from utils import Portal_exit
-from utils import Wall2
+from utils import Button, Wall, Ground, Wind, Blackhole, Portal_entry, Portal_exit
 from player import Player
 from hole import Hole
 
@@ -30,6 +23,8 @@ class Game(BaseState):
         self.player_sprite = assets_manager.get("ball")
         self.hole_sprite = assets_manager.get("hole")
         self.wind_sprite = assets_manager.get("wind_arrows")
+        self.blackhole_sprites = [assets_manager.get(f"blackhole{i}" for i in range(1, 10))]
+        print(self.blackhole_sprites)
         self.grass_particle_sprite = assets_manager.get("grass_particle")
         
         self.swing_sound = sounds_manager.get("swing")
@@ -54,7 +49,6 @@ class Game(BaseState):
         self.particle_spawn_rate = 3
         self.SPAWN_PARTICLE_TIMER = py.USEREVENT + 1
 
-        self.wall = Wall2(py.Rect(300, 500, 100, 30), 45)
         
         
         #UI
@@ -79,7 +73,6 @@ class Game(BaseState):
         self.level_to_load = kwargs["level"]
         level = self.level_manager.get_level(self.level_to_load)
         
-        
         self.player = Player(Vector2(level["player_pos"]), 8, self.player_sprite, self.grass_particle_sprite)
         self.hole = Hole(Vector2(level["hole_pos"]), self.hole_sprite)
         self.walls = []
@@ -91,7 +84,7 @@ class Game(BaseState):
         
         if "walls" in level:
             for wall in level["walls"]:
-                self.walls.append(Wall((wall["start_pos"]), (wall["end_pos"]), wall["width"], (wall["color"])))
+                self.walls.append(Wall(py.Rect(wall["rect"]), wall["direction"]))
         
         
         if "grounds" in level:
@@ -104,7 +97,7 @@ class Game(BaseState):
         
         if "blackholes" in level:
             for blackhole in level["blackholes"]:
-                self.blackholes.append(Blackhole(blackhole["pos"], blackhole["radius"], blackhole["strength"], None))
+                self.blackholes.append(Blackhole(blackhole["pos"], blackhole["radius"], blackhole["strength"], self.blackhole_sprites))
         
         if "portals" in level:
             for portals in level["portals"]:
@@ -136,6 +129,8 @@ class Game(BaseState):
         self.update_player_pos(dt)
         
         self.player.update_particles(dt)
+        for blackhole in self.blackholes:
+            blackhole.update()
 
     def win(self):
         py.mixer.Sound(self.hole_sound).play()
@@ -175,8 +170,6 @@ class Game(BaseState):
         for wall in self.walls:
             wall.draw(screen)
         
-        self.wall.draw(screen)
-            
         for wind in self.winds:
             wind.draw(screen)
                   
@@ -299,14 +292,10 @@ class Game(BaseState):
 
         #check if the player is in a wall
         for wall in self.walls:
-            collision, new_velocity = wall.detect_and_handle_collision(player_next_pos, self.player.radius, self.player.v)
-            if collision:
-                self.player.v = new_velocity
+            if wall.detect_collision(player_next_pos, self.player.radius):
+                self.player.v = wall.handle_collision(self.player.v, player_next_pos, self.player.radius)
                 player_next_pos = self.player.pos + self.player.v * dt
                 py.mixer.Sound(self.bounce_sound).play()
-
-        if self.wall.detect_collision(self.player.pos, self.player.radius):
-            self.player.v = self.wall.handle_collision(self.player.v, dt)
 
         self.player.pos = player_next_pos
         

@@ -31,11 +31,16 @@ ball = assets_manager.load("ball", "assets\\sprites\\16x16 ball.png")
 back_arrow = assets_manager.load("back_arrow", "assets\\sprites\\back_arrow.png")
 white_arrow = assets_manager.load("white_arrow", "assets\\sprites\\white_arrow_edited.png")
 next_arrow = assets_manager.load("next_arrow", "assets\\sprites\\white_arrow.png")
-hole = assets_manager.load("hole", "assets\\sprites\\hole.png")
+hole = assets_manager.load("hole", "assets\\sprites\\hole_24x24.png")
 undo_arrow = assets_manager.load("undo_arrow", "assets\\sprites\\undo_arrow.png")
 home = assets_manager.load("home", "assets\\sprites\\home.png")
 wind_arrows = assets_manager.load("wind_arrows", "assets\\sprites\\wind_arrows_edited.png")
 grass_particle = assets_manager.load("grass_particle", "assets\\sprites\\grass_particle.png")
+blackhole = []
+
+for i in range(1, 10):
+    blackhole.append(assets_manager.load(f"blackhole{i}", f"assets\\sprites\\blackhole_anim_256x{i}.png"))
+    
 
 level_manager = LevelManager('data\\levels.json')#automaticaly load all levels from the json
 save_manager = SaveManager('data\\data.json')#load all saved data in data.json
@@ -55,7 +60,6 @@ state_manager.add_state("game", game_state)
 
 
 state_manager.set_state(name="menu")
-cloud = assets_manager.load("cloud", "assets\\sprites\\mini_cloud.png")
 
 running = True
 while running:
