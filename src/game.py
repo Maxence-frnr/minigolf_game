@@ -27,6 +27,7 @@ class Game(BaseState):
         self.wind_sprite = assets_manager.get("wind_arrows")
         self.blackhole_sprites = [assets_manager.get(f"blackhole{i}" for i in range(1, 10))]
         self.grass_particle_sprite = assets_manager.get("grass_particle")
+        self.top_ground = assets_manager.get("tree_topground")
         
         self.swing_sound = sounds_manager.get("swing")
         self.bounce_sound = sounds_manager.get("bounce")
@@ -74,9 +75,10 @@ class Game(BaseState):
     def enter(self, **kwargs):
         self.level_to_load = kwargs["level"]
         level = self.level_manager.get_level(self.level_to_load)
-        
-        self.player = Player(Vector2(level["player_pos"]), 8, self.player_sprite, self.grass_particle_sprite)
-        self.hole = Hole(Vector2(level["hole_pos"]), self.hole_sprite)
+        pos = Vector2(level["player_pos"][0]+100, level["player_pos"][1])
+        self.player = Player(pos, 8, self.player_sprite, self.grass_particle_sprite)
+        pos = Vector2(level["hole_pos"][0]+100, level["hole_pos"][1])
+        self.hole = Hole(pos, self.hole_sprite)
         self.walls = []
         self.grounds = []
         self.winds = []
@@ -86,25 +88,31 @@ class Game(BaseState):
         
         if "walls" in level:
             for wall in level["walls"]:
-                self.walls.append(Wall(py.Rect(wall["rect"]), wall["direction"]))
+                rect = py.Rect(wall["rect"][0]+100, wall["rect"][1], wall["rect"][2], wall["rect"][3])
+                self.walls.append(Wall(rect, wall["direction"]))
         
         
         if "grounds" in level:
             for ground in level["grounds"]:
-                self.grounds.append(Ground(py.Rect(ground["rect"]), ground["type"]))
+                rect = py.Rect(ground["rect"][0] + 100, ground["rect"][1], ground["rect"][2], ground["rect"][3])
+                self.grounds.append(Ground(rect, ground["type"]))
         
         if "winds" in level:
             for wind in level["winds"]:
-                self.winds.append(Wind(py.Rect(wind["rect"]), wind["direction"], wind["strength"], self.wind_sprite))
+                rect = py.Rect(wind["rect"][0] + 100, wind["rect"][1], wind["rect"][2], wind["rect"][3])
+                self.winds.append(Wind(rect, wind["direction"], wind["strength"], self.wind_sprite))
         
         if "blackholes" in level:
             for blackhole in level["blackholes"]:
-                self.blackholes.append(Blackhole(blackhole["pos"], blackhole["radius"], blackhole["strength"], self.blackhole_sprites))
+                pos = Vector2(blackhole["pos"][0] + 100, blackhole["pos"][1])
+                self.blackholes.append(Blackhole(pos, blackhole["radius"], blackhole["strength"], self.blackhole_sprites))
         
         if "portals" in level:
             for portals in level["portals"]:
-                self.portals_entry.append(Portal_entry(Vector2(portals["entry_pos"]), Vector2(portals["exit_pos"])))
-                self.portals_exit.append(Portal_exit(Vector2(portals["exit_pos"])))
+                entry_pos = Vector2(portals["entry_pos"][0] + 100, portals["entry_pos"][1])
+                exit_pos = Vector2(portals["exit_pos"][0] + 100, portals["exit_pos"][1])
+                self.portals_entry.append(Portal_entry(entry_pos, exit_pos))
+                self.portals_exit.append(Portal_exit(exit_pos))
                 
         self.level_to_load = "level_"+self.level_to_load.split("_")[1]
         if "attempts" in self.save_manager.data["stats"][self.level_to_load]:
@@ -155,6 +163,8 @@ class Game(BaseState):
         #screen.fill((50, 50, 50))
         offset = self.camera.offset
         self.draw_background(screen, offset)
+        py.draw.line(screen, (0, 0, 0), (100, 0), (100, 1000), 2)
+        py.draw.line(screen, (0, 0, 0), (700, 0), (700, 1000), 2)
         for blackhole in self.blackholes:
             blackhole.draw(screen)
         for ground in self.grounds:
@@ -164,9 +174,9 @@ class Game(BaseState):
             self.player.draw(screen, offset)
         
         for portal in self.portals_entry:
-            portal.draw(screen)
+            portal.draw(screen, offset)
         for portal in self.portals_exit:
-            portal.draw(screen)
+            portal.draw(screen, offset)
         
         for blackhole in self.blackholes:
             blackhole.draw(screen)
@@ -179,6 +189,8 @@ class Game(BaseState):
                   
         stroke_surface = self.font.render(f"Stroke {self.stroke}", True, (255, 255, 255))
         screen.blit(stroke_surface, py.Rect(self.WIDTH//2 - stroke_surface.get_width()//2, 20, 30, 20))
+        
+        screen.blit(self.top_ground, py.Rect(0, 0, 800, 1000))
         
         
         #UI
@@ -235,6 +247,8 @@ class Game(BaseState):
             if keys[py.K_r] and self.stroke > 0:
                 self.reset()
                 self.camera.start_shake(0.7)
+            if keys[py.K_ESCAPE]:
+                self.back_to_menu()
 
     def update_player_pos(self, dt): #Calc physics of the player
         if not self.in_game: return
@@ -287,13 +301,13 @@ class Game(BaseState):
         #Predict player next pos
         player_next_pos = self.player.pos + self.player.v * dt
         #inverse player velocity if player is out of bounds
-        if not (0 <= player_next_pos.x <= self.WIDTH):
+        if not (100 + self.player.radius <= player_next_pos.x <= self.WIDTH-100 - self.player.radius):
             self.player.v.x *= -1
             player_next_pos.x = max(0, min(self.WIDTH, player_next_pos.x))
             py.mixer.Sound(self.bounce_sound).play()
             self.camera.start_shake(self.player.v.length()/300)
 
-        if not (0 <= player_next_pos.y <= self.HEIGHT):
+        if not (self.player.radius <= player_next_pos.y <= self.HEIGHT - self.player.radius):
             self.player.v.y *= -1  
             player_next_pos.y = max(0, min(self.HEIGHT, player_next_pos.y))
             py.mixer.Sound(self.bounce_sound).play()
@@ -305,7 +319,7 @@ class Game(BaseState):
                 self.player.v = wall.handle_collision(self.player.v, player_next_pos, self.player.radius)
                 player_next_pos = self.player.pos + self.player.v * dt
                 py.mixer.Sound(self.bounce_sound).play()
-                self.camera.start_shake(self.player.v.length()/300)
+                #self.camera.start_shake(self.player.v.length()/300)
 
         self.player.pos = player_next_pos
         

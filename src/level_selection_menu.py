@@ -11,6 +11,8 @@ class LevelSelectionMenu(BaseState):
         self.level_manager = level_manager
         self.title_font = py.font.Font(None, 50)
         self.WIDTH, self.HEIGHT = py.display.get_window_size()
+        #création d'un timer pour le retour au menu avec escape pour éviter le double back_to_menu() si le joueur était en partie
+        self.can_escape_timer = 45 
         
         self.back_to_menu_button_sprite = assets_manager.get("back_arrow")
         self.buttons = []
@@ -62,6 +64,7 @@ class LevelSelectionMenu(BaseState):
     def enter(self, **kwargs):
         self.pos_y = 175
         self.level_cards = self.create_level_cards()
+        self.can_escape_timer = 45
 
     def draw(self, screen):
         screen.fill((50, 50, 50))
@@ -78,6 +81,11 @@ class LevelSelectionMenu(BaseState):
         if self.save_manager.data["level_unlocked"] >= index:
             self.state_manager.set_state(name="game", level=f"level_{index}")
     
+    def update(self, dt):
+        if self.can_escape_timer > 0:
+            self.can_escape_timer -= 1
+        
+    
     def handle_events(self, events:py.event.Event):
         for button in self.buttons:
             button.handle_events(events)
@@ -87,6 +95,10 @@ class LevelSelectionMenu(BaseState):
         for event in events:
             if event.type == py.MOUSEWHEEL:
                 self.scroll(event.y)
+        
+        keys = py.key.get_pressed()
+        if keys[py.K_ESCAPE] and self.can_escape_timer == 0:
+            self.back_to_menu()
     
     def scroll(self, direction):
         scroll_amount = 40

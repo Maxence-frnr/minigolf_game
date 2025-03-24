@@ -411,8 +411,8 @@ class Portal_entry:
         self.exit_pos = exit_pos
         self.sprite = sprite
     
-    def draw(self, screen):
-        py.draw.circle(screen, (0, 150, 210), self.pos, self.radius, 5)
+    def draw(self, screen, offset:Vector2= Vector2(0, 0)):
+        py.draw.circle(screen, (0, 150, 210), self.pos + offset, self.radius, 5)
         
     def detect_collision(self, player_pos:Vector2, player_radius:float):
         d = self.pos.distance_to(player_pos)
@@ -427,8 +427,8 @@ class Portal_exit:
         self.sprite = sprite
         self.radius = 20
     
-    def draw(self, screen):
-        py.draw.circle(screen, (230, 130, 10), self.pos, self.radius, 5)
+    def draw(self, screen, offset:Vector2= Vector2(0, 0)):
+        py.draw.circle(screen, (230, 130, 10), self.pos + offset, self.radius, 5)
         
 class Particle(py.sprite.Sprite):
     def __init__(self, 

@@ -13,7 +13,7 @@ from level_selection_menu import LevelSelectionMenu
 from utils import Particle
 
 #CONSTANT
-WIDTH, HEIGHT = 600, 1000
+WIDTH, HEIGHT = 800, 1000
 
 py.init()
 py.mixer.init()
@@ -26,6 +26,7 @@ clock = py.time.Clock()
 assets_manager = AssetsManager()
 sounds_manager = SoundsManager()
 state_manager = StateManager()
+trees_topground = assets_manager.load("tree_topground", "assets\\sprites\\plain_biome_trees.png")
 
 ball = assets_manager.load("ball", "assets\\sprites\\16x16 ball.png")
 back_arrow = assets_manager.load("back_arrow", "assets\\sprites\\back_arrow.png")
@@ -64,7 +65,7 @@ state_manager.set_state(name="menu")
 
 running = True
 while running:
-    dt = clock.tick(60) / 1000
+    dt = clock.tick(120) / 1000
 
     events = py.event.get()
     for event in events:
