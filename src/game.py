@@ -3,7 +3,7 @@ import math
 import random as r
 from pygame import Vector2
 from state_manager import BaseState
-from utils import Button, Wall, Ground, Wind, Blackhole, Portal_entry, Portal_exit
+from utils import Camera, Button, Wall, Ground, Wind, Blackhole, Portal_entry, Portal_exit
 from player import Player
 from hole import Hole
 
@@ -12,6 +12,8 @@ class Game(BaseState):
         #DEBUG
         self.show_ball_speed = False
         self.show_ball_pos = False
+        
+        self.camera = Camera()
 
         self.state_manager = state_manager
         self.WIDTH, self.HEIGHT = py.display.get_window_size()
@@ -24,12 +26,12 @@ class Game(BaseState):
         self.hole_sprite = assets_manager.get("hole")
         self.wind_sprite = assets_manager.get("wind_arrows")
         self.blackhole_sprites = [assets_manager.get(f"blackhole{i}" for i in range(1, 10))]
-        print(self.blackhole_sprites)
         self.grass_particle_sprite = assets_manager.get("grass_particle")
         
         self.swing_sound = sounds_manager.get("swing")
         self.bounce_sound = sounds_manager.get("bounce")
         self.hole_sound = sounds_manager.get("hole")
+        self.portal_sound = sounds_manager.get("portal")
 
         self.grass_particle_sprite = assets_manager.get("grass_particle")
         
@@ -112,7 +114,6 @@ class Game(BaseState):
             self.save_manager.data["stats"][self.level_to_load]["attempts"] = 1
         self.stroke = 0
         self.in_game = True
-        py.time.set_timer(self.SPAWN_PARTICLE_TIMER, r.randint(30, 130))
 
             
     def next_level(self, *args):
@@ -127,8 +128,9 @@ class Game(BaseState):
         
     def update(self, dt)->None:
         self.update_player_pos(dt)
+        self.camera.update()
         
-        self.player.update_particles(dt)
+        self.player.update(dt)
         for blackhole in self.blackholes:
             blackhole.update()
 
@@ -151,13 +153,15 @@ class Game(BaseState):
     
     def draw(self, screen):
         #screen.fill((50, 50, 50))
-        self.draw_background(screen)
+        offset = self.camera.offset
+        self.draw_background(screen, offset)
         for blackhole in self.blackholes:
             blackhole.draw(screen)
         for ground in self.grounds:
             ground.draw(screen)
-        self.hole.draw(screen)
-        self.player.draw(screen)
+        self.hole.draw(screen, offset)
+        if self.in_game:
+            self.player.draw(screen, offset)
         
         for portal in self.portals_entry:
             portal.draw(screen)
@@ -168,7 +172,7 @@ class Game(BaseState):
             blackhole.draw(screen)
 
         for wall in self.walls:
-            wall.draw(screen)
+            wall.draw(screen, self.camera.offset)
         
         for wind in self.winds:
             wind.draw(screen)
@@ -223,12 +227,14 @@ class Game(BaseState):
             elif event.type == py.MOUSEMOTION:
                 if self.is_left_button_down and self.is_building_strength:
                     self.build_strength(event.pos)
-            
-            elif event.type == self.SPAWN_PARTICLE_TIMER:
-                self.player.create_particles()
+
                 
             keys = py.key.get_pressed()
-            
+            if keys[py.K_SPACE]:
+                self.camera.start_shake(5)
+            if keys[py.K_r] and self.stroke > 0:
+                self.reset()
+                self.camera.start_shake(0.7)
 
     def update_player_pos(self, dt): #Calc physics of the player
         if not self.in_game: return
@@ -261,6 +267,7 @@ class Game(BaseState):
             for portal in self.portals_entry:    
                 if portal.detect_collision(self.player.pos, self.player.radius):
                     self.player.pos = portal.handle_collision()
+                    py.mixer.Sound(self.portal_sound).play()
 
         
             if self.player.v.length() > 0 and not is_on_special_ground:
@@ -284,11 +291,13 @@ class Game(BaseState):
             self.player.v.x *= -1
             player_next_pos.x = max(0, min(self.WIDTH, player_next_pos.x))
             py.mixer.Sound(self.bounce_sound).play()
+            self.camera.start_shake(self.player.v.length()/300)
 
         if not (0 <= player_next_pos.y <= self.HEIGHT):
             self.player.v.y *= -1  
             player_next_pos.y = max(0, min(self.HEIGHT, player_next_pos.y))
             py.mixer.Sound(self.bounce_sound).play()
+            self.camera.start_shake(self.player.v.length()/300)
 
         #check if the player is in a wall
         for wall in self.walls:
@@ -296,6 +305,7 @@ class Game(BaseState):
                 self.player.v = wall.handle_collision(self.player.v, player_next_pos, self.player.radius)
                 player_next_pos = self.player.pos + self.player.v * dt
                 py.mixer.Sound(self.bounce_sound).play()
+                self.camera.start_shake(self.player.v.length()/300)
 
         self.player.pos = player_next_pos
         
@@ -327,11 +337,11 @@ class Game(BaseState):
         self.rotated_rect = self.rotated_image.get_rect(center=self.player.pos)
         #FIXME: clean code
         
-    def draw_background(self, screen):
+    def draw_background(self, screen, offset:Vector2 = Vector2(0, 0)):
         CELL_SIZE = 50
         screen.fill((131, 177, 73))
         for i in range(self.WIDTH // CELL_SIZE):
             for j in range (self.HEIGHT // CELL_SIZE):
                 if (i + j) %2 == 0:
-                    py.draw.rect(screen, (161, 197, 75), (i*CELL_SIZE, j*CELL_SIZE, CELL_SIZE, CELL_SIZE), 0 )
+                    py.draw.rect(screen, (161, 197, 75), (i*CELL_SIZE + offset[0], j*CELL_SIZE+offset[1], CELL_SIZE, CELL_SIZE), 0 )
                     

@@ -50,6 +50,7 @@ swing_sound = sounds_manager.load("swing", "assets\\sounds\\swing.mp3")
 bounce_sound = sounds_manager.load("bounce", "assets\\sounds\\bounce.mp3")
 hole_sound = sounds_manager.load("hole", "assets\\sounds\\hole.mp3")
 click_sound = sounds_manager.load("click", "assets\\sounds\\click.mp3")
+portal_sound = sounds_manager.load("portal", "assets\\sounds\\portal.mp3")
 
 menu_state = MenuState(state_manager, sounds_manager)
 level_selection_menu_state = LevelSelectionMenu(state_manager, assets_manager, sounds_manager, save_manager, level_manager)

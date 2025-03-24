@@ -2,6 +2,31 @@ import pygame as py
 import math
 import random as r
 from pygame import Vector2
+import copy
+
+
+class Camera:
+    def __init__(self):
+        self.offset = Vector2(0, 0)
+        self.shake_intensity = 0 #intensité actuelle du shake
+        self.decay = 0.9 #réduction du shake par frame
+        self.min_shake = 0.5
+        
+    def start_shake(self, intensity:float):#length en secondes
+        self.shake_intensity = intensity
+        print("started shake")
+    
+    def update(self):
+        if self.shake_intensity > 0:
+            self.offset.x = r.uniform(-self.shake_intensity, self.shake_intensity)
+            self.offset.y = r.uniform(-self.shake_intensity, self.shake_intensity)
+            self.shake_intensity *= self.decay  # Réduction progressive du shake
+            if self.shake_intensity < 0.5:  # Seuil minimal pour arrêter le shake
+                self.shake_intensity = 0
+        else:
+            self.offset = Vector2(0, 0)
+            
+        
 
 class Button:
     def __init__(self, text:str="", rect:py.Rect=py.Rect(0, 0, 10, 10), font_size:int=24, color:py.Color=(255, 255, 255), hover_color:py.Color=(200, 200, 200), action=None, action_arg=None, sprite=None, border:bool=False, border_width:int=3, border_radius:int=3, sound=None, sounds_manager = None):
@@ -106,38 +131,6 @@ class Label:
     
     def handle_events(self, events:py.event.Event):
         pass
-
-class Wallex():
-    def __init__(self, start:tuple, end:tuple, width:int, color:tuple):
-        self.start = start
-        self.end = end
-        self.color = color
-        self.width = width
-    
-    def draw(self, screen):
-        py.draw.line(screen, self.color, self.start, self.end, self.width)
-    
-    def detect_and_handle_collision(self, player_pos, player_radius, velocity:Vector2):
-        A = Vector2(self.start)
-        B = Vector2(self.end)
-        C = Vector2(player_pos)
-        P = Vector2()#Point le plus proche du joueur sur la droite A-B
-
-        t = ((C - A) * (B - A)) / ((B - A) * (B - A))
-
-        if t < 0: P = A
-        elif t > 1: P = B
-        else:
-            P = A + t*(B - A)
-        distance = C.distance_to(P)
-        if distance < player_radius:
-            normal = (C-P).normalize()
-
-            new_velocity = velocity - 2 * velocity.dot(normal) * normal
-            print("1", velocity - 2*velocity.dot(normal) * normal)
-            print("2", velocity - 2*velocity * -normal* -normal)
-            return True, new_velocity
-        return False, velocity
     
 class Wall():
     def __init__(self, rect:py.Rect, direction:int):
@@ -162,8 +155,9 @@ class Wall():
         self.corners = [self.center + point.rotate_rad(rad) for point in corners]
 
     
-    def draw(self, screen):
-        py.draw.polygon(screen, (255, 0, 0), self.corners, 2)
+    def draw(self, screen, offset:Vector2= Vector2(0, 0)):
+        shaken_corners = [corner + offset for corner in self.corners]
+        py.draw.polygon(screen, (255, 0, 0), shaken_corners, 2)
         
     def detect_collision(self, player_pos, player_radius):
         return self.sat_collision(player_pos, player_radius)
