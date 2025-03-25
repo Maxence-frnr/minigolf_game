@@ -2,60 +2,60 @@
     "level_unlocked": 15,
     "stats": {
         "level_1": {
-            "attempts": 67,
-            "highscore": 1
+            "attempts": 77,
+            "highscore": 2
         },
         "level_2": {
-            "attempts": 24,
-            "highscore": 1
+            "attempts": 28,
+            "highscore": 3
         },
         "level_3": {
-            "attempts": 63,
-            "highscore": 1
+            "attempts": 66,
+            "highscore": 8
         },
         "level_4": {
-            "attempts": 23,
+            "attempts": 29,
             "highscore": 1
         },
         "level_5": {
-            "attempts": 17,
+            "attempts": 22,
             "highscore": 1
         },
         "level_6": {
-            "attempts": 40,
+            "attempts": 43,
             "highscore": 1
         },
         "level_7": {
-            "attempts": 55,
+            "attempts": 56,
             "highscore": 1
         },
         "level_8": {
-            "attempts": 44,
+            "attempts": 46,
             "highscore": 1
         },
         "level_9": {
-            "attempts": 30,
+            "attempts": 31,
             "highscore": 1
         },
         "level_10": {
-            "attempts": 57,
+            "attempts": 58,
             "highscore": 1
         },
         "level_11": {
-            "attempts": 17,
+            "attempts": 19,
             "highscore": 1
         },
         "level_12": {
-            "attempts": 13,
+            "attempts": 15,
             "highscore": 1
         },
         "level_13": {
-            "attempts": 12,
+            "attempts": 13,
             "highscore": 2
         },
         "level_14": {
-            "attempts": 16,
-            "highscore": 6
+            "attempts": 19,
+            "highscore": 1
         }
     }
 }

@@ -2,11 +2,11 @@ import pygame as py
 from state_manager import BaseState
 from utils import Button
 from utils import Label
+import assets_manager
 
 class LevelSelectionMenu(BaseState):
-    def __init__(self, state_manager, assets_manager, sounds_manager, save_manager, level_manager):
+    def __init__(self, state_manager, save_manager, level_manager):
         self.state_manager = state_manager
-        self.sounds_manager = sounds_manager
         self.save_manager = save_manager
         self.level_manager = level_manager
         self.title_font = py.font.Font(None, 50)
@@ -14,9 +14,9 @@ class LevelSelectionMenu(BaseState):
         #création d'un timer pour le retour au menu avec escape pour éviter le double back_to_menu() si le joueur était en partie
         self.can_escape_timer = 45 
         
-        self.back_to_menu_button_sprite = assets_manager.get("back_arrow")
+        self.back_to_menu_button_sprite = assets_manager.get_image("back_arrow")
         self.buttons = []
-        self.buttons.append(Button(text="", rect=py.Rect(30, 30, 30, 30), font_size=10, color=(255, 255, 255), hover_color=(255, 0, 0), action=self.back_to_menu, sprite=self.back_to_menu_button_sprite, sound="click", sounds_manager=sounds_manager))
+        self.buttons.append(Button(text="", rect=py.Rect(30, 30, 30, 30), font_size=10, color=(255, 255, 255), hover_color=(255, 0, 0), action=self.back_to_menu, sprite=self.back_to_menu_button_sprite, sound="click"))
         self.title = Label("Level Selection", py.Rect(300, 60, 400, 75), 50, (255, 255, 255))
         self.pos_x = 300
         self.pos_y = 175
@@ -36,7 +36,7 @@ class LevelSelectionMenu(BaseState):
                 color = (200, 70, 70)
                 hover_color = (180, 60, 60)
             level_highscore, level_attempts = self.get_level_stats(f"level_{i}")
-            level_cards[i].append(Button("", py.Rect(self.pos_x, pos_y, 400, 75), 75, color=color, hover_color=hover_color, border=True, action=self.level_selected, action_arg=i, sound="click", sounds_manager=self.sounds_manager))
+            level_cards[i].append(Button("", py.Rect(self.pos_x, pos_y, 400, 75), 75, color=color, hover_color=hover_color, border=True, action=self.level_selected, action_arg=i, sound="click"))
             level_cards[i].append(Label(str(i), py.Rect(self.pos_x - 125, pos_y, 50, 50), 65, color, None, True, 3, 10))
             if level_highscore:
                 level_cards[i].append(Label(f"Highscore: {level_highscore}", py.Rect(self.pos_x+50, pos_y-15, 50, 50), 24, color, None))

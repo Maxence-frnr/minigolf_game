@@ -3,13 +3,16 @@ import math
 import random as r
 from pygame import Vector2
 from state_manager import BaseState
-from utils import Camera, Button, Wall, Ground, Wind, Blackhole, Portal_entry, Portal_exit
+from utils import Camera, Button
+from obstacles import Wall, Water, Ground, Wind, Blackhole, Portal_entry, Portal_exit
 from player import Player
 from hole import Hole
+import assets_manager
 
 class Game(BaseState):
-    def __init__(self, state_manager, assets_manager, level_manager, save_manager, sounds_manager):
+    def __init__(self, state_manager, level_manager, save_manager):
         #DEBUG
+        self.w = Water(py.Rect(400, 600, 150, 100))
         self.show_ball_speed = False
         self.show_ball_pos = False
         
@@ -22,21 +25,17 @@ class Game(BaseState):
         
         self.font = py.font.Font(None, 40)
 
-        self.player_sprite = assets_manager.get("ball")
-        self.hole_sprite = assets_manager.get("hole")
-        self.wind_sprite = assets_manager.get("wind_arrows")
-        self.blackhole_sprites = [assets_manager.get(f"blackhole{i}" for i in range(1, 10))]
-        self.grass_particle_sprite = assets_manager.get("grass_particle")
-        self.top_ground = assets_manager.get("tree_topground")
+        self.player_sprite = assets_manager.get_image("ball")
+        self.hole_sprite = assets_manager.get_image("hole")
+        self.wind_sprite = assets_manager.get_image("wind_arrows")
+        self.blackhole_sprites = [assets_manager.get_image(f"blackhole{i}" for i in range(1, 10))]
+        self.top_ground_sprite = assets_manager.get_image("tree_topground")
         
-        self.swing_sound = sounds_manager.get("swing")
-        self.bounce_sound = sounds_manager.get("bounce")
-        self.hole_sound = sounds_manager.get("hole")
-        self.portal_sound = sounds_manager.get("portal")
-
-        self.grass_particle_sprite = assets_manager.get("grass_particle")
+        self.swing_sound = assets_manager.get_sound("swing")
+        self.bounce_sound = assets_manager.get_sound("bounce")
+        self.hole_sound = assets_manager.get_sound("hole")
+        self.portal_sound = assets_manager.get_sound("portal")
         
-        self.in_game = True
         self.level_to_load = "level_1"
         self.stroke = 0
         self.max_strength = 600.0
@@ -47,36 +46,30 @@ class Game(BaseState):
         
         self.is_left_button_down = False
         self.is_building_strength = False
-        
-        self.strength_arrow_angle = 0
-        self.particle_spawn_rate = 3
-        self.SPAWN_PARTICLE_TIMER = py.USEREVENT + 1
 
-        
-        
         #UI
-        self.back_to_menu_button_sprite = assets_manager.get("back_arrow")
-        self.strength_arrow_sprite = assets_manager.get("white_arrow")
-        self.undo_arrow_sprite = assets_manager.get("undo_arrow")
-        self.home_sprite = assets_manager.get("home")
-        self.next_arrow_sprite = assets_manager.get("next_arrow")
+        self.back_to_menu_button_sprite = assets_manager.get_image("back_arrow")
+        self.strength_arrow_sprite = assets_manager.get_image("white_arrow")
+        self.undo_arrow_sprite = assets_manager.get_image("undo_arrow")
+        self.home_sprite = assets_manager.get_image("home")
+        self.next_arrow_sprite = assets_manager.get_image("next_arrow")
         
-        self.back_to_menu_button = Button(text="", rect=py.Rect(30, 30, 30, 30), font_size=10, color=(255, 255, 255), hover_color=(255, 0, 0), action=self.back_to_menu, sprite=self.back_to_menu_button_sprite, sound="click", sounds_manager=sounds_manager)
-        self.reset_button = Button(text="", rect=py.Rect(570, 30, 150, 50), font_size=10, color=(255, 255, 255), hover_color=(200, 200, 200), action=self.reset, sound="click", sounds_manager=sounds_manager, border=False, sprite=self.undo_arrow_sprite)
+        self.back_to_menu_button = Button(text="", rect=py.Rect(30, 30, 30, 30), font_size=10, color=(255, 255, 255), hover_color=(255, 0, 0), action=self.back_to_menu, sprite=self.back_to_menu_button_sprite, sound="click")
+        self.reset_button = Button(text="", rect=py.Rect(570, 30, 150, 50), font_size=10, color=(255, 255, 255), hover_color=(200, 200, 200), action=self.reset, sound="click",  border=False, sprite=self.undo_arrow_sprite)
         self.buttons = [self.back_to_menu_button, self.reset_button]
         
         
         #End_level_menu
         self.end_level_menu_elem = []
-        self.end_level_menu_elem.append(Button(text="", rect=py.Rect(self.WIDTH//2 + 175, self.HEIGHT//2, 150, 50), font_size=40, color=(255, 255, 255), hover_color=(200, 200, 200), action=self.next_level, sound="click", sounds_manager=sounds_manager, border=True, sprite=self.next_arrow_sprite))
-        self.end_level_menu_elem.append(Button(text="", rect=py.Rect(self.WIDTH//2 , self.HEIGHT//2, 150, 50), font_size=40, color=(255, 255, 255), hover_color=(200, 200, 200), action=self.reset, sound="click", sounds_manager=sounds_manager, border=True, sprite=self.undo_arrow_sprite))
-        self.end_level_menu_elem.append(Button(text="", rect=py.Rect(self.WIDTH//2- 175, self.HEIGHT//2, 150, 50), font_size=35, color=(255, 255, 255), hover_color=(200, 200, 200), action=self.back_to_menu, sound="click", sounds_manager=sounds_manager, border=True, sprite=self.home_sprite))
+        self.end_level_menu_elem.append(Button(text="", rect=py.Rect(self.WIDTH//2 + 175, self.HEIGHT//2, 150, 50), font_size=40, color=(255, 255, 255), hover_color=(200, 200, 200), action=self.next_level, sound="click", border=True, sprite=self.next_arrow_sprite))
+        self.end_level_menu_elem.append(Button(text="", rect=py.Rect(self.WIDTH//2 , self.HEIGHT//2, 150, 50), font_size=40, color=(255, 255, 255), hover_color=(200, 200, 200), action=self.reset, sound="click", border=True, sprite=self.undo_arrow_sprite))
+        self.end_level_menu_elem.append(Button(text="", rect=py.Rect(self.WIDTH//2- 175, self.HEIGHT//2, 150, 50), font_size=35, color=(255, 255, 255), hover_color=(200, 200, 200), action=self.back_to_menu, sound="click", border=True, sprite=self.home_sprite))
         
     def enter(self, **kwargs):
         self.level_to_load = kwargs["level"]
         level = self.level_manager.get_level(self.level_to_load)
         pos = Vector2(level["player_pos"][0]+100, level["player_pos"][1])
-        self.player = Player(pos, 8, self.player_sprite, self.grass_particle_sprite)
+        self.player = Player(pos, 8, self.player_sprite)
         pos = Vector2(level["hole_pos"][0]+100, level["hole_pos"][1])
         self.hole = Hole(pos, self.hole_sprite)
         self.walls = []
@@ -169,6 +162,7 @@ class Game(BaseState):
             blackhole.draw(screen)
         for ground in self.grounds:
             ground.draw(screen)
+        self.w.draw(screen, offset)
         self.hole.draw(screen, offset)
         if self.in_game:
             self.player.draw(screen, offset)
@@ -190,7 +184,7 @@ class Game(BaseState):
         stroke_surface = self.font.render(f"Stroke {self.stroke}", True, (255, 255, 255))
         screen.blit(stroke_surface, py.Rect(self.WIDTH//2 - stroke_surface.get_width()//2, 20, 30, 20))
         
-        screen.blit(self.top_ground, py.Rect(0, 0, 800, 1000))
+        screen.blit(self.top_ground_sprite, py.Rect(0, 0, 800, 1000))
         
         
         #UI
@@ -264,6 +258,9 @@ class Game(BaseState):
                 if ground.detect_collision(self.player.pos):
                     is_on_special_ground = True
                     self.player.v = ground.handle_collision(self.player.v, dt)
+                
+            if self.w.detect_collision(self.player.pos, self.player.radius):
+                self.player.drowning = True
             
             if self.hole.detect_collision(self.player.pos, self.player.radius):
                 self.win()

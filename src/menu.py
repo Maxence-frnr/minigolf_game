@@ -1,19 +1,16 @@
 import pygame as py
 from state_manager import BaseState
 from utils import Button
-from utils import Particle
 
 class MenuState(BaseState):
-    def __init__(self, state_manager, sounds_manager):
+    def __init__(self, state_manager):
         self.state_manager = state_manager
-        self.sounds_manager = sounds_manager
         #UI elements to enable
         self.title_font = py.font.Font(None, 125)
         
-        
         self.WIDTH, self.HEIGHT = py.display.get_window_size()
         
-        self.play_button = Button("Play", py.Rect(self.WIDTH//2, self.HEIGHT//2, 130, 80), 75, (255, 255, 255), (210, 210, 210), self.play, border=True, sounds_manager=sounds_manager, sound="click")
+        self.play_button = Button("Play", py.Rect(self.WIDTH//2, self.HEIGHT//2, 130, 80), 75, (255, 255, 255), (210, 210, 210), self.play, border=True, sound="click")
         self.buttons = [self.play_button]
 
         
