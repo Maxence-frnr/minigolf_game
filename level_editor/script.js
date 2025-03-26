@@ -1,5 +1,10 @@
 let data = {level_1: {
-    grounds: [],
+    grounds: {
+        water: [],
+        sand: [],
+        ice: []
+        
+    },
     walls:[],
     winds: [],
     blackholes: [],
@@ -65,9 +70,22 @@ function draw() {
         }
 
         else if (k== "grounds") {
-            for (let i = 0; i < data[loaded_level][k].length; i++) {
-                ctx.fillStyle = data[loaded_level][k][i].type == "sand" ? "yellow" : "cyan";
-                ctx.fillRect(data[loaded_level][k][i].rect[0], data[loaded_level][k][i].rect[1], data[loaded_level][k][i].rect[2], data[loaded_level][k][i].rect[3]);
+            //for (let i = 0; i < data[loaded_level][k].length; i++) {
+            for (let type in data[loaded_level][k]) { 
+                if (type == "sand") {
+                    ctx.fillStyle = "yellow"
+                }
+                else if (type == "ice")
+                {
+                    ctx.fillStyle = "cyan"
+                }
+                else if (type == "water")
+                    {
+                        ctx.fillStyle = "blue"
+                    }
+                for (let j = 0; j < data[loaded_level][k][type].length; j++) {
+                    ctx.fillRect(data[loaded_level][k][type][j].rect[0] - data[loaded_level][k][type][j].rect[2]/2, data[loaded_level][k][type][j].rect[1] - data[loaded_level][k][type][j].rect[3]/2, data[loaded_level][k][type][j].rect[2], data[loaded_level][k][type][j].rect[3]);
+                }
             }
         }
         else if (k== "winds") {
@@ -200,6 +218,7 @@ function draw_scale() {
 };
 
 function show_data() {
+    console.log(data)
     const element_container = document.getElementsByClassName('element-container')[0];
     element_container.innerHTML = "";
 
@@ -214,10 +233,13 @@ function show_data() {
             element_container.appendChild(create_wrapper("wall", index));
         });
     }
-    if (data[loaded_level].grounds.length > 0) {
-        data[loaded_level].grounds.forEach((ground, index) => {
-            element_container.appendChild(create_wrapper("ground", index));
+    for (let type in data[loaded_level]["grounds"])
+        {
+        if (data[loaded_level]["grounds"][type].length > 0) {
+            data[loaded_level]["grounds"][type].forEach((ground, index) => {
+                element_container.appendChild(create_wrapper(type, index));
         })
+        }
     }
     if (data[loaded_level].winds.length > 0) {
         data[loaded_level].winds.forEach((wind, index) => {
@@ -314,22 +336,22 @@ function create_wrapper(type, index=null) {
         wrapper.dataset.tags = "wall";
         element_name.style.color = "white";
     }
-    else if (type == "ground") {
-        name = `${data[loaded_level].grounds[index].type} ${index}`;
-        const x = createNumberInput("pos x:", data[loaded_level].grounds[index].rect[0], (val) => {
-            data[loaded_level].grounds[index].rect[0] = val;
+    else if (type == "water") {
+        name = `${type} ${index}`;
+        const x = createNumberInput("pos x:", data[loaded_level]["grounds"]["water"][index].rect[0], (val) => {
+            data[loaded_level]["grounds"]["water"][index].rect[0] = val;
             draw();
         }, 600);
-        const y = createNumberInput("pos y:", data[loaded_level].grounds[index].rect[1], (val) => {
-            data[loaded_level].grounds[index].rect[1] = val;
+        const y = createNumberInput("pos y:", data[loaded_level]["grounds"]["water"][index].rect[1], (val) => {
+            data[loaded_level]["grounds"]["water"][index].rect[1] = val;
             draw();
         }, 1000);
-        const width = createNumberInput("width:", data[loaded_level].grounds[index].rect[2], (val) => {
-            data[loaded_level].grounds[index].rect[2] = val;
+        const width = createNumberInput("width:", data[loaded_level]["grounds"]["water"][index].rect[2], (val) => {
+            data[loaded_level]["grounds"]["water"][index].rect[2] = val;
             draw();
         }, 600);
-        const height = createNumberInput("height:", data[loaded_level].grounds[index].rect[3], (val) => {
-            data[loaded_level].grounds[index].rect[3] = val;
+        const height = createNumberInput("height:", data[loaded_level]["grounds"]["water"][index].rect[3], (val) => {
+            data[loaded_level]["grounds"]["water"][index].rect[3] = val;
             draw();
         }, 1000);
         wrapper.appendChild(x);
@@ -337,8 +359,59 @@ function create_wrapper(type, index=null) {
         wrapper.appendChild(width);
         wrapper.appendChild(height);
         wrapper.dataset.tags = "ground";
-        element_name.style.color = "yellow";
+        element_name.style.color = "blue";
     }
+    else if (type == "sand") {
+            name = `${type} ${index}`;
+            const x = createNumberInput("pos x:", data[loaded_level]["grounds"]["sand"][index].rect[0], (val) => {
+                data[loaded_level]["grounds"]["sand"][index].rect[0] = val;
+                draw();
+            }, 600);
+            const y = createNumberInput("pos y:", data[loaded_level]["grounds"]["sand"][index].rect[1], (val) => {
+                data[loaded_level]["grounds"]["sand"][index].rect[1] = val;
+                draw();
+            }, 1000);
+            const width = createNumberInput("width:", data[loaded_level]["grounds"]["sand"][index].rect[2], (val) => {
+                data[loaded_level]["grounds"]["sand"][index].rect[2] = val;
+                draw();
+            }, 600);
+            const height = createNumberInput("height:", data[loaded_level]["grounds"]["sand"][index].rect[3], (val) => {
+                data[loaded_level]["grounds"]["sand"][index].rect[3] = val;
+                draw();
+            }, 1000);
+            wrapper.appendChild(x);
+            wrapper.appendChild(y);
+            wrapper.appendChild(width);
+            wrapper.appendChild(height);
+            wrapper.dataset.tags = "ground";
+            element_name.style.color = "yellow";
+    }
+    else if (type == "ice") {
+        name = `${type} ${index}`;
+        const x = createNumberInput("pos x:", data[loaded_level]["grounds"]["ice"][index].rect[0], (val) => {
+            data[loaded_level]["grounds"]["ice"][index].rect[0] = val;
+            draw();
+        }, 600);
+        const y = createNumberInput("pos y:", data[loaded_level]["grounds"]["ice"][index].rect[1], (val) => {
+            data[loaded_level]["grounds"]["ice"][index].rect[1] = val;
+            draw();
+        }, 1000);
+        const width = createNumberInput("width:", data[loaded_level]["grounds"]["ice"][index].rect[2], (val) => {
+            data[loaded_level]["grounds"]["ice"][index].rect[2] = val;
+            draw();
+        }, 600);
+        const height = createNumberInput("height:", data[loaded_level]["grounds"]["ice"][index].rect[3], (val) => {
+            data[loaded_level]["grounds"]["ice"][index].rect[3] = val;
+            draw();
+        }, 1000);
+        wrapper.appendChild(x);
+        wrapper.appendChild(y);
+        wrapper.appendChild(width);
+        wrapper.appendChild(height);
+        wrapper.dataset.tags = "ground";
+        element_name.style.color = "cyan";
+    }
+    
     else if (type == "wind") {
         name = `wind ${index}`;
         const x = createNumberInput("pos x:", data[loaded_level].winds[index].rect[0], (val) => {
@@ -455,8 +528,18 @@ function add_wall() {
     show_data();
     draw();
 }
+function add_water() {
+    data[loaded_level].grounds.water.push({rect: [300, 500, 50, 50]});
+    show_data();
+    draw();
+}
 function add_sand() {
-    data[loaded_level].grounds.push({rect: [275, 475, 50, 50], type: "sand"});
+    data[loaded_level].grounds.sand.push({rect: [300, 500, 50, 50]});
+    show_data();
+    draw();
+}
+function add_ice() {
+    data[loaded_level].grounds.ice.push({rect: [300, 500, 50, 50]});
     show_data();
     draw();
 }
@@ -524,7 +607,11 @@ function load_next_level() {
     let index = Number(loaded_level.split("_")[1])+1;
     if (!(`level_${index}` in data)) {
         data[`level_${index}`] = {
-            grounds: [],
+            grounds: {
+                water: [],
+                sand: [],
+                ice: []
+            },
             walls:[],
             winds: [],
             blackholes: [],

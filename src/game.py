@@ -12,7 +12,6 @@ import assets_manager
 class Game(BaseState):
     def __init__(self, state_manager, level_manager, save_manager):
         #DEBUG
-        self.w = Water(py.Rect(400, 600, 150, 100))
         self.show_ball_speed = False
         self.show_ball_pos = False
         
@@ -55,15 +54,15 @@ class Game(BaseState):
         self.next_arrow_sprite = assets_manager.get_image("next_arrow")
         
         self.back_to_menu_button = Button(text="", rect=py.Rect(30, 30, 30, 30), font_size=10, color=(255, 255, 255), hover_color=(255, 0, 0), action=self.back_to_menu, sprite=self.back_to_menu_button_sprite, sound="click")
-        self.reset_button = Button(text="", rect=py.Rect(570, 30, 150, 50), font_size=10, color=(255, 255, 255), hover_color=(200, 200, 200), action=self.reset, sound="click",  border=False, sprite=self.undo_arrow_sprite)
+        self.reset_button = Button(text="", rect=py.Rect(self.WIDTH-30, 30, 150, 50), font_size=10, color=(255, 255, 255), hover_color=(200, 200, 200), action=self.reset, sound="click",  border=False, sprite=self.undo_arrow_sprite)
         self.buttons = [self.back_to_menu_button, self.reset_button]
         
         
         #End_level_menu
         self.end_level_menu_elem = []
-        self.end_level_menu_elem.append(Button(text="", rect=py.Rect(self.WIDTH//2 + 175, self.HEIGHT//2, 150, 50), font_size=40, color=(255, 255, 255), hover_color=(200, 200, 200), action=self.next_level, sound="click", border=True, sprite=self.next_arrow_sprite))
-        self.end_level_menu_elem.append(Button(text="", rect=py.Rect(self.WIDTH//2 , self.HEIGHT//2, 150, 50), font_size=40, color=(255, 255, 255), hover_color=(200, 200, 200), action=self.reset, sound="click", border=True, sprite=self.undo_arrow_sprite))
-        self.end_level_menu_elem.append(Button(text="", rect=py.Rect(self.WIDTH//2- 175, self.HEIGHT//2, 150, 50), font_size=35, color=(255, 255, 255), hover_color=(200, 200, 200), action=self.back_to_menu, sound="click", border=True, sprite=self.home_sprite))
+        self.end_level_menu_elem.append(Button(text="", rect=py.Rect(self.WIDTH//2 + 175, 3*self.HEIGHT//5, 150, 50), font_size=40, color=(255, 255, 255), hover_color=(200, 200, 200), action=self.next_level, sound="click", border=True, sprite=self.next_arrow_sprite))
+        self.end_level_menu_elem.append(Button(text="", rect=py.Rect(self.WIDTH//2 , 3*self.HEIGHT//5, 150, 50), font_size=40, color=(255, 255, 255), hover_color=(200, 200, 200), action=self.reset, sound="click", border=True, sprite=self.undo_arrow_sprite))
+        self.end_level_menu_elem.append(Button(text="", rect=py.Rect(self.WIDTH//2- 175, 3*self.HEIGHT//5, 150, 50), font_size=35, color=(255, 255, 255), hover_color=(200, 200, 200), action=self.back_to_menu, sound="click", border=True, sprite=self.home_sprite))
         
     def enter(self, **kwargs):
         self.level_to_load = kwargs["level"]
@@ -73,6 +72,7 @@ class Game(BaseState):
         pos = Vector2(level["hole_pos"][0]+100, level["hole_pos"][1])
         self.hole = Hole(pos, self.hole_sprite)
         self.walls = []
+        self.waters = []
         self.grounds = []
         self.winds = []
         self.blackholes = []
@@ -86,9 +86,13 @@ class Game(BaseState):
         
         
         if "grounds" in level:
-            for ground in level["grounds"]:
-                rect = py.Rect(ground["rect"][0] + 100, ground["rect"][1], ground["rect"][2], ground["rect"][3])
-                self.grounds.append(Ground(rect, ground["type"]))
+            for ground_type in level["grounds"]:
+                for ground in level["grounds"][ground_type]:
+                    rect = py.Rect(ground["rect"][0] + 100, ground["rect"][1], ground["rect"][2], ground["rect"][3])
+                    if ground_type == "water":
+                        self.waters.append(Water(rect, None))
+                    else:
+                        self.grounds.append(Ground(rect, ground_type))
         
         if "winds" in level:
             for wind in level["winds"]:
@@ -160,9 +164,10 @@ class Game(BaseState):
         py.draw.line(screen, (0, 0, 0), (700, 0), (700, 1000), 2)
         for blackhole in self.blackholes:
             blackhole.draw(screen)
+        for water in self.waters:
+            water.draw(screen, offset)
         for ground in self.grounds:
             ground.draw(screen)
-        self.w.draw(screen, offset)
         self.hole.draw(screen, offset)
         if self.in_game:
             self.player.draw(screen, offset)
@@ -184,7 +189,8 @@ class Game(BaseState):
         stroke_surface = self.font.render(f"Stroke {self.stroke}", True, (255, 255, 255))
         screen.blit(stroke_surface, py.Rect(self.WIDTH//2 - stroke_surface.get_width()//2, 20, 30, 20))
         
-        screen.blit(self.top_ground_sprite, py.Rect(0, 0, 800, 1000))
+        rect = py.Rect(offset.x, offset.y, self.WIDTH, self.HEIGHT)
+        screen.blit(self.top_ground_sprite, rect)
         
         
         #UI
@@ -259,8 +265,9 @@ class Game(BaseState):
                     is_on_special_ground = True
                     self.player.v = ground.handle_collision(self.player.v, dt)
                 
-            if self.w.detect_collision(self.player.pos, self.player.radius):
-                self.player.drowning = True
+            for water in self.waters:
+                if water.detect_collision(self.player.pos, self.player.radius):
+                    self.player.drowning = True
             
             if self.hole.detect_collision(self.player.pos, self.player.radius):
                 self.win()

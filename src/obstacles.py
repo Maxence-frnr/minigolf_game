@@ -153,6 +153,7 @@ class Water:
 class Ground:
     def __init__(self, rect:py.Rect, type):
         self.rect = rect
+        self.rect.center = (rect[0], rect[1])
         if type == "sand":
             self.color = (255, 207, 92)
             self.friction = 600

@@ -17,8 +17,8 @@ class LevelSelectionMenu(BaseState):
         self.back_to_menu_button_sprite = assets_manager.get_image("back_arrow")
         self.buttons = []
         self.buttons.append(Button(text="", rect=py.Rect(30, 30, 30, 30), font_size=10, color=(255, 255, 255), hover_color=(255, 0, 0), action=self.back_to_menu, sprite=self.back_to_menu_button_sprite, sound="click"))
-        self.title = Label("Level Selection", py.Rect(300, 60, 400, 75), 50, (255, 255, 255))
-        self.pos_x = 300
+        self.title = Label("Level Selection", py.Rect(self.WIDTH//2, 60, 400, 75), 50, (255, 255, 255))
+        self.pos_x = self.WIDTH//2
         self.pos_y = 175
         
         

@@ -28,7 +28,6 @@ def load_all_sprites():
     load_image("next_arrow", "assets\\sprites\\white_arrow.png")   
     load_image("undo_arrow", "assets\\sprites\\undo_arrow.png")    
     load_image("wind_arrows", "assets\\sprites\\wind_arrows_edited.png")
-    load_image("grass_particle", "assets\\sprites\\grass_particle.png")
     load_image("tree_topground", "assets\\sprites\\plain_biome_sketch.png")
     for i in range(1, 10):
         load_image(f"blackhole{i}", f"assets\\sprites\\blackhole_anim_256x{i}.png")
