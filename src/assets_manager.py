@@ -29,8 +29,10 @@ def load_all_sprites():
     load_image("undo_arrow", "assets\\sprites\\undo_arrow.png")    
     load_image("wind_arrows", "assets\\sprites\\wind_arrows_edited.png")
     load_image("tree_topground", "assets\\sprites\\plain_biome_sketch.png")
+    load_image("plain_biome_background", "assets\\sprites\\plain_biome_background.png")
+    load_image("plain_biome_flowers", "assets\\sprites\\plain_biome_flowers.png")
     for i in range(1, 10):
-        load_image(f"blackhole{i}", f"assets\\sprites\\blackhole_anim_256x{i}.png")
+        load_image(f"blackhole{i}", f"assets\\sprites\\blackhole{i}.png")
 
 def load_all_sounds():
     load_sound("swing", "assets\\sounds\\swing.mp3")

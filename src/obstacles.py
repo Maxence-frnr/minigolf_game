@@ -1,6 +1,7 @@
 import pygame as py
 from pygame import Vector2
 import math
+import assets_manager
 
 
 class Wall:
@@ -257,15 +258,8 @@ class Blackhole:
         self.radius = radius
         self.strength = strength
         self.sprites = []
-        self.sprites.append(py.image.load("assets\\sprites\\blackhole_anim_256x1.png"))
-        self.sprites.append(py.image.load("assets\\sprites\\blackhole_anim_256x2.png"))
-        self.sprites.append(py.image.load("assets\\sprites\\blackhole_anim_256x3.png"))
-        self.sprites.append(py.image.load("assets\\sprites\\blackhole_anim_256x4.png"))
-        self.sprites.append(py.image.load("assets\\sprites\\blackhole_anim_256x5.png"))
-        self.sprites.append(py.image.load("assets\\sprites\\blackhole_anim_256x6.png"))
-        self.sprites.append(py.image.load("assets\\sprites\\blackhole_anim_256x7.png"))
-        self.sprites.append(py.image.load("assets\\sprites\\blackhole_anim_256x8.png"))
-        self.sprites.append(py.image.load("assets\\sprites\\blackhole_anim_256x9.png"))
+        for i in range(1, 10):
+            self.sprites.append(assets_manager.get_image(f"blackhole{i}"))
         for i in range(len(self.sprites)):
             self.sprites[i] = py.transform.scale(self.sprites[i], (radius*2, radius*2))
         self.sprite_index = 0
@@ -273,7 +267,7 @@ class Blackhole:
         self.rect = self.image.get_rect(center = pos)
     
     def update(self):
-        self.sprite_index += 0.2
+        self.sprite_index += 0.12
         if self.sprite_index > len(self.sprites) -1 :
             self.sprite_index = 0
         self.image = self.sprites[int(self.sprite_index)]

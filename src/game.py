@@ -29,6 +29,8 @@ class Game(BaseState):
         self.wind_sprite = assets_manager.get_image("wind_arrows")
         self.blackhole_sprites = [assets_manager.get_image(f"blackhole{i}" for i in range(1, 10))]
         self.top_ground_sprite = assets_manager.get_image("tree_topground")
+        self.background_sprite = assets_manager.get_image("plain_biome_background")
+        self.background_detail_sprite = assets_manager.get_image("plain_biome_flowers")
         
         self.swing_sound = assets_manager.get_sound("swing")
         self.bounce_sound = assets_manager.get_sound("bounce")
@@ -355,11 +357,14 @@ class Game(BaseState):
         self.rotated_rect = self.rotated_image.get_rect(center=self.player.pos)
         #FIXME: clean code
         
-    def draw_background(self, screen, offset:Vector2 = Vector2(0, 0)):
-        CELL_SIZE = 50
-        screen.fill((131, 177, 73))
-        for i in range(self.WIDTH // CELL_SIZE):
-            for j in range (self.HEIGHT // CELL_SIZE):
-                if (i + j) %2 == 0:
-                    py.draw.rect(screen, (161, 197, 75), (i*CELL_SIZE + offset[0], j*CELL_SIZE+offset[1], CELL_SIZE, CELL_SIZE), 0 )
+    def draw_background(self, screen:py.Surface, offset:Vector2 = Vector2(0, 0)):
+        rect = py.Rect(offset.x, offset.y, self.WIDTH, self.HEIGHT)
+        screen.blit(self.background_sprite, rect)
+        screen.blit(self.background_detail_sprite, rect)
+        # CELL_SIZE = 50
+        # screen.fill((131, 177, 73))
+        # for i in range(self.WIDTH // CELL_SIZE):
+        #     for j in range (self.HEIGHT // CELL_SIZE):
+        #         if (i + j) %2 == 0:
+        #             py.draw.rect(screen, (161, 197, 75), (i*CELL_SIZE + offset[0], j*CELL_SIZE+offset[1], CELL_SIZE, CELL_SIZE), 0 )
                     

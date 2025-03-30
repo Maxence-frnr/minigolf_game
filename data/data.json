@@ -2,7 +2,7 @@
     "level_unlocked": 16,
     "stats": {
         "level_1": {
-            "attempts": 86,
+            "attempts": 89,
             "highscore": 2
         },
         "level_2": {
@@ -14,8 +14,8 @@
             "highscore": 2
         },
         "level_4": {
-            "attempts": 30,
-            "highscore": 2
+            "attempts": 55,
+            "highscore": 1
         },
         "level_5": {
             "attempts": 22,
@@ -30,7 +30,7 @@
             "highscore": 1
         },
         "level_8": {
-            "attempts": 46,
+            "attempts": 48,
             "highscore": 1
         },
         "level_9": {
