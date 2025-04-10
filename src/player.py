@@ -20,9 +20,12 @@ class Player:
         
 
     def draw(self, screen, offset:Vector2 = Vector2(0, 0)): 
-        #py.draw.circle(screen, "white", self.pos, self.radius)
-        self.rect = self.sprite.get_rect(center = self.pos+ offset)
-        screen.blit(self.sprite, self.rect)
+        #py.draw.circle(screen, "white", self.pos, int(self.size*0.5))
+        #self.rect = self.sprite.get_rect(center = self.pos+ offset)
+        #screen.blit(self.sprite, self.rect)
+        py.draw.circle(screen, "black", self.pos, int(self.size*0.5))
+        py.draw.circle(screen, "white", self.pos, int(self.size*0.5)-3)
+        
         self.particle_group.draw(screen)
 
     def create_particles(self):
@@ -55,9 +58,11 @@ class Player:
             self.v += friction
         else:
             self.v = Vector2(0, 0)
-        
+        # TODO: move this into the else ?
         if self.size > 1:
             self.size -= self.shrink_factor * dt
-            self.sprite = py.transform.scale(self.sprite, (int(self.size), int(self.size)))
+            #self.sprite = py.transform.scale(self.sprite, (int(self.size), int(self.size)))
+            # self.sprite = py.transform.scale_by(self.sprite, self.shrink_factor*dt)
+            self.sprite = py.transform.smoothscale(self.sprite, (int(self.size), int(self.size)))
 
         
