@@ -33,6 +33,10 @@ def load_all_sprites():
     load_image("plain_biome_flowers", "assets\\sprites\\plain_biome_flowers.png")
     for i in range(1, 10):
         load_image(f"blackhole{i}", f"assets\\sprites\\blackhole{i}.png")
+    for i in range(1, 8):
+        load_image(f"wind{i}", f"assets\\sprites\\wind_anim{i}.png")
+    for i in range(1, 6):
+        load_image(f"portal_exit{i}", f"assets\\sprites\\portal{i}.png")
 
 def load_all_sounds():
     load_sound("swing", "assets\\sounds\\swing.mp3")

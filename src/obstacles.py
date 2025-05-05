@@ -313,10 +313,25 @@ class Portal_entry:
 class Portal_exit:
     def __init__(self, pos:Vector2, sprite:py.image=None):
         self.pos = pos
-        self.sprite = sprite
         self.radius = 20
+        self.sprites = []
+        for i in range(1, 6):
+            self.sprites.append(assets_manager.get_image(f"portal_exit{i}"))
+        print(self.sprites[0])
+        for i in range(len(self.sprites)):
+            self.sprites[i] = py.transform.scale(self.sprites[i], (self.radius*2, self.radius*2))
+        self.sprite_index = 0
+        self.image = self.sprites[self.sprite_index]
+        self.rect = self.image.get_rect(center = pos)
     
     def draw(self, screen, offset:Vector2= Vector2(0, 0)):
-        py.draw.circle(screen, (230, 130, 10), self.pos + offset, self.radius, 5)
+        screen.blit(self.image, self.rect)
+        #py.draw.circle(screen, "red", self.pos + offset, self.radius, 1) #orange -> (230, 130, 10)
+    
+    def update(self):
+        self.sprite_index += 0.09
+        if self.sprite_index > len(self.sprites) -1 :
+            self.sprite_index = 0
+        self.image = self.sprites[int(self.sprite_index)]
         
         

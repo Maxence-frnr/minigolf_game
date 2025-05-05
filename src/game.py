@@ -140,6 +140,9 @@ class Game(BaseState):
         self.player.update(dt)
         for blackhole in self.blackholes:
             blackhole.update()
+        
+        for portal_exit in self.portals_exit:
+            portal_exit.update()
 
     def win(self):
         py.mixer.Sound(self.hole_sound).play()
