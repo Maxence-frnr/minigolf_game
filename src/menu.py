@@ -15,15 +15,34 @@ class MenuState(BaseState):
         self.buttons = [self.play_button]
         self.background_music = assets_manager.get_sound("background_music")
 
-        self.volume_label = Label('50', py.Rect(400, 600, 50, 30), border= True, border_width=2)
-        self.volume_plus_button = Button('+', py.Rect(450, 600, 25, 25), border= True, border_width=2)
-        self.volume_minus_button = Button('-', py.Rect(350, 600, 25, 25), border= True, border_width=2)
+        self.default_volume = 0.5
+
+        self.volume_label = Label(str(int(self.default_volume* 100)), py.Rect(400, 600, 50, 30), border= True, border_width=2)
+        self.volume_plus_button = Button('+', py.Rect(450, 600, 25, 25), border= True, border_width=2, action=self.update_volume, action_arg=0.1, sound='click')
+        self.volume_minus_button = Button('-', py.Rect(350, 600, 25, 25), border= True, border_width=2, action=self.update_volume, action_arg=-0.1, sound='click')
+
+        self.buttons.append(self.volume_plus_button)
+        self.buttons.append(self.volume_minus_button)
 
         
     def update_window_size(self, screen):
         self.WIDTH, self.HEIGHT = py.display.get_window_size()
     
+    def update_volume(self, change)->None:
+        current_volume = py.mixer.music.get_volume()
+        if current_volume + change < 0:
+            new_volume = 0.0
+        elif current_volume + change > 1.0:
+            new_volume = 1.0
+        else:
+            new_volume = int(5 * round(float(int((current_volume + change)*100))/5)) # arrondi au 0.05 près
+            new_volume = round(new_volume / 100, 2)
+        self.volume_label.text = str(int(new_volume*100))
+        py.mixer.music.set_volume(new_volume)
+        
+    
     def enter(self, **kwargs):
+        py.mixer.music.set_volume(self.default_volume)
         py.mixer.music.play(-1, 0, 1000)
     
     def exit(self):
