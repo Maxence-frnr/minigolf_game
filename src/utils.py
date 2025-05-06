@@ -53,7 +53,7 @@ class Button:
         
     def draw(self, screen:py.Surface):
         if self.border:
-            py.draw.rect(screen, self.color, self.border_rect, 3, 3)
+            py.draw.rect(screen, self.color, self.border_rect, self.border_width, 3)
         color = self.hover_color if self.is_hovered else self.color
         if self.sprite: screen.blit(self.sprite, self.sprite_rect)
         text = self.font.render(self.text, True, color)
@@ -121,7 +121,7 @@ class Label:
     def draw(self, screen:py.Surface):
         color = self.color
         if self.border:
-            py.draw.rect(screen, color, self.border_rect, 3, 3)
+            py.draw.rect(screen, color, self.border_rect, self.border_width, 3)
         if self.sprite: screen.blit(self.sprite, self.sprite_rect)
         text = self.font.render(self.text, True, color)
         text_rect = text.get_rect(center= (self.rect[0], self.rect[1]))

@@ -21,10 +21,10 @@ class Player:
 
     def draw(self, screen, offset:Vector2 = Vector2(0, 0)): 
         #py.draw.circle(screen, "white", self.pos, int(self.size*0.5))
-        #self.rect = self.sprite.get_rect(center = self.pos+ offset)
-        #screen.blit(self.sprite, self.rect)
-        py.draw.circle(screen, "black", self.pos, int(self.size*0.5))
-        py.draw.circle(screen, "white", self.pos, int(self.size*0.5)-3)
+        self.rect = self.sprite.get_rect(center = self.pos+ offset)
+        screen.blit(self.sprite, self.rect)
+       # py.draw.circle(screen, "black", self.pos, int(self.size*0.5))
+        #py.draw.circle(screen, "white", self.pos, int(self.size*0.5)-3)
         
         self.particle_group.draw(screen)
 

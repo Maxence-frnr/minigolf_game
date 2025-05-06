@@ -1,6 +1,7 @@
 import pygame as py
 from state_manager import BaseState
-from utils import Button
+from utils import Button, Label
+import assets_manager
 
 class MenuState(BaseState):
     def __init__(self, state_manager):
@@ -12,11 +13,23 @@ class MenuState(BaseState):
         
         self.play_button = Button("Play", py.Rect(self.WIDTH//2, self.HEIGHT//2, 130, 80), 75, (255, 255, 255), (210, 210, 210), self.play, border=True, sound="click")
         self.buttons = [self.play_button]
+        self.background_music = assets_manager.get_sound("background_music")
+
+        self.volume_label = Label('50', py.Rect(400, 600, 50, 30), border= True, border_width=2)
+        self.volume_plus_button = Button('+', py.Rect(450, 600, 25, 25), border= True, border_width=2)
+        self.volume_minus_button = Button('-', py.Rect(350, 600, 25, 25), border= True, border_width=2)
 
         
     def update_window_size(self, screen):
         self.WIDTH, self.HEIGHT = py.display.get_window_size()
-
+    
+    def enter(self, **kwargs):
+        py.mixer.music.play(-1, 0, 1000)
+    
+    def exit(self):
+        print("leaving main menu")
+        py.mixer.music.fadeout(2000)
+ 
     def draw(self, screen):
         self.draw_background(screen)
         self.play_button.draw(screen)
@@ -24,6 +37,10 @@ class MenuState(BaseState):
         title_surface_pos_x = self.WIDTH//2 - title_surface.get_width()//2
         title_surface_pos_y = self.HEIGHT//2- 175
         screen.blit(title_surface, (title_surface_pos_x, title_surface_pos_y))
+
+        self.volume_label.draw(screen)
+        self.volume_plus_button.draw(screen)
+        self.volume_minus_button.draw(screen)
     
     def draw_background(self, screen):
         CELL_SIZE = 50

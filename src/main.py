@@ -31,7 +31,7 @@ save_manager = SaveManager('data\\data.json')#load all saved data in data.json
 
 menu_state = MenuState(state_manager)
 level_selection_menu_state = LevelSelectionMenu(state_manager, save_manager, level_manager)
-game_state = Game(state_manager,  level_manager, save_manager)
+game_state =  Game(state_manager,  level_manager, save_manager)
 state_manager.add_state("menu", menu_state)
 state_manager.add_state("level_selection_menu", level_selection_menu_state)
 state_manager.add_state("game", game_state)

@@ -11,6 +11,9 @@ def get_image(name):
 
 def load_sound(name, path):
     _sounds[name] = mixer.Sound(path)
+
+def load_music(name, path):
+    _sounds[name] = mixer.music.load(path)
     
 def get_sound(name):
     return _sounds.get(name)
@@ -46,3 +49,6 @@ def load_all_sounds():
     load_sound("hole", "assets\\sounds\\hole.mp3")
     load_sound("click", "assets\\sounds\\click.mp3")
     load_sound("portal", "assets\\sounds\\portal.mp3")
+    
+    #musics
+    load_music("background_music", "assets\\sounds\\background_music.mp3")
