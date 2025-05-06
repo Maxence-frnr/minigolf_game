@@ -36,6 +36,8 @@ def load_all_sprites():
     for i in range(1, 8):
         load_image(f"wind{i}", f"assets\\sprites\\wind_anim{i}.png")
     for i in range(1, 6):
+        load_image(f"portal_entry{i}", f"assets\\sprites\\portal_entry{i}.png")
+    for i in range(1, 6):
         load_image(f"portal_exit{i}", f"assets\\sprites\\portal{i}.png")
 
 def load_all_sounds():

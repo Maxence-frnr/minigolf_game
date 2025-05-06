@@ -185,9 +185,21 @@ class Wind:
                                  -round(math.sin(math.radians(direction)), 2))
         self.strength = self.direction * strength
         self.angle = direction
+        print("angle", direction)
         
-        self.sprite = py.transform.scale(sprite, (rect[2], rect[3]))
-        self.sprite = py.transform.rotate(self.sprite, direction)
+        #self.sprite = py.transform.scale(sprite, (rect[2], rect[3]))
+        #self.sprite = py.transform.rotate(self.sprite, direction)
+
+        self.sprites = []
+        for i in range(1, 8):
+            self.sprites.append(assets_manager.get_image(f"wind{i}"))
+        for i in range(len(self.sprites)):
+            self.sprites[i] = py.transform.scale(self.sprites[i], (rect[3], rect[2]))
+            self.sprites[i] = py.transform.rotate(self.sprites[i], direction + 90)
+            
+        self.sprite_index = 0
+        self.image = self.sprites[self.sprite_index]
+        self.rect = self.image.get_rect(center = (rect[0], rect[1]))
 
         self.center  = (rect[0], rect[1])
         self.width = rect[2]
@@ -207,8 +219,14 @@ class Wind:
 
     
     def draw(self, screen):
-        screen.blit(self.sprite, self.sprite.get_rect(center = self.center))
+        screen.blit(self.image, self.rect)
         #py.draw.polygon(screen, (255, 0, 0), self.corners, 2)
+
+    def update(self, dt):
+        self.sprite_index += 0.1
+        if self.sprite_index > len(self.sprites) -1 :
+            self.sprite_index = 0
+        self.image = self.sprites[int(self.sprite_index)]
         
     def detect_collision(self, player_pos, player_radius):
         return self.sat_collision(player_pos, player_radius)
@@ -266,7 +284,7 @@ class Blackhole:
         self.image = self.sprites[self.sprite_index]
         self.rect = self.image.get_rect(center = pos)
     
-    def update(self):
+    def update(self, dt):
         self.sprite_index += 0.12
         if self.sprite_index > len(self.sprites) -1 :
             self.sprite_index = 0
@@ -297,10 +315,24 @@ class Portal_entry:
         self.pos = pos
         self.radius = 20
         self.exit_pos = exit_pos
-        self.sprite = sprite
+        self.sprites = []
+        for i in range(1, 6):
+            self.sprites.append(assets_manager.get_image(f"portal_entry{i}"))
+        for i in range(len(self.sprites)):
+            self.sprites[i] = py.transform.scale(self.sprites[i], (self.radius*2, self.radius*2))
+        self.sprite_index = 0
+        self.image = self.sprites[self.sprite_index]
+        self.rect = self.image.get_rect(center = pos)
     
     def draw(self, screen, offset:Vector2= Vector2(0, 0)):
-        py.draw.circle(screen, (0, 150, 210), self.pos + offset, self.radius, 5)
+        screen.blit(self.image, self.rect)
+        #py.draw.circle(screen, "blue", self.pos + offset, self.radius, 1)#blue color (0, 150, 210)
+    
+    def update(self, dt):
+        self.sprite_index += 0.09
+        if self.sprite_index > len(self.sprites) -1 :
+            self.sprite_index = 0
+        self.image = self.sprites[int(self.sprite_index)]
         
     def detect_collision(self, player_pos:Vector2, player_radius:float):
         d = self.pos.distance_to(player_pos)
@@ -328,7 +360,7 @@ class Portal_exit:
         screen.blit(self.image, self.rect)
         #py.draw.circle(screen, "red", self.pos + offset, self.radius, 1) #orange -> (230, 130, 10)
     
-    def update(self):
+    def update(self, dt):
         self.sprite_index += 0.09
         if self.sprite_index > len(self.sprites) -1 :
             self.sprite_index = 0

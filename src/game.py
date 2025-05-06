@@ -139,10 +139,15 @@ class Game(BaseState):
         
         self.player.update(dt)
         for blackhole in self.blackholes:
-            blackhole.update()
+            blackhole.update(dt)
+
+        for wind in self.winds:
+            wind.update(dt)
         
+        for portal_entry in self.portals_entry:
+            portal_entry.update(dt)
         for portal_exit in self.portals_exit:
-            portal_exit.update()
+            portal_exit.update(dt)
 
     def win(self):
         py.mixer.Sound(self.hole_sound).play()
