@@ -29,7 +29,7 @@ state_manager = StateManager()
 level_manager = LevelManager('data\\levels.json')#automaticaly load all levels from the json
 save_manager = SaveManager('data\\data.json')#load all saved data in data.json
 
-menu_state = MenuState(state_manager)
+menu_state = MenuState(state_manager, save_manager)
 level_selection_menu_state = LevelSelectionMenu(state_manager, save_manager, level_manager)
 game_state =  Game(state_manager,  level_manager, save_manager)
 state_manager.add_state("menu", menu_state)

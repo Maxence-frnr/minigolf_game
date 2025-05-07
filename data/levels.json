@@ -32,7 +32,7 @@
     "blackholes":[],
     "portals":[]},
 "level_5":{
-    "grounds":{"water":[{"rect":[300,500,150,100]}],"sand":[],"ice":[]},
+    "grounds":{"water":[{"rect":[300,450,150,150]}],"sand":[],"ice":[]},
 "walls":[{"rect":[105,500,210,25],"direction":0},{"rect":[525,500,150,50],"direction":0}],
 "winds":[],
 "blackholes":[],
@@ -118,5 +118,13 @@
 "blackholes":[{"pos":[600,70],"radius":100,"strength":300}],
 "portals":[{"entry_pos":[550,50],"exit_pos":[50,950]}],
 "player_pos":[300,750],
-"hole_pos":[50,50]}
+"hole_pos":[50,50]},
+"level_16":{
+    "player_pos":[300,750],
+    "hole_pos":[300,250],
+    "walls":[{"rect":[150,500, 100,20],"direction":0},{"rect":[150,500,20,100],"direction":0},  {"rect":[450,500,100,25],"direction":0}, {"rect":[450,500,25,100],"direction":0}],
+    "grounds":{"sand":[],"ice":[],"water":[]},
+    "winds":[],
+    "blackholes":[],
+    "portals":[]}
 }

@@ -12,7 +12,6 @@ class Camera:
         
     def start_shake(self, intensity:float):#length en secondes
         self.shake_intensity = intensity
-        print("started shake")
     
     def update(self):
         if self.shake_intensity > 0:
@@ -41,6 +40,8 @@ class Button:
         self.border_radius = border_radius
         if sound:
             self.sound = assets_manager.get_sound(sound)
+        else:
+            self.sound = False
         
         self.is_hovered = False
 

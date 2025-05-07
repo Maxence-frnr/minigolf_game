@@ -1,64 +1,69 @@
 {
-    "level_unlocked": 16,
+    "music_volume": 0.0,
+    "level_unlocked": 17,
     "stats": {
         "level_1": {
-            "attempts": 89,
+            "attempts": 93,
             "highscore": 2
         },
         "level_2": {
-            "attempts": 31,
+            "attempts": 37,
             "highscore": 2
         },
         "level_3": {
-            "attempts": 67,
-            "highscore": 2
+            "attempts": 70,
+            "highscore": 1
         },
         "level_4": {
-            "attempts": 55,
+            "attempts": 59,
             "highscore": 1
         },
         "level_5": {
-            "attempts": 22,
+            "attempts": 24,
             "highscore": 1
         },
         "level_6": {
-            "attempts": 43,
+            "attempts": 44,
             "highscore": 1
         },
         "level_7": {
-            "attempts": 56,
-            "highscore": 1
+            "attempts": 57,
+            "highscore": 2
         },
         "level_8": {
-            "attempts": 48,
-            "highscore": 1
-        },
-        "level_9": {
-            "attempts": 31,
-            "highscore": 1
-        },
-        "level_10": {
             "attempts": 58,
             "highscore": 1
         },
+        "level_9": {
+            "attempts": 33,
+            "highscore": 1
+        },
+        "level_10": {
+            "attempts": 62,
+            "highscore": 2
+        },
         "level_11": {
-            "attempts": 19,
+            "attempts": 29,
             "highscore": 1
         },
         "level_12": {
-            "attempts": 15,
+            "attempts": 20,
             "highscore": 1
         },
         "level_13": {
-            "attempts": 13,
-            "highscore": 2
-        },
-        "level_14": {
-            "attempts": 19,
+            "attempts": 15,
             "highscore": 1
         },
+        "level_14": {
+            "attempts": 21,
+            "highscore": 2
+        },
         "level_15": {
-            "attempts": 9,
+            "attempts": 11,
+            "highscore": 1
+        },
+        "level_16": {
+            "attempts": 1,
             "highscore": 1
         }
     }

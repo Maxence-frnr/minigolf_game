@@ -2,6 +2,7 @@ import pygame as py
 from pygame import Vector2
 import math
 import assets_manager
+import time
 
 
 class Wall:
@@ -9,12 +10,26 @@ class Wall:
         self.direction = Vector2(round(math.cos(math.radians(direction)), 2), 
                                  -round(math.sin(math.radians(direction)), 2))
         self.angle = direction
-
+        self.sprite = assets_manager.get_image("wall")
+        self.image = py.transform.rotate(self.sprite, direction)
         self.center  = (rect[0], rect[1])
         self.width = rect[2]
         self.height = rect[3]
         
         self.update_corners()
+        self.rects = []
+        num_tiles_x = rect[2] // 25
+        num_tiles_y = rect[3] // 25
+        direction_rad = math.radians(-direction)
+
+        dir_along = Vector2(math.cos(direction_rad), math.sin(direction_rad))  # le long du mur
+        dir_across = Vector2(-dir_along.y, dir_along.x)  # perpendiculaire au mur
+        origin = Vector2(self.center) - dir_along * (self.width / 2) - dir_across * (self.height / 2)
+        for y in range(num_tiles_y):
+            for x in range(num_tiles_x):
+
+                tile_pos = origin + dir_along * (x * 25) + dir_across * (y * 25)
+                self.rects.append(py.Rect(tile_pos.x, tile_pos.y, 25, 25))
         
     def update_corners(self):
         half_width, half_height = self.width//2, self.height //2
@@ -27,9 +42,13 @@ class Wall:
         self.corners = [self.center + point.rotate_rad(rad) for point in corners]
 
     
-    def draw(self, screen, offset:Vector2= Vector2(0, 0)):
+    def draw(self, screen:py.Surface, offset:Vector2= Vector2(0, 0)):
         shaken_corners = [corner + offset for corner in self.corners]
         py.draw.polygon(screen, (255, 0, 0), shaken_corners, 2)
+        for rect in self.rects:
+            screen.blit(self.image, rect)
+        #py.draw.rect(screen, "purple", self.rects[0])
+        
         
     def detect_collision(self, player_pos, player_radius):
         return self.sat_collision(player_pos, player_radius)
@@ -135,7 +154,7 @@ class Wall:
 class Water:
     def __init__(self, rect:py.Rect, sprite=None):
         self.rect = rect
-        self.friction = 1000
+        self.friction = 1200
         self.sprite = sprite
         self.rect.center = (rect[0], rect[1])
         

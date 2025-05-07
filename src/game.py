@@ -276,7 +276,7 @@ class Game(BaseState):
                     self.player.v = ground.handle_collision(self.player.v, dt)
                 
             for water in self.waters:
-                if water.detect_collision(self.player.pos, self.player.radius):
+                if water.detect_collision(self.player.pos, self.player.radius) and self.player.v.length() < 50:
                     self.player.drowning = True
             
             if self.hole.detect_collision(self.player.pos, self.player.radius):
