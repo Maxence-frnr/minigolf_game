@@ -1,69 +1,77 @@
 {
-    "music_volume": 0.0,
-    "level_unlocked": 17,
+    "music_volume": 0.1,
+    "level_unlocked": 19,
     "stats": {
         "level_1": {
-            "attempts": 93,
+            "attempts": 94,
             "highscore": 2
         },
         "level_2": {
-            "attempts": 37,
-            "highscore": 2
+            "attempts": 43,
+            "highscore": 1
         },
         "level_3": {
-            "attempts": 70,
+            "attempts": 76,
             "highscore": 1
         },
         "level_4": {
-            "attempts": 59,
-            "highscore": 1
-        },
-        "level_5": {
-            "attempts": 24,
-            "highscore": 1
-        },
-        "level_6": {
-            "attempts": 44,
-            "highscore": 1
-        },
-        "level_7": {
-            "attempts": 57,
-            "highscore": 2
-        },
-        "level_8": {
-            "attempts": 58,
-            "highscore": 1
-        },
-        "level_9": {
-            "attempts": 33,
-            "highscore": 1
-        },
-        "level_10": {
             "attempts": 62,
             "highscore": 2
         },
-        "level_11": {
-            "attempts": 29,
+        "level_5": {
+            "attempts": 26,
+            "highscore": 2
+        },
+        "level_6": {
+            "attempts": 49,
+            "highscore": 2
+        },
+        "level_7": {
+            "attempts": 62,
+            "highscore": 2
+        },
+        "level_8": {
+            "attempts": 67,
             "highscore": 1
         },
+        "level_9": {
+            "attempts": 35,
+            "highscore": 1
+        },
+        "level_10": {
+            "attempts": 63,
+            "highscore": 1
+        },
+        "level_11": {
+            "attempts": 36,
+            "highscore": 3
+        },
         "level_12": {
-            "attempts": 20,
+            "attempts": 23,
             "highscore": 1
         },
         "level_13": {
-            "attempts": 15,
+            "attempts": 16,
             "highscore": 1
         },
         "level_14": {
-            "attempts": 21,
+            "attempts": 22,
             "highscore": 2
         },
         "level_15": {
-            "attempts": 11,
+            "attempts": 12,
             "highscore": 1
         },
         "level_16": {
-            "attempts": 1,
+            "attempts": 11,
+            "highscore": 1
+        },
+        "level_17": {
+            "attempts": 4,
+            "highscore": 1
+        },
+        "level_18": {
+            "attempts": 24,
             "highscore": 1
         }
     }

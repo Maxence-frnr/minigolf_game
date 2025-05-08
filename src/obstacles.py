@@ -41,12 +41,9 @@ class Wall:
 
     
     def draw(self, screen:py.Surface, offset:Vector2= Vector2(0, 0)):
-        shaken_corners = [corner + offset for corner in self.corners]
-        py.draw.polygon(screen, (255, 0, 0), shaken_corners, 2)
+        #shaken_corners = [corner + offset for corner in self.corners]
+        #py.draw.polygon(screen, (255, 0, 0), shaken_corners, 2)
         screen.blit(self.rotated_surface, self.rotated_rect)
-        #py.draw.rect(screen, "purple", self.rects[0])
-        py.draw.circle(screen, "purple", self.center, 1)
-        
         
     def detect_collision(self, player_pos, player_radius):
         return self.sat_collision(player_pos, player_radius)
@@ -175,17 +172,28 @@ class Ground:
         if type == "sand":
             self.color = (255, 207, 92)
             self.friction = 600
-        
+            sprite = assets_manager.get_image("sand")
+    
         elif type == "ice":
             self.color = (0, 255, 255)
             self.friction = 100
+            sprite = assets_manager.get_image("ice")
         
         elif type == "boost":
             self.color = (222, 76, 18)
             self.friction = -100
+            sprite = None
+        
+        self.surface:py.Surface = py.Surface((rect[2], rect[3]))
+        nbr_col = rect[2] // 50
+        nbr_row = rect[3] // 50
+        for i in range(nbr_col):
+            for j in range(nbr_row):
+                self.surface.blit(sprite, (i*50, j*50))
 
-    def draw(self, screen):
+    def draw(self, screen:py.Surface):
         py.draw.rect(screen, self.color, self.rect)
+        screen.blit(self.surface, self.rect)
 
     def detect_collision(self, player_pos):
         return self.rect.collidepoint(player_pos)
@@ -202,7 +210,6 @@ class Wind:
                                  -round(math.sin(math.radians(direction)), 2))
         self.strength = self.direction * strength
         self.angle = direction
-        print("angle", direction)
         
         #self.sprite = py.transform.scale(sprite, (rect[2], rect[3]))
         #self.sprite = py.transform.rotate(self.sprite, direction)
@@ -366,7 +373,6 @@ class Portal_exit:
         self.sprites = []
         for i in range(1, 6):
             self.sprites.append(assets_manager.get_image(f"portal_exit{i}"))
-        print(self.sprites[0])
         for i in range(len(self.sprites)):
             self.sprites[i] = py.transform.scale(self.sprites[i], (self.radius*2, self.radius*2))
         self.sprite_index = 0

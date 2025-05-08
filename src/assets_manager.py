@@ -26,6 +26,8 @@ def load_all_sprites():
     load_image("ball", "assets\\sprites\\16x16 ball.png")
     load_image("hole", "assets\\sprites\\hole_24x24.png")
     load_image("wall", "assets\\sprites\\wall_brick_25x25.png")
+    load_image("sand", "assets\\sprites\\sand.png")
+    load_image("ice", "assets\\sprites\\ice.png")
     load_image("home", "assets\\sprites\\home.png")
     load_image("back_arrow", "assets\\sprites\\back_arrow.png")
     load_image("white_arrow", "assets\\sprites\\white_arrow_edited.png")
