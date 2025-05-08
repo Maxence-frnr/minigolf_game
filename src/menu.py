@@ -42,7 +42,8 @@ class MenuState(BaseState):
         self.volume_label.text = str(int(new_volume*100))
         py.mixer.music.set_volume(new_volume)
         self.save_manager.data["music_volume"] = new_volume
-        self.save_manager.save_data()        
+        self.save_manager.save_data()
+        self.saved_volume = new_volume
     
     def enter(self, **kwargs):
         py.mixer.music.set_volume(self.saved_volume)

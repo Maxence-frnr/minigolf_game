@@ -259,6 +259,10 @@ class Game(BaseState):
                 self.camera.start_shake(0.7)
             if keys[py.K_ESCAPE]:
                 self.back_to_menu()
+            
+            if keys[py.K_e]:
+                mp = py.mouse.get_pos()
+                print("mp", mp)
 
     def update_player_pos(self, dt): #Calc physics of the player
         if not self.in_game: return
