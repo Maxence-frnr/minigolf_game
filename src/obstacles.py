@@ -10,43 +10,25 @@ class Wall:
         self.direction = Vector2(round(math.cos(math.radians(direction)), 2), 
                                  -round(math.sin(math.radians(direction)), 2))
         self.angle = direction
-        self.sprite = assets_manager.get_image("wall")
-        self.image = py.transform.rotate(self.sprite, direction)
-        self.center  = (rect[0], rect[1])
-        self.width = rect[2]
-        self.height = rect[3]
+        self.width, self.height = rect[2], rect[3]
+        self.center = (rect[0],rect[1])
+        sprite:py.Surface = assets_manager.get_image("wall")
+        sprite_size = sprite.get_width()
+        new_surface = py.Surface((self.width, self.height)).convert_alpha()
+        nbr_col = self.width // 25
+        nbr_row = self.height // 25
+        for i in range(nbr_col):
+            for j in range(nbr_row):
+                new_surface.blit(sprite, (i* sprite_size, j*sprite_size))
+        new_rect = new_surface.get_rect(center=(self.center))
+        self.rotated_surface = py.transform.rotate(new_surface, int(direction))
+        self.rotated_rect = self.rotated_surface.get_rect(center=(self.center))
+
         
         self.update_corners()
-        self.rects = []
-        num_tiles_x = rect[2] // 25
-        num_tiles_y = rect[3] // 25
-        direction_rad = math.radians(-direction)
 
-        # dir_along = Vector2(math.cos(direction_rad), math.sin(direction_rad))  # le long du mur
-        # dir_across = Vector2(-dir_along.y, dir_along.x)  # perpendiculaire au mur
-        # origin = Vector2(self.center) - dir_along * (self.width / 2) - dir_across * (self.height / 2)
-        # for i in range(num_tiles_y):
-        #     for j in range(num_tiles_x):
 
-        #         tile_pos = origin + dir_along * (j * 25) + dir_across * (i * 25)
-        #         self.rects.append(py.Rect(tile_pos.x, tile_pos.y, 25, 25))
-        cos_a = math.cos(direction_rad)
-        sin_a = math.sin(direction_rad)
-        origin_offset_x = -rect[2] / 2
-        origin_offset_y = -rect[3] / 2
-        print(origin_offset_x, origin_offset_y, direction)
-
-        for i in range(num_tiles_y):
-            for j in range(num_tiles_x):
-                local_x = origin_offset_x + j * 25
-                local_y = origin_offset_y + i * 25
-
-                rotated_x = local_x * cos_a - local_y * sin_a
-                rotated_y = local_x * sin_a + local_y * cos_a
-
-                pos_x = rect[0] + rotated_x
-                pos_y = rect[1] + rotated_y
-                self.rects.append((pos_x, pos_y))
+    
     def update_corners(self):
         half_width, half_height = self.width//2, self.height //2
         rad = math.radians(-self.angle)
@@ -61,8 +43,7 @@ class Wall:
     def draw(self, screen:py.Surface, offset:Vector2= Vector2(0, 0)):
         shaken_corners = [corner + offset for corner in self.corners]
         py.draw.polygon(screen, (255, 0, 0), shaken_corners, 2)
-        for rect in self.rects:
-            screen.blit(self.image, rect)
+        screen.blit(self.rotated_surface, self.rotated_rect)
         #py.draw.rect(screen, "purple", self.rects[0])
         py.draw.circle(screen, "purple", self.center, 1)
         
