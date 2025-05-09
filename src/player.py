@@ -33,8 +33,7 @@ class Player:
             Player_Particle(groups=self.particle_group,
                  pos=self.pos,
                  color=(255, 255, 255),
-                 direction= -self.v.normalize(),
-                 speed= self.v.length()/2)
+                 speed= -self.v*1.1)
     
     def update(self, dt:float)-> None:
         self.particle_group.update(dt)

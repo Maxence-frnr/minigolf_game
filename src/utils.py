@@ -137,14 +137,12 @@ class Particle(py.sprite.Sprite):
                 groups: py.sprite.Group, 
                 pos: Vector2, 
                 color: tuple, 
-                direction: Vector2, 
-                speed: float,
+                speed: Vector2,
                 size:int,
                 sprite: py.image=None):
         super().__init__(groups)
         self.pos = pos
         self.color = color
-        self.direction = direction
         self.speed = speed
         self.sprite = sprite
         self.size = size
@@ -166,7 +164,7 @@ class Particle(py.sprite.Sprite):
         
 
     def move(self, dt):
-        self.pos += self.direction * self.speed * dt
+        self.pos += self.speed * dt
         self.rect.center = self.pos
 
     def update(self, dt):
@@ -177,16 +175,15 @@ class Player_Particle(Particle):
     def __init__(self, 
                  groups:py.sprite.Group, 
                  pos, 
-                 color, 
-                 direction, 
-                 speed,
+                 color,  
+                 speed:Vector2,
                  sprite:py.image = None):
         k1 = r.uniform(-0.4, 0.4)
         k2 = k1 = r.uniform(-0.4, 0.4)
-        direction = py.Vector2(direction[0] +k1 , direction[1] + k2).normalize()
+        speed = py.Vector2(speed[0] +k1 , speed[1] + k2).normalize()
         size = r.randint(2, 8)
         
-        super().__init__(groups, pos, color, direction, speed, size, sprite)
+        super().__init__(groups, pos, color, speed, size, sprite)
         
         self.scale = 1
         self.alpha = 255
@@ -195,7 +192,7 @@ class Player_Particle(Particle):
         self.inflate_speed = 5
         self.fade_speed = 400
         self.rotation_speed = round(r.uniform(-1, 1))
-        self.slowing_speed = 75
+        self.slow_factor = 1.1
 
         self.max_size = 20
         self.min_speed = 1
@@ -204,8 +201,8 @@ class Player_Particle(Particle):
         #self.size = self.sprite.get_width()
 
     def slow(self, dt):
-        if self.speed > self.min_speed:
-            self.speed -= self.slowing_speed * dt
+        if self.speed.length() > self.min_speed:
+            self.speed *= self.slow_factor * dt
 
 
     def rotate(self, dt):
@@ -234,3 +231,29 @@ class Player_Particle(Particle):
         self.slow(dt)
         
         self.check_alpha()
+
+
+class HoleInOneParticule(Particle):
+    def __init__(self,
+                 groups:py.sprite.Group,
+                 pos,
+                 color,
+                 speed,
+                 size):
+        self.lifetime = 0.3 # in seconds
+        self.g = Vector2(0, 1000)
+
+        super().__init__(groups, pos, color, speed, size)
+    
+    def decay(self, dt):
+        self.lifetime -= dt
+        if self.lifetime <= 0:
+            self.kill()
+
+    def gravity(self, dt):
+        self.speed += self.g * dt
+
+    def update(self, dt):
+        self.decay(dt)
+        self.gravity(dt)
+        self.move(dt)

@@ -1,4 +1,4 @@
-from pygame import image, mixer
+from pygame import image, mixer, font
 
 _assets = {}
 _sounds = {}
@@ -29,11 +29,13 @@ def load_all_sprites():
     load_image("sand", "assets\\sprites\\sand.png")
     load_image("ice", "assets\\sprites\\ice.png")
     load_image("home", "assets\\sprites\\home.png")
+
     load_image("back_arrow", "assets\\sprites\\back_arrow.png")
     load_image("white_arrow", "assets\\sprites\\white_arrow_edited.png")
     load_image("next_arrow", "assets\\sprites\\white_arrow.png")   
-    load_image("undo_arrow", "assets\\sprites\\undo_arrow.png")    
-    load_image("wind_arrows", "assets\\sprites\\wind_arrows_edited.png")
+    load_image("undo_arrow", "assets\\sprites\\undo_arrow.png")
+    load_image("music_note", "assets\\sprites\\music_note_icon.png") 
+
     load_image("tree_topground", "assets\\sprites\\plain_biome_sketch.png")
     load_image("plain_biome_background", "assets\\sprites\\plain_biome_background.png")
     load_image("plain_biome_flowers", "assets\\sprites\\plain_biome_flowers.png")

@@ -7,7 +7,8 @@ class MenuState(BaseState):
     def __init__(self, state_manager, save_manager):
         self.state_manager = state_manager
         #UI elements to enable
-        self.title_font = py.font.Font(None, 125)
+        self.title_font = py.font.Font("assets\\font\\SuperComic.ttf", 75)
+        #self.title = Label("Mission:\nHole in One !", py.Rect())
         
         self.WIDTH, self.HEIGHT = py.display.get_window_size()
         
@@ -18,6 +19,9 @@ class MenuState(BaseState):
         self.save_manager = save_manager
 
         self.saved_volume = save_manager.data["music_volume"]
+
+        music_note_sprite = assets_manager.get_image("music_note")
+        self.volume_icon_label = Label("", py.Rect(300, 600, 32, 32), sprite=music_note_sprite)
 
         self.volume_label = Label(str(int(self.saved_volume* 100)), py.Rect(400, 600, 50, 30), border= True, border_width=2)
         self.volume_plus_button = Button('+', py.Rect(450, 600, 25, 25), border= True, border_width=2, action=self.update_volume, action_arg=0.1, sound='click')
@@ -55,12 +59,13 @@ class MenuState(BaseState):
  
     def draw(self, screen):
         self.draw_background(screen)
-        title_surface = self.title_font.render("Mini Golf 2D", True, (255, 255, 255))
+        title_surface = self.title_font.render("One Shot Golf", True, (255, 255, 255))
         title_surface_pos_x = self.WIDTH//2 - title_surface.get_width()//2
         title_surface_pos_y = self.HEIGHT//2- 175
         screen.blit(title_surface, (title_surface_pos_x, title_surface_pos_y))
 
         self.volume_label.draw(screen)
+        self.volume_icon_label.draw(screen)
 
         for button in self.buttons:
             button.draw(screen)

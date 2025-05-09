@@ -3,7 +3,7 @@ import math
 import random as r
 from pygame import Vector2
 from state_manager import BaseState
-from utils import Camera, Button
+from utils import Camera, Button, HoleInOneParticule
 from obstacles import Wall, Water, Ground, Wind, Blackhole, Portal_entry, Portal_exit
 from player import Player
 from hole import Hole
@@ -58,6 +58,9 @@ class Game(BaseState):
         self.back_to_menu_button = Button(text="", rect=py.Rect(30, 30, 30, 30), font_size=10, color=(255, 255, 255), hover_color=(255, 0, 0), action=self.back_to_menu, sprite=self.back_to_menu_button_sprite, sound="click")
         self.reset_button = Button(text="", rect=py.Rect(self.WIDTH-30, 30, 150, 50), font_size=10, color=(255, 255, 255), hover_color=(200, 200, 200), action=self.reset, sound="click",  border=False, sprite=self.undo_arrow_sprite)
         self.buttons = [self.back_to_menu_button, self.reset_button]
+
+        self.particle_group = py.sprite.Group()
+        self.particle_list = []
         
         
         #End_level_menu
@@ -148,6 +151,8 @@ class Game(BaseState):
             portal_entry.update(dt)
         for portal_exit in self.portals_exit:
             portal_exit.update(dt)
+        
+        self.particle_group.update(dt)
 
     def win(self):
         py.mixer.Sound(self.hole_sound).play()
@@ -156,6 +161,10 @@ class Game(BaseState):
         self.player.v = Vector2(0, 0)
         self.player.pos = Vector2((1100, 1000))
         #self.back_to_menu()
+        if self.stroke == 1:
+            for i in range(12):
+                alpha = i * math.pi/6
+                self.particle_list.append(HoleInOneParticule(self.particle_group, Vector2(self.hole.pos.x + 20 * math.cos(alpha), self.hole.pos.y + 20 * math.sin(alpha)), (255, 20, 80), Vector2(500 * math.cos(alpha), 500 * math.sin(alpha)), 12))
     
     def save_progression(self):
         if "highscore" in self.save_manager.data["stats"][str(self.level_to_load)] and self.stroke < self.save_manager.data["stats"][str(self.level_to_load)]["highscore"]:
@@ -224,6 +233,8 @@ class Game(BaseState):
             pos = self.player.pos
             txt = self.font.render(f"Pos: {pos}", True, (255, 255, 255))
             screen.blit(txt, py.Rect(280, 950, 40, 20))
+        
+        self.particle_group.draw(screen)
         
     def handle_events(self, events):
         for button in self.buttons:
