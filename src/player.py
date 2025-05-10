@@ -15,16 +15,15 @@ class Player:
         self.base_interval = 0.2 #en secondes
         
         self.drowning = False
+        self.disappearing = False
         self.size = sprite.get_width()
-        self.shrink_factor = 5
+        self.shrink_factor = 10
         
 
     def draw(self, screen, offset:Vector2 = Vector2(0, 0)): 
         #py.draw.circle(screen, "white", self.pos, int(self.size*0.5))
         self.rect = self.sprite.get_rect(center = self.pos+ offset)
         screen.blit(self.sprite, self.rect)
-       # py.draw.circle(screen, "black", self.pos, int(self.size*0.5))
-        #py.draw.circle(screen, "white", self.pos, int(self.size*0.5)-3)
         
         self.particle_group.draw(screen)
 
@@ -49,6 +48,9 @@ class Player:
         if self.drowning:
             self.drowning_animation(dt)
         
+        if self.disappearing:
+            self.disappearing_animation(dt)
+        
         
             
     def drowning_animation(self, dt):
@@ -57,11 +59,11 @@ class Player:
             self.v += friction
         else:
             self.v = Vector2(0, 0)
-        # TODO: move this into the else ?
+            if self.size > 1:
+                self.size -= self.shrink_factor * dt
+                self.sprite = py.transform.smoothscale(self.sprite, (int(self.size), int(self.size)))
+
+    def disappearing_animation(self, dt)-> None:
         if self.size > 1:
             self.size -= self.shrink_factor * dt
-            #self.sprite = py.transform.scale(self.sprite, (int(self.size), int(self.size)))
-            # self.sprite = py.transform.scale_by(self.sprite, self.shrink_factor*dt)
             self.sprite = py.transform.smoothscale(self.sprite, (int(self.size), int(self.size)))
-
-        

@@ -22,7 +22,7 @@ class Wall:
                 new_surface.blit(sprite, (i* sprite_size, j*sprite_size))
         new_rect = new_surface.get_rect(center=(self.center))
         self.rotated_surface = py.transform.rotate(new_surface, int(direction))
-        self.rotated_rect = self.rotated_surface.get_rect(center=(self.center))
+        
 
         
         self.update_corners()
@@ -43,6 +43,7 @@ class Wall:
     def draw(self, screen:py.Surface, offset:Vector2= Vector2(0, 0)):
         #shaken_corners = [corner + offset for corner in self.corners]
         #py.draw.polygon(screen, (255, 0, 0), shaken_corners, 2)
+        self.rotated_rect = self.rotated_surface.get_rect(center=self.center + offset)
         screen.blit(self.rotated_surface, self.rotated_rect)
         
     def detect_collision(self, player_pos, player_radius):
@@ -149,12 +150,32 @@ class Wall:
 class Water:
     def __init__(self, rect:py.Rect, sprite=None):
         self.rect = rect
-        self.friction = 1200
-        self.sprite = sprite
+        self.friction = 900
+        self.pos = Vector2(rect[0], rect[1])
+        width, height = rect[2], rect[3]
+        self.sprite_index:float = 0
+        self.sprite_index_old = int(self.sprite_index)
+        self.sprites:list[py.Surface] = []
+        for i in range(1, 6):
+            self.sprites.append(assets_manager.get_image(f"water{i}"))
         self.rect.center = (rect[0], rect[1])
+        self.nbr_col = width // self.sprites[0].get_width()
+        self.nbr_row = height // self.sprites[0].get_height()
+        self.surface = py.Surface((width, height)).convert_alpha()
+
+        #Prerender a animation frame in case of reset
+        #Because draw() may happen before update()
+        for i in range(self.nbr_col):
+            for j in range(self.nbr_row):
+                self.surface.blit(self.sprites[int(self.sprite_index)], (i* 50, j* 50))
+        
+
+        
         
     def draw(self, screen, offset:Vector2=Vector2(0, 0)):
         py.draw.rect(screen, (50, 50, 200), self.rect)
+        self.draw_rect = self.surface.get_rect(center= self.pos + offset)
+        screen.blit(self.surface, self.draw_rect)
     
     def detect_collision(self, player_pos:Vector2, player_radius:float)->bool:
         return self.rect.collidepoint(player_pos)
@@ -163,6 +184,20 @@ class Water:
         friction_v = player_velocity.normalize() * -self.friction * dt
         player_velocity += friction_v
         return player_velocity
+
+    def update(self, dt):
+        self.sprite_index += 0.09
+
+        if self.sprite_index > len(self.sprites) -1 :
+            self.sprite_index = 0
+
+        if int(self.sprite_index) != self.sprite_index_old: #Only reblit if the frame has changed
+            for i in range(self.nbr_col):
+                for j in range(self.nbr_row):
+                    self.surface.blit(self.sprites[int(self.sprite_index)], (i* 50, j* 50))
+            self.sprite_index_old = int(self.sprite_index)
+
+        
       
     
 class Ground:
@@ -375,7 +410,7 @@ class Portal_exit:
             self.sprites.append(assets_manager.get_image(f"portal_exit{i}"))
         for i in range(len(self.sprites)):
             self.sprites[i] = py.transform.scale(self.sprites[i], (self.radius*2, self.radius*2))
-        self.sprite_index = 0
+        self.sprite_index:float = 0
         self.image = self.sprites[self.sprite_index]
         self.rect = self.image.get_rect(center = pos)
     
@@ -388,5 +423,4 @@ class Portal_exit:
         if self.sprite_index > len(self.sprites) -1 :
             self.sprite_index = 0
         self.image = self.sprites[int(self.sprite_index)]
-        
         

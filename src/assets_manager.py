@@ -39,17 +39,19 @@ def load_all_sprites():
     load_image("tree_topground", "assets\\sprites\\plain_biome_sketch.png")
     load_image("plain_biome_background", "assets\\sprites\\plain_biome_background.png")
     load_image("plain_biome_flowers", "assets\\sprites\\plain_biome_flowers.png")
+    for i in range(1, 6):
+        load_image(f"water{i}", f"assets\\sprites\\water\\water_{i}.png")
     for i in range(1, 10):
-        load_image(f"blackhole{i}", f"assets\\sprites\\blackhole{i}.png")
+        load_image(f"blackhole{i}", f"assets\\sprites\\blackhole\\blackhole_{i}.png")
     for i in range(1, 8):
-        load_image(f"wind{i}", f"assets\\sprites\\wind_anim{i}.png")
+        load_image(f"wind{i}", f"assets\\sprites\\wind\\wind_{i}.png")
     for i in range(1, 6):
-        load_image(f"portal_entry{i}", f"assets\\sprites\\portal_entry{i}.png")
+        load_image(f"portal_entry{i}", f"assets\\sprites\\portal\\portal_entry\\portal_entry_{i}.png")
     for i in range(1, 6):
-        load_image(f"portal_exit{i}", f"assets\\sprites\\portal{i}.png")
+        load_image(f"portal_exit{i}", f"assets\\sprites\\portal\\portal_exit\\portal_exit_{i}.png")
 
 def load_all_sounds():
-    load_sound("swing", "assets\\sounds\\swing.mp3")
+    load_sound("swing", "assets\\sounds\\swings\\swing1.mp3")
     load_sound("bounce", "assets\\sounds\\bounce.mp3")
     load_sound("hole", "assets\\sounds\\hole.mp3")
     load_sound("click", "assets\\sounds\\click.mp3")

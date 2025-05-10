@@ -10,4 +10,6 @@ class LevelManager:
             file.close()
     
     def get_level(self, name:str):
-        return self.levels[name]
+        if name in self.levels:
+            return self.levels[name]
+        return None

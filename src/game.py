@@ -44,6 +44,7 @@ class Game(BaseState):
         self.builded_strength = Vector2(0, 0)
         self.building_strength_factor = 5.0
         self.friction = 200
+        self.player_max_speed = 800
         
         self.is_left_button_down = False
         self.is_building_strength = False
@@ -70,19 +71,20 @@ class Game(BaseState):
         self.end_level_menu_elem.append(Button(text="", rect=py.Rect(self.WIDTH//2- 175, 3*self.HEIGHT//5, 150, 50), font_size=35, color=(255, 255, 255), hover_color=(200, 200, 200), action=self.back_to_menu, sound="click", border=True, sprite=self.home_sprite))
         
     def enter(self, **kwargs):
+        self.is_next_level_available = False
         self.level_to_load = kwargs["level"]
         level = self.level_manager.get_level(self.level_to_load)
         pos = Vector2(level["player_pos"][0]+100, level["player_pos"][1])
         self.player = Player(pos, 8, self.player_sprite)
         pos = Vector2(level["hole_pos"][0]+100, level["hole_pos"][1])
         self.hole = Hole(pos, self.hole_sprite)
-        self.walls = []
-        self.waters = []
-        self.grounds = []
-        self.winds = []
-        self.blackholes = []
-        self.portals_entry = []
-        self.portals_exit = []
+        self.walls:list[Wall] = []
+        self.waters:list[Water] = []
+        self.grounds:list[Ground] = []
+        self.winds:list[Wind] = []
+        self.blackholes:list[Blackhole] = []
+        self.portals_entry:list[Portal_entry] = []
+        self.portals_exit:list[Portal_exit] = []
         
         if "walls" in level:
             for wall in level["walls"]:
@@ -126,9 +128,12 @@ class Game(BaseState):
         self.in_game = True
 
             
-    def next_level(self, *args):
+    def next_level(self, *args):    
         self.level_to_load = "level_" + str(int(self.level_to_load.split("_")[1]) + 1)
-        self.enter(level=self.level_to_load)
+        if self.level_manager.get_level(self.level_to_load) != None:
+            self.enter(level=self.level_to_load)
+        else:
+            self.back_to_menu()
         
     def reset(self, *args):
         self.enter(level=self.level_to_load)
@@ -137,10 +142,16 @@ class Game(BaseState):
         self.WIDTH, self.HEIGHT = py.display.get_window_size()
         
     def update(self, dt)->None:
+        if (self.player.drowning  or self.player.disappearing) and self.player.size <= 1 and self.in_game:
+            self.game_over()
         self.update_player_pos(dt)
         self.camera.update()
         
         self.player.update(dt)
+
+        for water in self.waters:
+            water.update(dt)
+
         for blackhole in self.blackholes:
             blackhole.update(dt)
 
@@ -155,16 +166,20 @@ class Game(BaseState):
         self.particle_group.update(dt)
 
     def win(self):
+        self.is_next_level_available = True
         py.mixer.Sound(self.hole_sound).play()
+        print("called game over")
         self.save_progression()
         self.in_game = False
-        self.player.v = Vector2(0, 0)
-        self.player.pos = Vector2((1100, 1000))
+        
         #self.back_to_menu()
         if self.stroke == 1:
             for i in range(12):
                 alpha = i * math.pi/6
                 self.particle_list.append(HoleInOneParticule(self.particle_group, Vector2(self.hole.pos.x + 20 * math.cos(alpha), self.hole.pos.y + 20 * math.sin(alpha)), (255, 20, 80), Vector2(500 * math.cos(alpha), 500 * math.sin(alpha)), 12))
+        
+    def game_over(self):
+        self.in_game = False
     
     def save_progression(self):
         if "highscore" in self.save_manager.data["stats"][str(self.level_to_load)] and self.stroke < self.save_manager.data["stats"][str(self.level_to_load)]["highscore"]:
@@ -223,6 +238,8 @@ class Game(BaseState):
         
         if not self.in_game:
             for elem in self.end_level_menu_elem:
+                if self.is_next_level_available == False and elem.action == self.next_level:
+                    continue
                 elem.draw(screen)
         if self.show_ball_speed:
             speed = round(self.player.v.length(), 1)
@@ -241,10 +258,12 @@ class Game(BaseState):
             button.handle_events(events)
         if not self.in_game:
             for elem in self.end_level_menu_elem:
+                if self.is_next_level_available == False and elem.action == self.next_level:
+                    continue
                 elem.handle_events(events)
             
         for event in events:
-            if event.type == py.MOUSEBUTTONDOWN:
+            if event.type == py.MOUSEBUTTONDOWN and self.in_game:
                 self.is_left_button_down = True
                 
                 if abs(event.pos[0] - self.player.pos[0]) < 20 and abs(event.pos[1] - self.player.pos[1]) < 20:
@@ -291,8 +310,13 @@ class Game(BaseState):
                     self.player.v = ground.handle_collision(self.player.v, dt)
                 
             for water in self.waters:
-                if water.detect_collision(self.player.pos, self.player.radius) and self.player.v.length() < 50:
-                    self.player.drowning = True
+                if water.detect_collision(self.player.pos, self.player.radius):
+                    self.player.v = water.handle_collision(self.player.v, dt)
+                    if self.player.v.length() < 50:
+                        if self.player.size <= 1:
+                            self.game_over()
+                        self.player.drowning = True
+
             
             if self.hole.detect_collision(self.player.pos, self.player.radius):
                 self.win()
@@ -306,6 +330,11 @@ class Game(BaseState):
                 if blackhole.detect_collision(self.player.pos, self.player.radius):
                     is_in_blackhole = True
                     self.player.v = blackhole.handle_collision(self.player.pos, self.player.v, dt)
+                    radius = blackhole.radius
+                    d = blackhole.pos.distance_to(self.player.pos)
+                    #print(self.player.v.length(), math.exp(-5* (d / radius)) * 1000)
+                    if self.player.v.length() <= math.exp(-5* (d / radius)) * 1000:
+                        self.player.disappearing = True
                     
             for portal in self.portals_entry:    
                 if portal.detect_collision(self.player.pos, self.player.radius):
@@ -318,12 +347,14 @@ class Game(BaseState):
                 self.player.v += friction_v 
                 
             
-
-        if self.player.v.length() < 1 and not is_in_wind and not is_in_blackhole:
+        #Stop the player if speed is near zero
+        #Only if the player isn't in a wind or blackhole
+        if self.player.v.length() < 1 and not is_in_wind and not is_in_blackhole: 
             self.player.v = Vector2(0, 0)
         
-        if self.player.v.length() > 800:
-            self.player.v = self.player.v.normalize() * 800
+        #Cap the player speed
+        if self.player.v.length() > self.player_max_speed:
+            self.player.v = self.player.v.normalize() * self.player_max_speed
 
         self.strength = Vector2(0, 0)
         
@@ -334,13 +365,13 @@ class Game(BaseState):
             self.player.v.x *= -1
             player_next_pos.x = max(0, min(self.WIDTH, player_next_pos.x))
             py.mixer.Sound(self.bounce_sound).play()
-            self.camera.start_shake(self.player.v.length()/300)
+            self.camera.start_shake(self.player.v.length()/250)
 
         if not (self.player.radius <= player_next_pos.y <= self.HEIGHT - self.player.radius):
             self.player.v.y *= -1  
             player_next_pos.y = max(0, min(self.HEIGHT, player_next_pos.y))
             py.mixer.Sound(self.bounce_sound).play()
-            self.camera.start_shake(self.player.v.length()/300)
+            self.camera.start_shake(self.player.v.length()/250)
 
         #check if the player is in a wall
         for wall in self.walls:
@@ -348,7 +379,7 @@ class Game(BaseState):
                 self.player.v = wall.handle_collision(self.player.v, player_next_pos, self.player.radius)
                 player_next_pos = self.player.pos + self.player.v * dt
                 py.mixer.Sound(self.bounce_sound).play()
-                #self.camera.start_shake(self.player.v.length()/300)
+                self.camera.start_shake(self.player.v.length()/250)
 
         self.player.pos = player_next_pos
         

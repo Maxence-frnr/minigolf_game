@@ -34,7 +34,7 @@
 "level_5":{
     "player_pos":[300,650],
     "grounds":{"water":[{"rect":[300,450,150,150]}],"sand":[],"ice":[]},
-    "walls":[{"rect":[105,500,210,25],"direction":0},{"rect":[525,500,150,50],"direction":0}],
+    "walls":[{"rect":[105,500,200,25],"direction":0},{"rect":[525,500,150,50],"direction":0}],
     "winds":[],
     "blackholes":[],
     "portals":[],

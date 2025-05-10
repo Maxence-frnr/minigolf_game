@@ -101,7 +101,7 @@ class LevelSelectionMenu(BaseState):
             self.back_to_menu()
     
     def scroll(self, direction):
-        scroll_amount = 40
+        scroll_amount = 60
         if direction > 0 and self.level_cards[1][0].rect[1] < 150:
             for card in self.level_cards:
                 for elem in card:
