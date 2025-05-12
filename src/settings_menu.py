@@ -23,7 +23,6 @@ class MenuState(BaseState):
         py.mixer.music.play(-1, 0, 1000)
     
     def exit(self):
-        print("leaving main menu")
         py.mixer.music.fadeout(1000)
  
     def draw(self, screen):

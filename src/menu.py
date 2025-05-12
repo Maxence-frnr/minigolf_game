@@ -11,21 +11,28 @@ class MenuState(BaseState):
         #self.title = Label("Mission:\nHole in One !", py.Rect())
         
         self.WIDTH, self.HEIGHT = py.display.get_window_size()
+        self.background_sprite = assets_manager.get_image("plain_biome_background")
+        play_button_sprite = assets_manager.get_image("play_button")
+        plus_button_sprite = assets_manager.get_image("plus_button")
+        minus_button_sprite = assets_manager.get_image("minus_button")
+        leave_button_sprite = assets_manager.get_image("leave_button")
+        blank_label_sprite = assets_manager.get_image("blank_label")
+        note_label_sprite = assets_manager.get_image("note_label")
+        self.title_sprite = assets_manager.get_image("title")
         
-        self.play_button = Button("Play", py.Rect(self.WIDTH//2, self.HEIGHT//2, 130, 80), 75, (255, 255, 255), (210, 210, 210), self.play, border=True, sound="click")
-        self.exit_button = Button("Exit", py.Rect(self.WIDTH//2, 700, 100, 70), 60, (255, 255, 255), (210, 210, 210), self.exit_game, border=True)
-        self.buttons = [self.play_button, self.exit_button]
+        self.play_button = Button("", py.Rect(self.WIDTH//2, self.HEIGHT//2, 130, 80),action= self.play, sound="click", sprite=play_button_sprite)
+        self.leave_button = Button("", py.Rect(self.WIDTH//2, 650, 100, 70), action=self.exit_game, sprite=leave_button_sprite)
+        self.buttons = [self.play_button, self.leave_button]
         self.background_music = assets_manager.get_sound("background_music")
         self.save_manager = save_manager
 
         self.saved_volume = save_manager.data["music_volume"]
 
-        music_note_sprite = assets_manager.get_image("music_note")
-        self.volume_icon_label = Label("", py.Rect(300, 600, 32, 32), sprite=music_note_sprite)
+        self.volume_icon_label = Label("", py.Rect(290, 575, 32, 32), sprite=note_label_sprite)
 
-        self.volume_label = Label(str(int(self.saved_volume* 100)), py.Rect(400, 600, 50, 30), border= True, border_width=2)
-        self.volume_plus_button = Button('+', py.Rect(450, 600, 25, 25), border= True, border_width=2, action=self.update_volume, action_arg=0.1, sound='click')
-        self.volume_minus_button = Button('-', py.Rect(350, 600, 25, 25), border= True, border_width=2, action=self.update_volume, action_arg=-0.1, sound='click')
+        self.volume_label = Label(str(int(self.saved_volume* 100)), py.Rect(400, 575, 50, 30), sprite=blank_label_sprite)
+        self.volume_plus_button = Button('', py.Rect(465, 575, 25, 25), action=self.update_volume, action_arg=0.1, sound='click', sprite=plus_button_sprite)
+        self.volume_minus_button = Button('', py.Rect(335, 575, 25, 25), action=self.update_volume, action_arg=-0.1, sound='click', sprite=minus_button_sprite)
 
         self.buttons.append(self.volume_plus_button)
         self.buttons.append(self.volume_minus_button)
@@ -54,7 +61,6 @@ class MenuState(BaseState):
         py.mixer.music.play(-1, 0, 1000)
     
     def exit(self):
-        print("leaving main menu")
         py.mixer.music.fadeout(2000)
  
     def draw(self, screen):
@@ -62,7 +68,9 @@ class MenuState(BaseState):
         title_surface = self.title_font.render("One Shot Golf", True, (255, 255, 255))
         title_surface_pos_x = self.WIDTH//2 - title_surface.get_width()//2
         title_surface_pos_y = self.HEIGHT//2- 175
-        screen.blit(title_surface, (title_surface_pos_x, title_surface_pos_y))
+        #screen.blit(title_surface, (title_surface_pos_x, title_surface_pos_y))
+        screen.blit(self.title_sprite, (0, 150))
+
 
         self.volume_label.draw(screen)
         self.volume_icon_label.draw(screen)
@@ -71,12 +79,13 @@ class MenuState(BaseState):
             button.draw(screen)
     
     def draw_background(self, screen):
-        CELL_SIZE = 50
-        screen.fill((131, 177, 73))
-        for i in range(self.WIDTH // CELL_SIZE):
-            for j in range (self.HEIGHT // CELL_SIZE):
-                if (i + j) %2 == 0:
-                    py.draw.rect(screen, (161, 197, 75), (i*CELL_SIZE, j*CELL_SIZE, CELL_SIZE, CELL_SIZE), 0 )
+        screen.blit(self.background_sprite, (0, 0))
+        # CELL_SIZE = 50
+        # screen.fill((131, 177, 73))
+        # for i in range(self.WIDTH // CELL_SIZE):
+        #     for j in range (self.HEIGHT // CELL_SIZE):
+        #         if (i + j) %2 == 0:
+        #             py.draw.rect(screen, (161, 197, 75), (i*CELL_SIZE, j*CELL_SIZE, CELL_SIZE, CELL_SIZE), 0 )
     
     def handle_events(self, events):
         for button in self.buttons:

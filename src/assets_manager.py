@@ -30,13 +30,23 @@ def load_all_sprites():
     load_image("ice", "assets\\sprites\\ice.png")
     load_image("home", "assets\\sprites\\home.png")
 
+    #UI
+    load_image("title", "assets\\sprites\\title.png")
+    load_image("blank_label", "assets\\sprites\\UI\\blank_label.png")
+    load_image("big_blank_label", "assets\\sprites\\UI\\big_blank_label.png")
+    load_image("play_button", "assets\\sprites\\UI\\play_button.png")
+    load_image("plus_button", "assets\\sprites\\UI\\plus_button.png")
+    load_image("minus_button", "assets\\sprites\\UI\\minus_button.png")
+    load_image("note_label", "assets\\sprites\\UI\\note_button.png")
+    load_image("leave_button", "assets\\sprites\\UI\\leave_button.png")
+    load_image("go_back", "assets\\sprites\\UI\\go_back_button.png")
     load_image("back_arrow", "assets\\sprites\\back_arrow.png")
     load_image("white_arrow", "assets\\sprites\\white_arrow_edited.png")
     load_image("next_arrow", "assets\\sprites\\white_arrow.png")   
     load_image("undo_arrow", "assets\\sprites\\undo_arrow.png")
     load_image("music_note", "assets\\sprites\\music_note_icon.png") 
 
-    load_image("tree_topground", "assets\\sprites\\plain_biome_sketch.png")
+    load_image("tree_topground", "assets\\sprites\\plain_biome_foreground.png")
     load_image("plain_biome_background", "assets\\sprites\\plain_biome_background.png")
     load_image("plain_biome_flowers", "assets\\sprites\\plain_biome_flowers.png")
     for i in range(1, 6):

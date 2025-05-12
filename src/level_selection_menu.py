@@ -14,9 +14,11 @@ class LevelSelectionMenu(BaseState):
         #création d'un timer pour le retour au menu avec escape pour éviter le double back_to_menu() si le joueur était en partie
         self.can_escape_timer = 45 
         
-        self.back_to_menu_button_sprite = assets_manager.get_image("back_arrow")
+        go_back_button_sprite = assets_manager.get_image("go_back")
+        self.background_sprite = assets_manager.get_image('plain_biome_background')
+        self.big_blank_label_sprite = assets_manager.get_image("big_blank_label")
         self.buttons = []
-        self.buttons.append(Button(text="", rect=py.Rect(30, 30, 30, 30), font_size=10, color=(255, 255, 255), hover_color=(255, 0, 0), action=self.back_to_menu, sprite=self.back_to_menu_button_sprite, sound="click"))
+        self.buttons.append(Button(text="", rect=py.Rect(30, 30, 30, 30), font_size=10, color=(255, 255, 255), action=self.back_to_menu, sprite=go_back_button_sprite, sound="click"))
         self.title = Label("Level Selection", py.Rect(self.WIDTH//2, 60, 400, 75), 50, (255, 255, 255))
         self.pos_x = self.WIDTH//2
         self.pos_y = 175
@@ -27,17 +29,17 @@ class LevelSelectionMenu(BaseState):
         pos_y = self.pos_y
         unlocked_level_index = self.save_manager.data["level_unlocked"]
         color = (255, 255, 255)
-        hover_color = (210, 210, 210)
+        hover_color = (180, 180, 180)
         level_cards = [[]]
         number_of_level = len(self.level_manager.levels)+1
         for i in range(1, number_of_level):
             level_cards.append([])
             if i > unlocked_level_index:
                 color = (200, 70, 70)
-                hover_color = (180, 60, 60)
+                hover_color = (200, 70, 70)
             level_highscore, level_attempts = self.get_level_stats(f"level_{i}")
-            level_cards[i].append(Button("", py.Rect(self.pos_x, pos_y, 400, 75), 75, color=color, hover_color=hover_color, border=True, action=self.level_selected, action_arg=i, sound="click"))
-            level_cards[i].append(Label(str(i), py.Rect(self.pos_x - 125, pos_y, 50, 50), 65, color, None, True, 3, 10))
+            level_cards[i].append(Button(rect=py.Rect(self.pos_x, pos_y, 400, 75), action=self.level_selected, action_arg=i, sound="click", sprite=self.big_blank_label_sprite))
+            level_cards[i].append(Label(str(i), py.Rect(self.pos_x - 125, pos_y, 50, 50), 65, color, None, True, 3, 10, border_hover_color=(180, 180, 180), hover_rect=py.Rect(self.pos_x - 200, pos_y - 37.5, 400, 75)))
             if level_highscore:
                 level_cards[i].append(Label(f"Highscore: {level_highscore}", py.Rect(self.pos_x+50, pos_y-15, 50, 50), 24, color, None))
             if level_attempts:
@@ -67,7 +69,7 @@ class LevelSelectionMenu(BaseState):
         self.can_escape_timer = 45
 
     def draw(self, screen):
-        screen.fill((50, 50, 50))
+        screen.blit(self.background_sprite, (0, 0))
         
         self.title.draw(screen)
         
@@ -134,4 +136,3 @@ class LevelCard:
     
     def handle_events(self, events):
         self.button.handle_events(events)
-        

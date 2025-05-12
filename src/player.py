@@ -18,6 +18,8 @@ class Player:
         self.disappearing = False
         self.size = sprite.get_width()
         self.shrink_factor = 10
+
+        self.rolling_on = "default"
         
 
     def draw(self, screen, offset:Vector2 = Vector2(0, 0)): 
@@ -28,10 +30,18 @@ class Player:
         self.particle_group.draw(screen)
 
     def create_particles(self):
+        if self.rolling_on == 'default':
+            color = (200, 255, 200)
+        elif self.rolling_on == 'sand':
+            color = (251, 226, 78)
+        elif self.rolling_on == 'ice':
+            color = (50, 100, 200)
+        elif self.rolling_on == 'water':
+            color = (54, 127, 220)
         if self.v.length() > 0:
             Player_Particle(groups=self.particle_group,
                  pos=self.pos,
-                 color=(255, 255, 255),
+                 color=color,
                  speed= -self.v*1.1)
     
     def update(self, dt:float)-> None:

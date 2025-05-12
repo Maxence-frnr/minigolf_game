@@ -143,7 +143,7 @@ class Wall:
 
             if normal.dot(player_velocity) > 0:
                 normal = -normal  # Flip the normal
-        print(normal)
+        #print(normal)
         return player_velocity - 2*(player_velocity.dot(normal)) * normal
      
     
@@ -204,6 +204,7 @@ class Ground:
     def __init__(self, rect:py.Rect, type):
         self.rect = rect
         self.rect.center = (rect[0], rect[1])
+        self.type = type
         if type == "sand":
             self.color = (255, 207, 92)
             self.friction = 600
@@ -240,7 +241,7 @@ class Ground:
     
     
 class Wind:
-    def __init__(self, rect:py.Rect, direction:int, strength:int, sprite):
+    def __init__(self, rect:py.Rect, direction:int, strength:int):
         self.direction = Vector2(round(math.cos(math.radians(direction)), 2), 
                                  -round(math.sin(math.radians(direction)), 2))
         self.strength = self.direction * strength
@@ -330,7 +331,7 @@ class Wind:
     
     
 class Blackhole:
-    def __init__(self, pos, radius, strength, sprites:list[py.sprite.Sprite]):
+    def __init__(self, pos, radius, strength):
         self.pos = Vector2(pos)
         self.radius = radius
         self.strength = strength
@@ -415,7 +416,8 @@ class Portal_exit:
         self.rect = self.image.get_rect(center = pos)
     
     def draw(self, screen, offset:Vector2= Vector2(0, 0)):
-        screen.blit(self.image, self.rect)
+        rect = self.image.get_rect(center = self.pos + offset)
+        screen.blit(self.image, rect)
         #py.draw.circle(screen, "red", self.pos + offset, self.radius, 1) #orange -> (230, 130, 10)
     
     def update(self, dt):

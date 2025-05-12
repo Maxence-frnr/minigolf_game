@@ -26,8 +26,6 @@ class Game(BaseState):
 
         self.player_sprite = assets_manager.get_image("ball")
         self.hole_sprite = assets_manager.get_image("hole")
-        self.wind_sprite = assets_manager.get_image("wind_arrows")
-        self.blackhole_sprites = [assets_manager.get_image(f"blackhole{i}" for i in range(1, 10))]
         self.top_ground_sprite = assets_manager.get_image("tree_topground")
         self.background_sprite = assets_manager.get_image("plain_biome_background")
         self.background_detail_sprite = assets_manager.get_image("plain_biome_flowers")
@@ -50,13 +48,13 @@ class Game(BaseState):
         self.is_building_strength = False
 
         #UI
-        self.back_to_menu_button_sprite = assets_manager.get_image("back_arrow")
+        go_back_button_sprite = assets_manager.get_image("go_back")
         self.strength_arrow_sprite = assets_manager.get_image("white_arrow")
         self.undo_arrow_sprite = assets_manager.get_image("undo_arrow")
         self.home_sprite = assets_manager.get_image("home")
         self.next_arrow_sprite = assets_manager.get_image("next_arrow")
         
-        self.back_to_menu_button = Button(text="", rect=py.Rect(30, 30, 30, 30), font_size=10, color=(255, 255, 255), hover_color=(255, 0, 0), action=self.back_to_menu, sprite=self.back_to_menu_button_sprite, sound="click")
+        self.back_to_menu_button = Button(rect=py.Rect(30, 30, 30, 30), action=self.back_to_menu, sprite=go_back_button_sprite, sound="click")
         self.reset_button = Button(text="", rect=py.Rect(self.WIDTH-30, 30, 150, 50), font_size=10, color=(255, 255, 255), hover_color=(200, 200, 200), action=self.reset, sound="click",  border=False, sprite=self.undo_arrow_sprite)
         self.buttons = [self.back_to_menu_button, self.reset_button]
 
@@ -104,12 +102,12 @@ class Game(BaseState):
         if "winds" in level:
             for wind in level["winds"]:
                 rect = py.Rect(wind["rect"][0] + 100, wind["rect"][1], wind["rect"][2], wind["rect"][3])
-                self.winds.append(Wind(rect, wind["direction"], wind["strength"], self.wind_sprite))
+                self.winds.append(Wind(rect, wind["direction"], wind["strength"]))
         
         if "blackholes" in level:
             for blackhole in level["blackholes"]:
                 pos = Vector2(blackhole["pos"][0] + 100, blackhole["pos"][1])
-                self.blackholes.append(Blackhole(pos, blackhole["radius"], blackhole["strength"], self.blackhole_sprites))
+                self.blackholes.append(Blackhole(pos, blackhole["radius"], blackhole["strength"]))
         
         if "portals" in level:
             for portals in level["portals"]:
@@ -168,7 +166,6 @@ class Game(BaseState):
     def win(self):
         self.is_next_level_available = True
         py.mixer.Sound(self.hole_sound).play()
-        print("called game over")
         self.save_progression()
         self.in_game = False
         
@@ -191,25 +188,27 @@ class Game(BaseState):
         self.save_manager.save_data()
     
     def draw(self, screen):
-        #screen.fill((50, 50, 50))
         offset = self.camera.offset
+
         self.draw_background(screen, offset)
-        py.draw.line(screen, (0, 0, 0), (100, 0), (100, 1000), 2)
-        py.draw.line(screen, (0, 0, 0), (700, 0), (700, 1000), 2)
-        for blackhole in self.blackholes:
-            blackhole.draw(screen)
+        py.draw.line(screen, (30, 40, 30), (100, 0), (100, 1000), 2)
+        py.draw.line(screen, (30, 40, 30), (700, 0), (700, 1000), 2)
+
         for water in self.waters:
             water.draw(screen, offset)
         for ground in self.grounds:
             ground.draw(screen)
+
         self.hole.draw(screen, offset)
-        if self.in_game:
-            self.player.draw(screen, offset)
-        
+
         for portal in self.portals_entry:
             portal.draw(screen, offset)
+
         for portal in self.portals_exit:
             portal.draw(screen, offset)
+        
+        if self.in_game:
+            self.player.draw(screen, offset)
         
         for blackhole in self.blackholes:
             blackhole.draw(screen)
@@ -283,16 +282,17 @@ class Game(BaseState):
                 
             keys = py.key.get_pressed()
             if keys[py.K_SPACE]:
-                self.camera.start_shake(5)
+                #self.camera.start_shake(5)
+                if self.is_next_level_available == True:
+                    print("pressed + next level available")
+                    if not self.in_game:
+                        print("everthing ok")
+                        self.next_level()
             if keys[py.K_r] and self.stroke > 0:
                 self.reset()
                 self.camera.start_shake(0.7)
             if keys[py.K_ESCAPE]:
                 self.back_to_menu()
-            
-            if keys[py.K_e]:
-                mp = py.mouse.get_pos()
-                print("mp", mp)
 
     def update_player_pos(self, dt): #Calc physics of the player
         if not self.in_game: return
@@ -303,15 +303,18 @@ class Game(BaseState):
         is_on_special_ground = False
         is_in_wind = False
         is_in_blackhole = False
+        self.player.rolling_on = 'default'
         if self.player.v.length() > 0:
             for ground in self.grounds:
                 if ground.detect_collision(self.player.pos):
                     is_on_special_ground = True
                     self.player.v = ground.handle_collision(self.player.v, dt)
+                    self.player.rolling_on = ground.type
                 
             for water in self.waters:
                 if water.detect_collision(self.player.pos, self.player.radius):
                     self.player.v = water.handle_collision(self.player.v, dt)
+                    self.player.rolling_on = 'water'
                     if self.player.v.length() < 50:
                         if self.player.size <= 1:
                             self.game_over()
@@ -332,7 +335,6 @@ class Game(BaseState):
                     self.player.v = blackhole.handle_collision(self.player.pos, self.player.v, dt)
                     radius = blackhole.radius
                     d = blackhole.pos.distance_to(self.player.pos)
-                    #print(self.player.v.length(), math.exp(-5* (d / radius)) * 1000)
                     if self.player.v.length() <= math.exp(-5* (d / radius)) * 1000:
                         self.player.disappearing = True
                     
